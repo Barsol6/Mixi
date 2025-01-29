@@ -1,0 +1,36 @@
+﻿@page "/login"
+@page "/"
+
+@rendermode InteractiveServer
+
+
+@using System.Collections.ObjectModel
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using Components.Pages
+@using mixi.Components.Layout
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+
+@layout LoginLayout
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject NavigationManager NavigationManager
+
+
+<div class="container">
+    
+    <div class="title">
+        <div class="titleImg">
+            <img class="titleImg"   src="assets/title.png"/>
+        </div>
+    </div>
+    
+    <div class="loginBox">
+
+    </div>
+
+</div> 
+
+@code {
+    
+}
