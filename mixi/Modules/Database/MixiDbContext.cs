@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using mixi.Modules.Users;
+
 namespace mixi.Modules.Database;
 
 public class MixiDbContext:DbContext

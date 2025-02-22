@@ -1,9 +1,16 @@
 using mixi.Components;
+using mixi.Modules.Database;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 
 builder
     .Services.AddRazorComponents()
@@ -11,6 +18,11 @@ builder
     .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddControllers();
+
+builder.Services.AddDbContext<MixiDbContext>(options =>
+{
+    options.UseSqlite("Data Source = mixi.db");
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -43,6 +55,10 @@ app.MapControllers();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<MixiDbContext>();
+    db.Database.Migrate();
+}
 
 app.Run();

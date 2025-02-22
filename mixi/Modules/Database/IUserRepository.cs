@@ -8,5 +8,5 @@ public interface IUserRepository
 
     public Task<User?> GetUserAsync(int id);
 
-    public Task<User?> GetUserAsync(string username, string password);
+    public Task<User?> GetUserAsync(string username);
 }
