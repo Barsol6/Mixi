@@ -11,11 +11,14 @@
 @using Components.Pages
 @using mixi.Components.Layout
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Microsoft.AspNetCore.Identity
+@using mixi.Modules.Database
+@using mixi.Modules.Users
 
 @layout LoginLayout
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
-
+@inject IUserRepository UsersRepository
 
 <div class="container">
     
@@ -26,11 +29,64 @@
     </div>
     
     <div class="loginBox">
-
+        <div class="login">
+            <div class="data-box">
+                <input type="text" @bind="_username" onkeyup="@Enter" required="required"/>
+                <label> LOGIN </label>
+            </div>  
+            <div class="data-box">
+                <input type="text" @bind="_password" onkeyup="@Enter" required="required"/>
+                <label> PASSWORD </label>
+            </div>   
+            <div class="data-box">
+                <div @onclick="HandleUserLogin" class="loginButton">
+                    <div class="loginButton-content">LOG IN</div>
+                </div>
+            </div>   
+        </div>
     </div>
 
 </div> 
 
 @code {
+    private User _user = new();
+    private string _username = String.Empty;
+    private string _password = String.Empty;
     
+
+    private PasswordHasher<object> _passwordHasher = new PasswordHasher<object>();
+    
+    private async Task Enter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter"|| e.Code == "NumpadEnter" )
+        {
+            await HandleUserLogin();
+        }
+    }
+
+    private async Task HandleUserLogin()
+    {
+        if (_username != String.Empty && _password != String.Empty)
+        {
+            var user = await UsersRepository.GetUserAsync(_username);
+            
+            if (user is null)
+            {
+                user = new User { Username = _username, Password = _password};
+                await UsersRepository.AddUserAsync(user);
+            }
+            
+            _password = _passwordHasher.HashPassword(_username, _password);
+            
+            await ProtectedSessionStore.SetAsync("username", _username);
+            await ProtectedSessionStore.SetAsync("password", _password);
+            
+            if (_passwordHasher.VerifyHashedPassword(_username, _password, user!.Password) == Microsoft.AspNetCore.Identity.PasswordVerificationResult.Success)
+            {
+                NavigationManager.NavigateTo("/home");
+            }
+            
+          
+        }
+    }
 }

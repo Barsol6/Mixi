@@ -27,11 +27,10 @@ public class UserRepository : IUserRepository
         return user;
     } 
     
-    public async Task<User?> GetUserAsync(string username, string password)
+    public async Task<User?> GetUserAsync(string username)
     {
         var user = await _dbContext
             .Users.Where(u => u.Username == username)
-            .Include(u => u.Password == password)
             .FirstOrDefaultAsync();
         return user;
     }

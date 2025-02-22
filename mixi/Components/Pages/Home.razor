@@ -1,0 +1,53 @@
+﻿
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Microsoft.AspNetCore.Identity
+@using mixi.Modules.Database
+@using mixi.Modules.Users
+@page "/home"
+
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject IUserRepository UsersRepository
+@inject NavigationManager NavigationManager
+<h3>Home</h3>
+
+        
+
+@code {
+    private User _user = new();
+    
+    private PasswordHasher<object> _passwordHasher = new PasswordHasher<object>();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var username = await ProtectedSessionStore.GetAsync<string>("username");
+        var password = await ProtectedSessionStore.GetAsync<string>("password");
+        
+        if (!username.Success)
+        {
+            NavigationManager.NavigateTo($"/");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(username.Value)||string.IsNullOrEmpty(password.Value))
+        {
+            NavigationManager.NavigateTo($"/");
+            return;
+        }
+        
+        var user = await UsersRepository.GetUserAsync(username.Value!);
+
+        if (user is null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        _user = user;
+        
+      
+        
+        
+
+        await base.OnInitializedAsync();
+
+    }
+
+}
