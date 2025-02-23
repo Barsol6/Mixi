@@ -2,13 +2,16 @@ using mixi.Components;
 using mixi.Modules.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using mixi.Modules.Hashers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<PasswordHash>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
