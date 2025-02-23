@@ -14,11 +14,13 @@
 @using Microsoft.AspNetCore.Identity
 @using mixi.Modules.Database
 @using mixi.Modules.Users
+@using mixi.Modules.Hashers
 
 @layout LoginLayout
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 @inject IUserRepository UsersRepository
+@inject PasswordHash PassHash
 
 <div class="container">
     
@@ -52,9 +54,8 @@
     private User _user = new();
     private string _username = String.Empty;
     private string _password = String.Empty;
-    
-
-    private PasswordHasher<object> _passwordHasher = new PasswordHasher<object>();
+    private string _hashedPassword = String.Empty;
+    private bool _checkPassword = false;
     
     private async Task Enter(KeyboardEventArgs e)
     {
@@ -68,25 +69,18 @@
     {
         if (_username != String.Empty && _password != String.Empty)
         {
-            var user = await UsersRepository.GetUserAsync(_username);
-            
-            if (user is null)
-            {
-                user = new User { Username = _username, Password = _password};
-                await UsersRepository.AddUserAsync(user);
-            }
-            
-            _password = _passwordHasher.HashPassword(_username, _password);
-            
+            _hashedPassword = PassHash.HashPasswords(_password, _username);
             await ProtectedSessionStore.SetAsync("username", _username);
-            await ProtectedSessionStore.SetAsync("password", _password);
-            
-            if (_passwordHasher.VerifyHashedPassword(_username, _password, user!.Password) == Microsoft.AspNetCore.Identity.PasswordVerificationResult.Success)
+            await ProtectedSessionStore.SetAsync("password", _hashedPassword);
+
+            _checkPassword = await PassHash.CheckPassword(_password, _username);
+
+            Console.Out.Write(_checkPassword);
+            if (_checkPassword == true)
             {
                 NavigationManager.NavigateTo("/home");
             }
-            
-          
+
         }
     }
 }

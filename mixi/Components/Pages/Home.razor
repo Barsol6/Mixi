@@ -19,28 +19,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        var username = await ProtectedSessionStore.GetAsync<string>("username");
-        var password = await ProtectedSessionStore.GetAsync<string>("password");
-        
-        if (!username.Success)
-        {
-            NavigationManager.NavigateTo($"/");
-            return;
-        }
-
-        if (string.IsNullOrEmpty(username.Value)||string.IsNullOrEmpty(password.Value))
-        {
-            NavigationManager.NavigateTo($"/");
-            return;
-        }
-        
-        var user = await UsersRepository.GetUserAsync(username.Value!);
-
-        if (user is null)
-        {
-            NavigationManager.NavigateTo("/");
-        }
-        _user = user;
+  
         
       
         
