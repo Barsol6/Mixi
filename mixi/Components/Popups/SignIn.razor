@@ -1,0 +1,73 @@
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using mixi.Components.Pages
+@using mixi.Components.UI
+@using mixi.Modules.Database
+@using mixi.Modules.Account
+@using mixi.Modules.UI
+
+@inject SignUp SignUp
+@inject SignUpPopup SignUpPop
+@inject ProtectedSessionStorage SessionStorage
+
+
+@rendermode InteractiveServer
+
+<div class="loginBox">
+    <div class="login">
+        <div class="data-box">
+            <input type="text" @bind="SignUpPop.Username" onkeydown="@Enter" required="required"/>
+            <label> USERNAME </label>
+        </div>
+        <div class="data-box">
+            <input type="text" @bind="SignUpPop.Password" onkeydown="@Enter" required="required"/>
+            <label> PASSWORD </label>
+        </div>
+        <div class="data-box">
+            <input type="text" @bind="SignUpPop.PasswordRepeat" onkeydown="@Enter" required="required"/>
+            <label> REPEAT PASSWORD </label>
+        </div>
+        <div class="data-box">
+            <div  class="loginButton"  >
+                <div class="loginButton-content"@onclick="HandleUserSignUp">SIGN UP</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        SignUpPop.Password = String.Empty;
+        SignUpPop.Username = String.Empty;
+        base.OnInitialized();
+    }
+
+    private async Task Enter(KeyboardEventArgs e)
+    {
+        if (e.Code is "Enter" or "NumpadEnter" )
+        {
+            await HandleUserSignUp();   
+        }
+    }
+
+    private async Task HandleUserSignUp()
+    {
+        if (SignUpPop.Username != String.Empty && SignUpPop.Password != String.Empty && SignUpPop.PasswordRepeat != String.Empty)
+        {
+            if (SignUpPop.Password != SignUpPop.PasswordRepeat)
+            {
+                return;
+            }
+            Console.Out.Write(SignUpPop.Password);
+            await SignUp.CreateAccount();
+            StateHasChanged();
+            return;
+        }
+        else return;
+    }
+    
+
+
+
+}

@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using mixi.Modules.Database;
+using mixi.Modules.Enums;
 using mixi.Modules.Users;
 
-namespace mixi.Modules.Hashers;
+namespace mixi.Modules.Account;
 
 public  class PasswordHash
 {
-    
     private PasswordHasher<object> _passwordHasher = new PasswordHasher<object>();
     private string _hashedPassword = String.Empty;
 
@@ -19,25 +20,25 @@ public  class PasswordHash
         UserRepository = userRepository;
     }
 
+
     [Inject] private IUserRepository UserRepository { get; set; }
    
 
-    public string HashPasswords(string password, string username)
+    public  string HashPasswords(string password, string username)
     {
        _hashedPassword = _passwordHasher.HashPassword(username, password);
 
        return _hashedPassword;
     }
 
-    public async Task<bool> CheckPassword(string password, string username)
+    public async Task<LoginStatus> CheckPassword(string password, string username)
     {
         
         var user = await UserRepository.GetUserAsync(username);
         
         if (user is null)
         {
-            user = new User { Username = username, Password = HashPasswords(username, password)};
-            await UserRepository.AddUserAsync(user);
+            return LoginStatus.NoAccount;
         }
          _hashedPassword = user.Password;
         
@@ -46,9 +47,9 @@ public  class PasswordHash
          Console.Out.Write(passwordCheck);
          return passwordCheck switch
          {
-             PasswordVerificationResult.Failed => false,
-             PasswordVerificationResult.Success => true,
-             _ => false
+             PasswordVerificationResult.Failed => LoginStatus.Fail,
+             PasswordVerificationResult.Success => LoginStatus.Success,
+             _ => LoginStatus.Fail
          };
     }
 }
