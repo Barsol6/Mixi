@@ -4,42 +4,38 @@
 @rendermode InteractiveServer
 
 
-@using System.Collections.ObjectModel
-@using Microsoft.AspNetCore.Mvc
-@using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Mvc.RazorPages
-@using Components.Pages
 @using mixi.Components.Layout
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@using Microsoft.AspNetCore.Identity
-@using mixi.Modules.Database
+@using mixi.Components.UI
+@using mixi.Modules.Enums
 @using mixi.Modules.Users
-@using mixi.Modules.Hashers
+@using mixi.Modules.Account
+@using mixi.Components.Popups
+@using mixi.Modules.UI
+
 
 @layout LoginLayout
-@inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
-@inject IUserRepository UsersRepository
 @inject PasswordHash PassHash
+@inject SignUpPopup SignUpPop
+
 
 <div class="container">
     
     <div class="title">
-        <div class="titleImg">
-            <img class="titleImg"   src="assets/title.png"/>
-        </div>
+       MIXI
     </div>
     
     <div class="loginBox">
         <div class="login">
             <div class="data-box">
-                <input type="text" @bind="_username" onkeyup="@Enter" required="required"/>
+                <input type="text" @bind="SignUpPop.Username" onkeyup="@Enter" required="required"/>
                 <label> LOGIN </label>
             </div>  
             <div class="data-box">
-                <input type="text" @bind="_password" onkeyup="@Enter" required="required"/>
+                <input type="text" @bind="SignUpPop.Password" onkeyup="@Enter" required="required"/>
                 <label> PASSWORD </label>
             </div>   
+            <PopupContainer @ref="_popup"></PopupContainer>
             <div class="data-box">
                 <div @onclick="HandleUserLogin" class="loginButton">
                     <div class="loginButton-content">LOG IN</div>
@@ -52,14 +48,27 @@
 
 @code {
     private User _user = new();
-    private string _username = String.Empty;
-    private string _password = String.Empty;
-    private string _hashedPassword = String.Empty;
-    private bool _checkPassword = false;
-    
+    private LoginStatus _loginStatus; 
+
+
+    private PopupContainer _popup = null!;
+
+    protected override void OnInitialized()
+    {
+        this.SignUpPop.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        this.SignUpPop.IsVisibleChange += () =>
+        {
+            SignUpPop.Password = String.Empty;
+            SignUpPop.Username = String.Empty;
+            SignUpPop.PasswordRepeat = String.Empty;
+        };
+        base.OnInitializedAsync();
+    }
+
+
     private async Task Enter(KeyboardEventArgs e)
     {
-        if (e.Code == "Enter"|| e.Code == "NumpadEnter" )
+        if (e.Code is "Enter" or "NumpadEnter" )
         {
             await HandleUserLogin();
         }
@@ -67,20 +76,30 @@
 
     private async Task HandleUserLogin()
     {
-        if (_username != String.Empty && _password != String.Empty)
+        if (SignUpPop.Username != String.Empty && SignUpPop.Password != String.Empty)
         {
-            _hashedPassword = PassHash.HashPasswords(_password, _username);
-            await ProtectedSessionStore.SetAsync("username", _username);
-            await ProtectedSessionStore.SetAsync("password", _hashedPassword);
-
-            _checkPassword = await PassHash.CheckPassword(_password, _username);
-
-            Console.Out.Write(_checkPassword);
-            if (_checkPassword == true)
+            
+            _loginStatus = await PassHash.CheckPassword(SignUpPop.Password, SignUpPop.Username);
+            Console.Out.Write(_loginStatus);
+            
+            if (_loginStatus == LoginStatus.Success)
             {
                 NavigationManager.NavigateTo("/home");
             }
-
+            else if(_loginStatus == LoginStatus.NoAccount)
+            {
+                SignUpPop.Password = String.Empty;
+                SignUpPop.Username = String.Empty;
+                SignUpPop.PasswordRepeat = String.Empty;
+                _popup.ShowComponent<SignIn>();
+            }
+            
         }
     }
+    
+    public void Dispose()
+    {
+        this.SignUpPop.IsVisibleChange -= StateHasChanged;
+    }
+    
 }

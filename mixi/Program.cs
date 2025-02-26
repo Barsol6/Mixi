@@ -1,18 +1,28 @@
+using System.ComponentModel.Design;
 using mixi.Components;
 using mixi.Modules.Database;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
-using mixi.Modules.Hashers;
+using mixi.Components.UI;
+using mixi.Modules.Account;
+using mixi.Modules.UI;
+
+IServiceProvider service = new ServiceContainer();
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+
+
+
 builder.Services.AddScoped<PasswordHash>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<SignUp>();
+builder.Services.AddSingleton<SignUpPopup,SignUpPopup>();
+
+
 
 
 builder
@@ -65,3 +75,4 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+

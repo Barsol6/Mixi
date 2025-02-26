@@ -8,7 +8,7 @@ body{
     width: 100%;
     height: 100%;
     margin: 0;
-    background-color: rgba(0,0,0,0.61);
+    background-color: black;
     overflow: hidden;
     color: white;
     font-weight: bold;
@@ -17,6 +17,11 @@ body{
     background-position: center;
     background-attachment: fixed;
     position: fixed;
+    
+}
+
+.hidden {
+    visibility: hidden;
 }
 
 .container{
@@ -26,12 +31,27 @@ body{
     flex-direction: column;
 }
 
+.popup {
+    top: var(--popup-padding);
+    left: var(--popup-padding);
+    position: absolute;
+    background-color: rgba(0,0,0,0.5);
+    width: calc(100% - (var(--popup-padding) * 2));
+    height: calc(100% - (var(--popup-padding) * 2));
+    backdrop-filter: blur(1px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+
+}
+
 .title{
     width: 90%;
-    
+    font-family: "Comic Sans MS", sans-serif;
     height: 20vh;
-    font-size: large;
-    color: black;
+    font-size: xxx-large;
+    color: white;
     margin: auto;
     margin-top: 0;
     display: flex;
@@ -40,17 +60,17 @@ body{
     place-items: center;
     border-radius: 50px;
 /*    filter: dropShadow(20px);*/
-    background-color: rgb(219,165,255);
+    background-color: black;
     backdrop-filter: blur(100px);
-   box-shadow: inset 0px 0px 100px 25px rgba(95,0,160,0.85);
     filter: drop-shadow(5px 8px 30px black );
     flex-direction: row;
     flex: fit-content;
+    
 }
 .loginBox{
     height: 400px;
     width: 400px;
-    background-color: rgba(76, 76, 76, 0.27);
+    background-color: black;
     margin: auto;
     margin-top: 0px;
     display: flex;
@@ -69,6 +89,17 @@ body{
     border-radius: 50px;
     display: flex;
     flex-direction: row;
-    box-shadow: inset 0 0 10px 10px rgba(95,0,160,0.85);
+    /*box-shadow: inset 0 0 10px 10px rgba(95,0,160,0.85);*/
     
+}
+
+:root {
+    --rarity-common: #808080;
+    --rarity-uncommon: #8ef059;
+    --rarity-rare: #5963f0;
+    --rarity-insane: #f54c40;
+    --rarity-epic: #b423f7;
+    --rarity-legendary: gold;
+    --popup-padding: 10px;
+    --row-padding: 5px;
 }
