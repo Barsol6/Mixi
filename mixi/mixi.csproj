@@ -65,6 +65,7 @@
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.map" />
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\LICENSE.txt" />
     </ItemGroup>
+  
 
     <ItemGroup>
       <Folder Include="Controllers\" />
@@ -82,5 +83,14 @@
       <PackageReference Include="Microsoft.FeatureManagement" Version="4.0.0" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
     </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckBuilt Include="mixi/wwwroot/styles/source.css" Set="Css" />
+    <UpToDateCheckBuilt Include="C:/Users/barto/RiderProjects/mixi/tailwind.config.js" Set="Css" />
+  </ItemGroup>
+
+  <Target Name="Tailwind" BeforeTargets="Build">
+    <Exec Command="npm run css:build"/>
+  </Target>
 
 </Project>

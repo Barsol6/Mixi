@@ -13,22 +13,25 @@
 @rendermode InteractiveServer
 
 <div class="loginBox">
-    <div class="login">
+    <div class="login text-5xl bg-gray-800">
         <div class="data-box">
             <input type="text" @bind="SignUpPop.Username" onkeydown="@Enter" required="required"/>
             <label> USERNAME </label>
+            <br/>
         </div>
         <div class="data-box">
             <input type="text" @bind="SignUpPop.Password" onkeydown="@Enter" required="required"/>
             <label> PASSWORD </label>
+            <br/>
         </div>
         <div class="data-box">
             <input type="text" @bind="SignUpPop.PasswordRepeat" onkeydown="@Enter" required="required"/>
             <label> REPEAT PASSWORD </label>
+            <br/>
         </div>
         <div class="data-box">
-            <div  class="loginButton"  >
-                <div class="loginButton-content"@onclick="HandleUserSignUp">SIGN UP</div>
+            <div  class="actionButton"  >
+                <div class="bg-gray-600"@onclick="HandleUserSignUp">SIGN UP</div>
             </div>
         </div>
     </div>
