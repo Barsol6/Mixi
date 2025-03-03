@@ -1,5 +1,4 @@
-﻿@page "/login"
-@page "/"
+﻿
 
 @rendermode InteractiveServer
 
@@ -19,36 +18,42 @@
 @inject SignUpPopup SignUpPop
 
 
-<div class="container">
+<div class="container @(SignUpPop.IsLogged? "hidden" : " ")">
     
     <div class="title">
        MIXI
     </div>
     
-    <div class="loginBox">
-        <div class="login">
-            <div class="data-box">
-                <input type="text" @bind="SignUpPop.Username" onkeyup="@Enter" required="required"/>
-                <label> LOGIN </label>
-            </div>  
-            <div class="data-box">
-                <input type="text" @bind="SignUpPop.Password" onkeyup="@Enter" required="required"/>
-                <label> PASSWORD </label>
-            </div>   
-            <PopupContainer @ref="_popup"></PopupContainer>
-            <div class="data-box">
-                <div @onclick="HandleUserLogin" class="loginButton">
-                    <div class="loginButton-content">LOG IN</div>
+
+    <div class="loginBox items-center">
+
+            <div class="login">
+                <div class="data-box">
+                    <input type="text" @bind="SignUpPop.Username" onkeyup="@Enter" required="required"/>
+                    <label> LOGIN </label>
                 </div>
-            </div>   
-        </div>
+                <br/>
+                <div class="data-box">
+                    <input class="bg-[]" type="text" @bind="SignUpPop.Password" onkeyup="@Enter" required="required"/>
+                    <label> PASSWORD </label>
+                </div>
+                <PopupContainer @ref="_popup"></PopupContainer>
+                <br/>
+                <div class="data-box">
+                    <div @onclick="HandleUserLogin" class="actionButton">
+                        <label>LOG IN</label>
+                    </div>
+                </div>
+            </div>
     </div>
+   
+
 
 </div> 
 
 @code {
     private User _user = new();
-    private LoginStatus _loginStatus; 
+    private LoginStatus _loginStatus;
 
 
     private PopupContainer _popup = null!;
@@ -84,7 +89,7 @@
             
             if (_loginStatus == LoginStatus.Success)
             {
-                NavigationManager.NavigateTo("/home");
+                SignUpPop.IsLogged = true;
             }
             else if(_loginStatus == LoginStatus.NoAccount)
             {

@@ -6,6 +6,9 @@ public class SignUpPopup
 {
  private bool _isVisible;
  public event Action? IsVisibleChange;
+ public event Action? IsLoggedChange;
+
+ private bool _isLogged;
  public bool IsVisible
  {
   get => _isVisible;
@@ -18,12 +21,21 @@ public class SignUpPopup
    }
   }
  }
+ 
+ public bool IsLogged
+ {
+  get => _isLogged;
+  set
+  {
+   if (_isLogged != value)
+   {
+    _isLogged = value;
+    IsLoggedChange?.Invoke();
+   }
+  }
+ }
  public string Username { get; set; } = String.Empty;
  public string Password { get; set; } = String.Empty;
  public string PasswordRepeat { get; set; } = String.Empty;
-
- public void dupa()
- {
-  Console.Out.Write(IsVisible);
- }
+ 
 }
