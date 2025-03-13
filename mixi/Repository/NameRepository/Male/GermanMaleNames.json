@@ -1,0 +1,30 @@
+{
+  "first_names": [
+    "Johann", "Friedrich", "Karl", "Hans", "Heinrich", "Otto", "Wolfgang", "Ludwig",
+    "Ernst", "Gerhard", "Manfred", "Günther", "Horst", "Peter", "Uwe", "Rainer",
+    "Klaus", "Matthias", "Andreas", "Jörg", "Sebastian", "Markus", "Stefan", "Alexander",
+    "Daniel", "Patrick", "Florian", "Tobias", "Julian", "Felix", "Simon", "Benjamin",
+    "Philipp", "Dominik", "Ralf", "Marcel", "Niklas", "Christian", "Thomas", "Sven",
+    "Bastian", "Oliver", "Michael", "Rico", "Henrik", "Jonas", "Lukas", "David",
+    "Erik", "Leon", "Tim", "Kevin", "Dennis", "Nico", "Pascal", "Moritz", "Fabian",
+    "Raphael", "Valentin", "Samuel", "Elias", "Jakob", "Maximilian", "Heinrich",
+    "Erhard", "Gunther", "Harald", "Bertram", "Rudolf", "Edgar", "Norbert", "Lothar",
+    "Eugen", "Wilfried", "Jens", "Gisbert",
+    "Wilhelm", "Albert", "Franz", "Dieter", "Jürgen", "Thomas", "Michael", "Christian",
+    "Dominik", "Johannes", "Maximilian", "Henrik", "André", "Lennart", "Emil", "Timo",
+    "Julius", "Noah", "Matteo"
+  ],
+  "surnames": [
+    "Schmidt", "Meyer", "Weber", "Wagner", "Becker", "Schulz", "Hoffmann", "Koch",
+    "Richter", "Klein", "Schröder", "Neumann", "Braun", "Schwarz", "Krüger", "Lange",
+    "Schmitt", "Werner", "Peters", "Zimmermann", "Scholz", "Fuchs", "Krause", "Maier",
+    "Lehmann", "Schmid", "Huber", "Möller", "Hartmann", "Lorenz", "Bauer", "Kühn",
+    "Stein", "Vogel", "Winter", "Busch", "Schuster", "Beck", "Seidel", "Horn",
+    "Arnold", "Berger", "Schreiber", "Kraft", "Dietrich", "Fiedler", "Hermann",
+    "Nowak", "Fischer", "Scholz", "Winkler", "Reuter", "Böhm", "Baumann", "Franke",
+    "König", "Schulte", "Mayer", "Heinrich", "Lindner", "Wirth", "Römer", "Fleischer",
+    "Kaiser", "Scholz", "Müller", "Jung", "Ludwig", "Böhm", "Kaufmann", "Götz",
+    "Hahn", "Moser", "Reinhardt", "Ulrich", "Thiel"
+  ]
+}
+
