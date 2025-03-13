@@ -18,7 +18,7 @@
 @inject SignUpPopup SignUpPop
 
 
-<div class="container @(SignUpPop.IsLogged? "hidden" : " ")">
+<div class="@(SignUpPop.IsLogged? "hidden" : "container")">
     
     <div class="title">
        MIXI
@@ -39,10 +39,12 @@
                 </div>
                 <PopupContainer @ref="_popup"></PopupContainer>
                 <br/>
-                <div class="data-box">
-                    <div @onclick="HandleUserLogin" class="actionButton">
-                        <label>LOG IN</label>
-                    </div>
+                <div class="data-box" @onclick="HandleUserLogin">
+                        <div class="logButton">
+                            <div class="logButton-content">
+                                LOG IN
+                            </div>
+                        </div>
                 </div>
             </div>
     </div>
@@ -90,6 +92,7 @@
             if (_loginStatus == LoginStatus.Success)
             {
                 SignUpPop.IsLogged = true;
+                SignUpPop.IsVisible = true;
             }
             else if(_loginStatus == LoginStatus.NoAccount)
             {

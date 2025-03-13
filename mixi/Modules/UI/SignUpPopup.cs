@@ -4,7 +4,7 @@ namespace mixi.Modules.UI;
 
 public class SignUpPopup
 {
- private bool _isVisible;
+ private bool _isVisible = false;
  public event Action? IsVisibleChange;
  public event Action? IsLoggedChange;
 
