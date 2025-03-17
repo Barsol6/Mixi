@@ -1,13 +1,11 @@
-using System.ComponentModel.Design;
 using mixi.Components;
 using mixi.Modules.Database;
 using Microsoft.EntityFrameworkCore;
-using mixi.Components.UI;
 using mixi.Modules.Account;
 using mixi.Modules.Generators;
+using mixi.Modules.Generators.CharacterNameGenerator;
 using mixi.Modules.UI;
 
-IServiceProvider service = new ServiceContainer();
 
 
 var builder = WebApplication.CreateBuilder(args);

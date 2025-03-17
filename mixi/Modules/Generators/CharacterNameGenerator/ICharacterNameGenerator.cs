@@ -1,6 +1,6 @@
 ﻿using mixi.Modules.Enums;
 
-namespace mixi.Modules.Generators;
+namespace mixi.Modules.Generators.CharacterNameGenerator;
 
 public interface ICharacterNameGenerator
 { 
