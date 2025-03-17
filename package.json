@@ -1,0 +1,16 @@
+{
+  "name": "mixi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "css:build": "npx tailwindcss -i ./mixi/wwwroot/styles/source.css -o ./mixi/wwwroot/styles/Style.css --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^4.0.9"
+  }
+}
