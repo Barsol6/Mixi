@@ -10,15 +10,11 @@
 @implements IDisposable
 
 
-<div class="@(SignUpPop.IsVisible ? "popup" : "hidden")"  >
+<div class="@(SignUpPop.IsVisible ? "loginPopup" : "hidden")"  >
     @if (ComponentType is not null)
     {
         <DynamicComponent Type="@ComponentType" Parameters="@Parameters" @ref="_component"/>
     }
-    <div>
-        <button @onclick="() => HidePopup()">X</button>
-    </div>
-
 </div>
 
 
@@ -49,6 +45,7 @@
         ComponentType = typeof(T);
         Parameters = parameters;
         SignUpPop.IsVisible = true; 
+        await Storage.SetAsync("SignUpPopupIsVisible", true);  
         StateHasChanged();
     }   
     
@@ -63,6 +60,7 @@
     {
         SignUpPop.IsVisible = false;
         Storage.SetAsync("SignUpPopupIsVisible", SignUpPop.IsVisible);
+        StateHasChanged();
     }
 
 

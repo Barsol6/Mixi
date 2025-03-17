@@ -14,6 +14,8 @@ public class User
     
     public string Password { get; set; }
     
+    public string UserType { get; set; }
+    
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     

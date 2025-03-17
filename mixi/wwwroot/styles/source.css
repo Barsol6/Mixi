@@ -44,6 +44,7 @@ body {
     align-items: center;
     justify-content: center;
     border-radius: 10px;
+    z-index: auto;
 }
 .title {
     width: 90%;
@@ -193,6 +194,8 @@ body {
     border-style: solid;
     border-radius: initial;
     transition: 0.4s;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 .logButton{
@@ -211,4 +214,18 @@ body {
     justify-content: center;
     opacity: 1;
     display: flex;
+}
+
+.loginPopup {
+    top: var(--popup-padding);
+    left: var(--popup-padding);
+    position: absolute;
+    background-color: black;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    z-index: auto;
 }

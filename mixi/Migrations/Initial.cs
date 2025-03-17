@@ -1,9 +1,8 @@
-﻿using System;
+﻿#nullable disable
+
 using Microsoft.EntityFrameworkCore.Migrations;
 
-#nullable disable
-
-namespace Fracture.Server.Migrations
+namespace mixi.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
@@ -20,6 +19,7 @@ namespace Fracture.Server.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Username = table.Column<string>(type: "TEXT", nullable: false),
                     Password = table.Column<string>(type: "TEXT", nullable:false),
+                    UserType = table.Column<string>(type: "TEXT", nullable:false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                 },
                 constraints: table =>

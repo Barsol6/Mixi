@@ -31,26 +31,26 @@
 
     <div class="loginBox items-center">
 
-            <div class="login">
-                <div class="data-box">
-                    <input type="text" @bind="SignUpPop.Username" onkeyup="@Enter" required="required"/>
-                    <label> LOGIN </label>
-                </div>
-                <br/>
-                <div class="data-box">
-                    <input class="bg-[]" type="text" @bind="SignUpPop.Password" onkeyup="@Enter" required="required"/>
-                    <label> PASSWORD </label>
-                </div>
-                <PopupContainer @ref="_popup"></PopupContainer>
-                <br/>
-                <div class="data-box" @onclick="HandleUserLogin">
-                        <div class="logButton">
-                            <div class="logButton-content">
-                                LOG IN
-                            </div>
-                        </div>
+        <div class="login">
+            <div class="data-box">
+                <input type="text" @bind="SignUpPop.Username" onkeyup="@Enter" required="required"/>
+                <label> LOGIN </label>
+            </div>
+            <br/>
+            <div class="data-box">
+                <input class="bg-[]" type="text" @bind="SignUpPop.Password" onkeyup="@Enter" required="required"/>
+                <label> PASSWORD </label>
+            </div>
+            <br/>
+            <div class="data-box" @onclick="HandleUserLogin">
+                <div class="logButton">
+                    <div class="logButton-content">
+                        LOG IN
+                    </div>
                 </div>
             </div>
+        </div>
+        <PopupContainer @ref="_popup"></PopupContainer>
     </div>
    
 
@@ -104,7 +104,9 @@
                 SignUpPop.Password = String.Empty;
                 SignUpPop.Username = String.Empty;
                 SignUpPop.PasswordRepeat = String.Empty;
+                SignUpPop.UserType = string.Empty; 
                 _popup.ShowComponent<SignIn>();
+                await Storage.SetAsync("SignUpPopupIsVisible", true);  
             }
             
         }

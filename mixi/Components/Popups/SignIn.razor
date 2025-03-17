@@ -8,8 +8,7 @@
 
 @rendermode InteractiveServer
 
-<div class="loginBox">
-    <div class="login text-5xl bg-gray-800">
+<div class="h-full w-full bg-black m-auto mt-0 flex-col flex text-nowrap text-center items-center content-center place-content-center rounded-lg bg-black">
         <div class="data-box">
             <input type="text" @bind="SignUpPop.Username" onkeyup="@Enter" required="required"/>
             <label> USERNAME </label>
@@ -24,8 +23,19 @@
             <input type="text" @bind="SignUpPop.PasswordRepeat" onkeyup="@Enter" required="required"/>
             <label> REPEAT PASSWORD </label>
             <br/>
-        </div>
+        </div> 
         <div class="data-box">
+            <InputSelect @bind-Value="SignUpPop.UserType">
+                <option checked="@(SignUpPop.UserType == "GameMaster")">
+                    Game Master
+                </option>   
+                <option checked="@(SignUpPop.UserType == "Player")">
+                    Player
+                </option>
+            </InputSelect>
+            <label> USER TYPE </label>
+            <br/>
+        </div>
             <div class="data-box" @onclick="HandleUserSignUp">
                 <div class="logButton">
                     <div class="logButton-content">
@@ -33,8 +43,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 </div>
 
 @code {

@@ -27,7 +27,7 @@ public class SignUp
     public Task CreateAccount()
     {
         SignUps.Password = PasswordHash.HashPasswords(SignUps.Password, SignUps.Username);
-        var user = new User { Username = SignUps.Username, Password = SignUps.Password }; 
+        var user = new User { Username = SignUps.Username, Password = SignUps.Password, UserType = SignUps.UserType}; 
         UserRepository.AddUserAsync(user);
         SignUps.IsVisible = false;
         Storage.SetAsync("SignUpPopupIsVisible", SignUps.IsVisible);
