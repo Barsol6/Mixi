@@ -16,7 +16,7 @@ public class CharacterNameGenerator:ICharacterNameGenerator
 
     public async Task<string?> GenerateNameAsync(NameType nameType, bool isNoble, string sex)
     {
-        var names = File.ReadAllText("Repository/NameRepository/"+sex+"/"+ nameType + "Names.json");
+        var names = File.ReadAllText("Repository/NameRepository/" + sex + "/" + nameType + "Names.json");
         _names = JsonSerializer.Deserialize<NamesElements>(names);
 
         if (_names != null)
