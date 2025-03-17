@@ -4,5 +4,5 @@ namespace mixi.Modules.Generators;
 
 public interface ICharacterNameGenerator
 { 
-    Task<string?> GenerateNameAsync(NameType nameType, bool isNoble);
+    Task<string?> GenerateNameAsync(NameType nameType, bool isNoble, string sex);
 }

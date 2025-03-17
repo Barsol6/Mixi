@@ -4,6 +4,7 @@ using mixi.Modules.Database;
 using Microsoft.EntityFrameworkCore;
 using mixi.Components.UI;
 using mixi.Modules.Account;
+using mixi.Modules.Generators;
 using mixi.Modules.UI;
 
 IServiceProvider service = new ServiceContainer();
@@ -16,11 +17,13 @@ builder.Services.AddControllersWithViews();
 
 
 
-
+builder.Services.AddSingleton<ICharacterNameGenerator, CharacterNameGenerator>();
+builder.Services.AddSingleton<CharacterNameGenerator, CharacterNameGenerator>();
 builder.Services.AddScoped<PasswordHash>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<SignUp>();
 builder.Services.AddSingleton<SignUpPopup,SignUpPopup>();
+builder.Services.AddSingleton<MenuPopup,MenuPopup>();
 
 
 

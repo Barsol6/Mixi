@@ -1,5 +1,24 @@
-﻿<h3>NameGenerator</h3>
+﻿@using mixi.Modules.Enums
+@using mixi.Modules.Generators
+
+
+@inject CharacterNameGenerator NameGen
+
+@rendermode InteractiveServer
+
+<div class="loginBox">
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="async () => Console.Out.Write( await NameGen.GenerateNameAsync(NameType.EnglishMale, false,_male ))">
+                English Male 
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
-    
+    private string _male = "Male";
+    private string _female = "Female";
+
+
 }

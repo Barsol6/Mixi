@@ -44,7 +44,6 @@ public  class PasswordHash
         
 
          var passwordCheck = _passwordHasher.VerifyHashedPassword(username, _hashedPassword, password);
-         Console.Out.Write(passwordCheck);
          return passwordCheck switch
          {
              PasswordVerificationResult.Failed => LoginStatus.Fail,

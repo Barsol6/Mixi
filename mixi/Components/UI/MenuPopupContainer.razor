@@ -4,14 +4,14 @@
 @using mixi.Modules.UI
 @rendermode InteractiveAuto
 
-@inject SignUp SignUp
-@inject SignUpPopup SignUpPop
-@inject ProtectedSessionStorage Storage
 
+@inject MenuPopup MenuPopup
+@inject ProtectedSessionStorage Storage
+@inject SignUpPopup Signup
 @implements IDisposable
 
 
-<div class="@(SignUpPop.IsVisible ? "popup" : "hidden")"  >
+<div class="@(MenuPopup.IsVisible ? "popup" : "hidden")"  >
     @if (ComponentType is not null)
     {
         <DynamicComponent Type="@ComponentType" Parameters="@Parameters" @ref="_component"/>
@@ -33,23 +33,22 @@
     
     protected override void OnInitialized()
     {
-        this.SignUpPop.IsVisibleChange += () => InvokeAsync(StateHasChanged);
-        this.SignUpPop.IsVisibleChange += () =>
-        {
-            SignUpPop.Password = String.Empty;
-            SignUpPop.Username = String.Empty;
-            SignUpPop.PasswordRepeat = String.Empty;
-        };
+        this.MenuPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
         base.OnInitializedAsync();
     }
     
 
     
     public async void ShowComponent<T>(IDictionary<string, object>? parameters = null)
-    {
+    {   
         ComponentType = typeof(T);
         Parameters = parameters;
-        SignUpPop.IsVisible = true; 
+        MenuPopup.IsVisible = true;
+        Signup.IsLogged = true;
+        await Storage.SetAsync("MenuIsVisible", MenuPopup.IsVisible);
+        await Storage.SetAsync("IsLogged", Signup.IsLogged);
+        Console.Out.Write(Signup.IsLogged + " " +MenuPopup.IsVisible);
+        
         StateHasChanged();
     }   
     
@@ -57,13 +56,13 @@
 
     public void Dispose()
     {
-        this.SignUpPop.IsVisibleChange -= StateHasChanged;
+        this.MenuPopup.IsVisibleChange -= StateHasChanged;
     }
 
     private void HidePopup()
     {
-        SignUpPop.IsVisible = false;
-        Storage.SetAsync("SignUpPopupIsVisible", SignUpPop.IsVisible);
+        MenuPopup.IsVisible = false;
+        Storage.SetAsync("MenuIsVisible", MenuPopup.IsVisible);
     }
 
 
