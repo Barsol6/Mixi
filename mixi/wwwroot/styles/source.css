@@ -23,6 +23,7 @@ body {
 }
 .hidden {
     display: none;
+    visibility: hidden;
 }
 .container {
     width: 100%;
@@ -43,6 +44,7 @@ body {
     align-items: center;
     justify-content: center;
     border-radius: 10px;
+    z-index: auto;
 }
 .title {
     width: 90%;
@@ -143,7 +145,6 @@ body {
 
 .actionButton:hover:before, .info:hover:before, .settingsBtn:hover:before, .logButton-content:hover{
     border-radius: inherit;
-    position: absolute;
     inset: 1px;
     transition: 0.4s;
     z-index: 0;
@@ -151,6 +152,13 @@ body {
 }
 
 
+.closeButton-content:hover{
+    border-radius: inherit;
+    inset: 1px;
+    transition: 0.4s;
+    z-index: 0;
+    color:red;
+}
 
 
 
@@ -159,30 +167,65 @@ body {
     color: white;
     border-radius: inherit;
     inset: 1px;
-    position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: black;
 }
 
-.logButton-content{
+.closeButton-content{
+    color: darkred;
+    border-radius: inherit;
+    inset: 1px;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
     letter-spacing: 5px;
     font-size:1.2rem ;
 }
 
+.logButton-content{
+    width: fit-content;
+    height: fit-content;
+    letter-spacing: 5px;
+    font-size:1.2rem ;
+    border-style: solid;
+    border-radius: initial;
+    transition: 0.4s;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
 .logButton{
+    
     width: 12rem;
     height: 2.5rem;
     margin: 5px;
     border-radius: 10px;
     position: relative;
     cursor: pointer;
-    line-height: 150px;
     text-transform: uppercase;
     line-height: 2.5rem;
     color: white;
     font-weight: bold;
     background-color: black;
+    justify-content: center;
     opacity: 1;
+    display: flex;
+}
+
+.loginPopup {
+    top: var(--popup-padding);
+    left: var(--popup-padding);
+    position: absolute;
+    background-color: black;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    z-index: auto;
 }

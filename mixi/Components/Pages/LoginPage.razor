@@ -3,6 +3,7 @@
 @rendermode InteractiveServer
 
 
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using mixi.Components.Layout
 @using mixi.Components.UI
 @using mixi.Modules.Enums
@@ -16,9 +17,12 @@
 @inject NavigationManager NavigationManager
 @inject PasswordHash PassHash
 @inject SignUpPopup SignUpPop
+@inject ProtectedSessionStorage Storage
+@inject MenuPopup MenuPop
 
+@implements IDisposable
 
-<div class="@(SignUpPop.IsLogged? "hidden" : "container")">
+<div class="@(SignUpPop.IsLogged ? "hidden" : "container")">
     
     <div class="title">
        MIXI
@@ -27,26 +31,26 @@
 
     <div class="loginBox items-center">
 
-            <div class="login">
-                <div class="data-box">
-                    <input type="text" @bind="SignUpPop.Username" onkeyup="@Enter" required="required"/>
-                    <label> LOGIN </label>
-                </div>
-                <br/>
-                <div class="data-box">
-                    <input class="bg-[]" type="text" @bind="SignUpPop.Password" onkeyup="@Enter" required="required"/>
-                    <label> PASSWORD </label>
-                </div>
-                <PopupContainer @ref="_popup"></PopupContainer>
-                <br/>
-                <div class="data-box" @onclick="HandleUserLogin">
-                        <div class="logButton">
-                            <div class="logButton-content">
-                                LOG IN
-                            </div>
-                        </div>
+        <div class="login">
+            <div class="data-box">
+                <input type="text" @bind="SignUpPop.Username" onkeyup="@Enter" required="required"/>
+                <label> LOGIN </label>
+            </div>
+            <br/>
+            <div class="data-box">
+                <input class="bg-[]" type="text" @bind="SignUpPop.Password" onkeyup="@Enter" required="required"/>
+                <label> PASSWORD </label>
+            </div>
+            <br/>
+            <div class="data-box" @onclick="HandleUserLogin">
+                <div class="logButton">
+                    <div class="logButton-content">
+                        LOG IN
+                    </div>
                 </div>
             </div>
+        </div>
+        <PopupContainer @ref="_popup"></PopupContainer>
     </div>
    
 
@@ -56,12 +60,14 @@
 @code {
     private User _user = new();
     private LoginStatus _loginStatus;
-
-
+    
+    
     private PopupContainer _popup = null!;
 
     protected override void OnInitialized()
     {
+
+        this.SignUpPop.IsLoggedChange += () => InvokeAsync(StateHasChanged);
         this.SignUpPop.IsVisibleChange += () => InvokeAsync(StateHasChanged);
         this.SignUpPop.IsVisibleChange += () =>
         {
@@ -85,21 +91,22 @@
     {
         if (SignUpPop.Username != String.Empty && SignUpPop.Password != String.Empty)
         {
-            
             _loginStatus = await PassHash.CheckPassword(SignUpPop.Password, SignUpPop.Username);
             Console.Out.Write(_loginStatus);
             
             if (_loginStatus == LoginStatus.Success)
             {
                 SignUpPop.IsLogged = true;
-                SignUpPop.IsVisible = true;
+                await Storage.SetAsync("IsLogged", SignUpPop.IsLogged);
             }
             else if(_loginStatus == LoginStatus.NoAccount)
             {
                 SignUpPop.Password = String.Empty;
                 SignUpPop.Username = String.Empty;
                 SignUpPop.PasswordRepeat = String.Empty;
+                SignUpPop.UserType = string.Empty; 
                 _popup.ShowComponent<SignIn>();
+                await Storage.SetAsync("SignUpPopupIsVisible", true);  
             }
             
         }
@@ -108,6 +115,7 @@
     public void Dispose()
     {
         this.SignUpPop.IsVisibleChange -= StateHasChanged;
+        this.SignUpPop.IsLoggedChange -= StateHasChanged;
     }
     
 }

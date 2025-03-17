@@ -1,37 +1,57 @@
 ﻿@using mixi.Components.Layout
+@using mixi.Components.Popups
+@using mixi.Components.UI
 @using mixi.Modules.Enums
 @using mixi.Modules.UI
 @rendermode InteractiveServer
 
 @layout MenuLayout
 
-@inject SignUpPopup Signup
+@inject MenuPopup MenuPopup 
+@inject SignUpPopup SignUp
 
-<div class="@(Signup.IsVisible ? "hidden" : "container")">
-    <div class="text-white">
-        CHARACTER CARD
-        <div class="actionButton text-white"></div>
-    </div>
-    <div class="text-white">
-        CHARACTER CARD
-        <div class="actionButton text-white"></div>
-    </div>
-    <div class="text-white">
-        CHARACTER CARD
-        <div class="actionButton "></div>
-    </div>
-    <div class="text-white">
-        CHARACTER CARD
-        <div class="actionButton text-white"></div>
-    </div>
-    <div class="text-white">
-        CHARACTER CARD
-        <div class="actionButton text-white"></div>
-    </div>
+@implements IDisposable
+
+
+<div class="@(SignUp.IsLogged ? "container" : "hidden")">
+        <div class="data-box">
+            <div class="logButton">
+                <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.NameGenerator)">
+                    NAME GENERATOR
+                </div>
+            </div>
+        </div>
+    <MenuPopupContainer @ref="_popup"></MenuPopupContainer>
 </div>
 
 @code {
+    private MenuPopupContainer _popup = null!;
 
+    ILogger Logger;
+
+
+    protected override void OnInitialized()
+    {
+        this.SignUp.IsLoggedChange += () => InvokeAsync(StateHasChanged);
+    }
+
+    private Task ShowPopup(MenuChoice menuChoice)
+    {
+        switch (menuChoice)
+        {
+            case MenuChoice.NameGenerator:
+                _popup.ShowComponent<NameGenerator>();
+                Console.Out.Write(SignUp.IsLogged + " " +MenuPopup.IsVisible);
+                break;
+            default:
+                Logger.LogInformation("Menu choice error");
+                break; 
+        }
+        return Task.CompletedTask;
+    }
     
-    
+    public void Dispose()
+    {
+        this.SignUp.IsLoggedChange -= StateHasChanged;
+    }
 }

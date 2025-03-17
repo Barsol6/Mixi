@@ -10,7 +10,7 @@ using mixi.Modules.Users;
 namespace mixi.Modules.Account;
 public class SignUp
 {
-    
+    private ProtectedSessionStorage Storage;
     public SignUp(SignUpPopup signUps, PasswordHash passwordHash, IUserRepository userRepository)
     {
         SignUps = signUps;
@@ -27,9 +27,10 @@ public class SignUp
     public Task CreateAccount()
     {
         SignUps.Password = PasswordHash.HashPasswords(SignUps.Password, SignUps.Username);
-        var user = new User { Username = SignUps.Username, Password = SignUps.Password }; 
+        var user = new User { Username = SignUps.Username, Password = SignUps.Password, UserType = SignUps.UserType}; 
         UserRepository.AddUserAsync(user);
         SignUps.IsVisible = false;
+        Storage.SetAsync("SignUpPopupIsVisible", SignUps.IsVisible);
         SignUps.Username = String.Empty;
         SignUps.Password = String.Empty;
         SignUps.PasswordRepeat = String.Empty;
