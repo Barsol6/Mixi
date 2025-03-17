@@ -14,10 +14,6 @@
     {
         <DynamicComponent Type="@ComponentType" Parameters="@Parameters" @ref="_component"/>
     }
-    <div>
-        <button @onclick="() => HidePopup()">X</button>
-    </div>
-
 </div>
 
 
@@ -26,8 +22,8 @@
 @code {
 
     private  DynamicComponent? _component = null;
-    public Type? ComponentType { get; set; }
-    public IDictionary<string, object>? Parameters { get; set; }
+    private Type? ComponentType { get; set; }
+    private IDictionary<string, object>? Parameters { get; set; }
     
     protected override void OnInitialized()
     {
@@ -57,11 +53,7 @@
         this.MenuPopup.IsVisibleChange -= StateHasChanged;
     }
 
-    private void HidePopup()
-    {
-        MenuPopup.IsVisible = false;
-        Storage.SetAsync("MenuIsVisible", MenuPopup.IsVisible);
-    }
+
 
 
 }
