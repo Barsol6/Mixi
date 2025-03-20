@@ -7,53 +7,58 @@
 @inject MenuPopup MenuPopup
 @inject CharacterNameGenerator NameGen
 @inject ProtectedSessionStorage Storage
+@inject NameGeneratorPopup NameGenPop
 
 
 @rendermode InteractiveServer
 
-<div class="h-9/10 w-9/10 bg-black m-auto mt-0 flex-col flex text-nowrap text-center items-center content-center place-content-center rounded-lg drop-shadow-md">
+<div class="h-9/10 w-9/10 bg-black m-auto mt-0 flex-col flex  text-center items-center content-center place-content-center rounded-lg drop-shadow-md">
+            <div class="text-[#ffd789] bg-black h-fit w-fit tracking-[5px] text-[1.2rem] border-solid rounded-[initial] pr-[6px] pl-[6px]">
+                @NameGenPop.GeneratedName
+            </div>
     <div class="data-box">
         <div class="logButton">
-            <div class="logButton-content" @onclick="async () => _generatedName =  await NameGen.GenerateNameAsync(NameType.EnglishMale, _isNoble, _sex[0])">
-                English Male 
+            <div class="logButton-content" @onclick="async () => NameGenPop.GeneratedName = await NameGen.GenerateNameAsync(NameType.EnglishMale, _isNoble, _sex[0])">
+                English Male
             </div>
         </div>
-    </div>   
+    </div>
     <div class="data-box">
         <div class="logButton">
-            <div class="logButton-content" @onclick="async () => _generatedName =  await NameGen.GenerateNameAsync(NameType.EnglishFemale, _isNoble, _sex[1])">
-                English Female 
+            <div class="logButton-content" @onclick="async () => NameGenPop.GeneratedName = await NameGen.GenerateNameAsync(NameType.EnglishFemale, _isNoble, _sex[1])">
+                English Female
             </div>
         </div>
-    </div>   
+    </div>
     <div class="data-box">
         <div class="logButton">
-            <div class="logButton-content" @onclick="async () => _generatedName =  await NameGen.GenerateNameAsync(NameType.GermanMale, _isNoble, _sex[0])">
-                German Male 
+            <div class="logButton-content" @onclick="async () => NameGenPop.GeneratedName = await NameGen.GenerateNameAsync(NameType.GermanMale, _isNoble, _sex[0])">
+                German Male
             </div>
         </div>
-    </div>    
+    </div>
     <div class="data-box">
         <div class="logButton">
-            <div class="logButton-content" @onclick="async () => _generatedName =  await NameGen.GenerateNameAsync(NameType.GermanFemale, _isNoble, _sex[1])">
-                German Female 
+            <div class="logButton-content" @onclick="async () => NameGenPop.GeneratedName = await NameGen.GenerateNameAsync(NameType.GermanFemale, _isNoble, _sex[1])">
+                German Female
             </div>
         </div>
-    </div>   
+    </div>
     <div class="data-box">
         <div class="logButton">
-            <div class="logButton-content" @onclick="async () =>  _generatedName = await NameGen.GenerateNameAsync(NameType.FrenchMale, _isNoble, _sex[0])">
-                French Male 
+            <div class="logButton-content" @onclick="async () => NameGenPop.GeneratedName = await NameGen.GenerateNameAsync(NameType.FrenchMale, _isNoble, _sex[0])">
+                French Male
             </div>
         </div>
-    </div>    
+    </div>
     <div class="data-box">
         <div class="logButton">
-            <div class="logButton-content" @onclick="async () => _generatedName =  await NameGen.GenerateNameAsync(NameType.FrenchFemale, _isNoble, _sex[1])">
+            <div class="logButton-content" @onclick="async () => NameGenPop.GeneratedName = await NameGen.GenerateNameAsync(NameType.FrenchFemale, _isNoble, _sex[1])">
                 French Female
             </div>
         </div>
-    </div>   <div class="data-box">
+    </div>
+    <div class="data-box">
         <div class="logButton">
             <div class="closeButton-content " @onclick="() => HidePopup()">
                 CLOSE

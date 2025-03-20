@@ -11,8 +11,10 @@ namespace mixi.Modules.Account;
 public  class PasswordHash
 {
     private PasswordHasher<object> _passwordHasher = new PasswordHasher<object>();
-    private string _hashedPassword = String.Empty;
-
+    private string _hashedPassword = String.Empty ;
+    public bool LoggedIn { get; set; } = false;
+    
+    
     private User _user = new();
 
     public PasswordHash(IUserRepository userRepository)
@@ -20,6 +22,7 @@ public  class PasswordHash
         UserRepository = userRepository;
     }
 
+   
 
     [Inject] private IUserRepository UserRepository { get; set; }
    
@@ -42,8 +45,12 @@ public  class PasswordHash
         }
          _hashedPassword = user.Password;
         
-
+  
          var passwordCheck = _passwordHasher.VerifyHashedPassword(username, _hashedPassword, password);
+         if (passwordCheck is PasswordVerificationResult.Success)
+         {
+             LoggedIn = true;
+         }
          return passwordCheck switch
          {
              PasswordVerificationResult.Failed => LoginStatus.Fail,
