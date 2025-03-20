@@ -1,12 +1,13 @@
 ﻿using System.Text.Json;
+using Microsoft.AspNetCore.Components;
 using mixi.Modules.Enums;
+using mixi.Modules.UI;
 using SecurityDriven.Core;
 
 namespace mixi.Modules.Generators.CharacterNameGenerator;
 
 public class CharacterNameGenerator:ICharacterNameGenerator
 {
-
     private NamesElements? _names;
     private int _firstName;
     private int _lastName;

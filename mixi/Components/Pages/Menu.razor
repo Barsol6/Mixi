@@ -1,6 +1,8 @@
-﻿@using mixi.Components.Layout
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using mixi.Components.Layout
 @using mixi.Components.Popups
 @using mixi.Components.UI
+@using mixi.Modules.Account
 @using mixi.Modules.Enums
 @using mixi.Modules.UI
 @rendermode InteractiveServer
@@ -9,6 +11,8 @@
 
 @inject MenuPopup MenuPopup 
 @inject SignUpPopup SignUp
+@inject PasswordHash Password
+@inject ProtectedSessionStorage Storage
 
 @implements IDisposable
 
@@ -28,6 +32,7 @@
     private MenuPopupContainer _popup = null!;
 
     ILogger Logger;
+    
 
 
     protected override void OnInitialized()

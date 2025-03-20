@@ -22,6 +22,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<SignUp>();
 builder.Services.AddSingleton<SignUpPopup,SignUpPopup>();
 builder.Services.AddSingleton<MenuPopup,MenuPopup>();
+builder.Services.AddSingleton<NameGeneratorPopup,NameGeneratorPopup>();
 
 
 

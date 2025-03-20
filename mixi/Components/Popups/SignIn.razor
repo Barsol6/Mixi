@@ -70,12 +70,9 @@
             {
                 return;
             }
-            Console.Out.Write(SignUpPop.Password);
             await SignUp.CreateAccount();
             StateHasChanged();
-            return;
         }
-        else return;
     }
     
 
