@@ -67,6 +67,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Aspose.PDF" Version="25.3.0" />
       <PackageReference Include="CryptoRandom" Version="1.0.9" />
       <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.12" />
       <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.12" />

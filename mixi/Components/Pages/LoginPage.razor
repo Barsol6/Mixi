@@ -38,7 +38,7 @@
             </div>
             <br/>
             <div class="data-box">
-                <input class="bg-[]" type="text" @bind="SignUpPop.Password" onkeyup="@Enter" required="required"/>
+                <input class="bg-[]" type="password" @bind="SignUpPop.Password" onkeyup="@Enter" required="required"/>
                 <label> PASSWORD </label>
             </div>
             <br/>
@@ -61,12 +61,11 @@
     private User _user = new();
     private LoginStatus _loginStatus;
     
-    
     private PopupContainer _popup = null!;
 
     protected override void OnInitialized()
-    {
-
+    {   
+        
         this.SignUpPop.IsLoggedChange += () => InvokeAsync(StateHasChanged);
         this.SignUpPop.IsVisibleChange += () => InvokeAsync(StateHasChanged);
         this.SignUpPop.IsVisibleChange += () =>
