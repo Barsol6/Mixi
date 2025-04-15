@@ -17,8 +17,7 @@
         <DynamicComponent Type="@ComponentType" Parameters="@Parameters" @ref="_component"/>
     }
 </div>
-
-
+    
 
 
 @code {
@@ -53,7 +52,6 @@
         Signup.IsLogged = true;
         await Storage.SetAsync("MenuIsVisible", MenuPopup.IsVisible);
         await Storage.SetAsync("IsLogged", Signup.IsLogged);
-        Console.Out.Write(Signup.IsLogged + " " +MenuPopup.IsVisible);
         
         StateHasChanged();
     }   

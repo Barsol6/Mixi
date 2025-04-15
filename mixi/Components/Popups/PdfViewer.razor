@@ -1,0 +1,121 @@
+﻿@using mixi.Components.Layout
+@using mixi.Modules.UI
+
+
+@inject IWebHostEnvironment Env
+@inject IJSRuntime JsRuntime
+@rendermode InteractiveServer
+@inject PdfPopup Pdf
+
+@layout PdfViewerLayout
+
+
+
+
+<div id="adobe-dc-view"></div>
+<script src="https://acrobatservices.adobe.com/view-sdk/viewer.js"></script>
+<script>
+    let adobeDCViewSdkReady = false;
+
+    document.addEventListener("adobe_dc_view_sdk.ready", () => {
+        adobeDCViewSdkReady = true;
+    });
+
+    function initializePdfViewer(clientId, containerId, base64Data, fileName) {
+        console.log("Initializing PDF viewer...");
+
+        const initViewer = () => {
+            const adobeDCView = new AdobeDC.View({
+                clientId: clientId,
+                divId: containerId
+            });
+
+            const binaryString = atob(base64Data);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+
+            adobeDCView.previewFile({
+                content: { promise: Promise.resolve(bytes.buffer) },
+                metaData: { fileName: fileName }
+            }, {
+                embedMode: "FULL_WINDOW",
+                showDownloadPDF: true,
+                showPrintPDF: false,
+                enableFormFilling: true,
+                defaultViewMode: "FIT_PAGE"
+            });
+        };
+
+        if (adobeDCViewSdkReady) {
+            initViewer();
+        } else {
+            document.addEventListener("adobe_dc_view_sdk.ready", initViewer);
+        }
+    }
+</script>
+
+@code {
+    private const string ClientId = "443579f5eec94e33926127c9f8a579c1";
+    private const string SaveDirectory = "assets/CharacterSheets/Edited";
+    
+    
+    
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadPdf(string.Concat("assets/CharacterSheets/",Pdf.PdfName));
+        }
+    }
+    
+    private async Task LoadPdf(string filePath)
+    {
+        try
+        {
+            var fullPath = Path.Combine(Env.WebRootPath, filePath);
+            if (!File.Exists(fullPath))
+            {
+                Console.WriteLine("PDF not found at: {fullPath}");
+                return;
+            }
+            var fileBytes = await File.ReadAllBytesAsync(fullPath);
+            if (fileBytes.Length == 0)
+            {
+                Console.WriteLine("Error: File bytes are empty or null");
+                return;
+            }
+
+            var base64String = Convert.ToBase64String(fileBytes);
+            await JsRuntime.InvokeVoidAsync(
+                "initializePdfViewer",
+                ClientId,
+                "adobe-dc-view",
+                base64String,
+                Path.GetFileName(filePath));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading PDF: {ex.Message}");
+        }
+    }
+    
+
+    
+   
+    [JSInvokable]
+    public async Task HandleFileUpload(string fileName, byte[] fileContent)
+    {
+        var base64String = Convert.ToBase64String(fileContent);
+        await JsRuntime.InvokeVoidAsync(
+            "initializePdfViewer",
+            ClientId,
+            "adobe-dc-view",
+            base64String,
+            fileName);
+    }
+
+
+}

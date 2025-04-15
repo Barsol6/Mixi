@@ -67,6 +67,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Aspose.PDF" Version="25.3.0" />
       <PackageReference Include="CryptoRandom" Version="1.0.9" />
       <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.12" />
       <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.12" />
@@ -82,6 +83,15 @@
 
   <ItemGroup>
     <UpToDateCheckBuilt Include="C:/Users/barto/RiderProjects/mixi/tailwind.config.js" Set="Css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\assets\CharacterSheets\WHF4E.pdf" />
+    <None Include="wwwroot\js\PdfViever.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\assets\CharacterSheets\Edited\" />
   </ItemGroup>
 
   <Target Name="Tailwind" BeforeTargets="Build">
