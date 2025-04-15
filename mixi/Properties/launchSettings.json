@@ -14,11 +14,25 @@
       "dotnetRunMessages": true,
       "launchBrowser": false,
       "launchUrl": "home",
-      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}", 
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
       "applicationUrl": "http://localhost:5171",
+      "StaticFiles": {
+        "RootPath": "Assets"
+      },
+      "CORS": {
+        "AllowedOrigins": ["http://localhost:5171","*"]
+      },
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }      
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "home",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
-    }
+  }
 }

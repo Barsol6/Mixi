@@ -3,15 +3,15 @@
 @using mixi.Modules.UI
 @rendermode InteractiveAuto
 
-
 @inject MenuPopup MenuPopup
+@inject PdfPopup PdfPopup
 @inject ProtectedSessionStorage Storage
 @inject SignUpPopup Signup
 @inject PasswordHash Password
 @implements IDisposable
 
 
-<div class="@(MenuPopup.IsVisible ? "popup" : "hidden")"  >
+<div class="@(PdfPopup.IsVisible ? "popup" : "hidden")"  >
     @if (ComponentType is not null)
     {
         <DynamicComponent Type="@ComponentType" Parameters="@Parameters" @ref="_component"/>
@@ -28,7 +28,7 @@
     
     protected override void OnInitialized()
     {
-        this.MenuPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        this.PdfPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
         base.OnInitializedAsync();
     }
 
@@ -36,7 +36,7 @@
     {
         if (Password.LoggedIn is false)
         {
-            MenuPopup.IsVisible = false;
+            PdfPopup.IsVisible = false;
             Password.LoggedIn = false;
             await Storage.SetAsync("IsLogged", false);
             await Storage.SetAsync("MenuIsVisible", false);
@@ -48,9 +48,10 @@
     {   
         ComponentType = typeof(T);
         Parameters = parameters;
-        MenuPopup.IsVisible = true;
+        PdfPopup.IsVisible = true;
         Signup.IsLogged = true;
-        await Storage.SetAsync("MenuIsVisible", MenuPopup.IsVisible);
+        MenuPopup.IsVisible = false;
+        await Storage.SetAsync("MenuIsVisible", PdfPopup.IsVisible);
         await Storage.SetAsync("IsLogged", Signup.IsLogged);
         
         StateHasChanged();
@@ -60,7 +61,7 @@
 
     public void Dispose()
     {
-        this.MenuPopup.IsVisibleChange -= StateHasChanged;
+        this.PdfPopup.IsVisibleChange -= StateHasChanged;
     }
 
 

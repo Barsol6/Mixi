@@ -1,0 +1,38 @@
+﻿@using mixi.Components.Pages
+@using mixi.Components.UI
+@using mixi.Modules.Enums
+@using mixi.Modules.UI
+
+@inject PdfPopup PdfPopup
+
+@rendermode InteractiveServer
+
+
+<div class="data-box">
+    <div class="logButton">
+        <div class="logButton-content" @onclick="() => ShowPopup(PdfMenuChoice.Wh4E)">
+            WARHAMMER FANTASY 4E
+        </div>
+    </div>
+</div>
+<PdfPopupContainer @ref="_pdfPopup"></PdfPopupContainer>
+
+@code {
+    PdfPopupContainer _pdfPopup = null!;
+    ILogger _logger;
+    
+    private Task ShowPopup(PdfMenuChoice pdfMenuChoice)
+    {
+        switch (pdfMenuChoice)
+        {
+            case PdfMenuChoice.Wh4E:
+                PdfPopup.PdfName = "WHF4E.pdf";
+                _pdfPopup.ShowComponent<PdfViewer>();
+                break;
+            default:
+                _logger.LogInformation("Menu choice error");
+                break; 
+        }
+        return Task.CompletedTask;
+    }
+}

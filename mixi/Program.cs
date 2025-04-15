@@ -1,6 +1,7 @@
 using mixi.Components;
 using mixi.Modules.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using mixi.Modules.Account;
 using mixi.Modules.Generators;
 using mixi.Modules.Generators.CharacterNameGenerator;
@@ -43,6 +44,9 @@ builder.Services.AddDbContext<MixiDbContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddLogging();
+builder.Services.AddRouting();
+
+
 
 
 var app = builder.Build();
@@ -60,7 +64,7 @@ else
 }
 
 
-app.UseStaticFiles();
+
 app.UseAuthorization();
 
 app.UseRouting();
@@ -70,6 +74,10 @@ app.MapControllers();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.UseStaticFiles();
+
+
 
 using (var scope = app.Services.CreateScope())
 {

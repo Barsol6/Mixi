@@ -39,10 +39,8 @@ public class CharacterNameGenerator:ICharacterNameGenerator
         }
         else
         {
-            Console.Out.Write("dupa");
             return _exception.StackTrace;
         }
-        Console.Out.Write("dupa");
         return _exception.StackTrace;
     }
 }

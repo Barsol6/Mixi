@@ -3,4 +3,5 @@
 public enum MenuChoice
 {
     NameGenerator,
+    PdfViewer,
 }

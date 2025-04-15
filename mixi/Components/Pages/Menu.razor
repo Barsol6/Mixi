@@ -24,6 +24,13 @@
                     NAME GENERATOR
                 </div>
             </div>
+        </div>  
+        <div class="data-box">
+            <div class="logButton">
+                <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.PdfViewer)">
+                    INTERACTIVE CHARACTER CARD
+                </div>
+            </div>
         </div>
     <MenuPopupContainer @ref="_popup"></MenuPopupContainer>
 </div>
@@ -31,7 +38,7 @@
 @code {
     private MenuPopupContainer _popup = null!;
 
-    ILogger Logger;
+    ILogger _logger;
     
 
 
@@ -46,10 +53,12 @@
         {
             case MenuChoice.NameGenerator:
                 _popup.ShowComponent<NameGenerator>();
-                Console.Out.Write(SignUp.IsLogged + " " +MenuPopup.IsVisible);
+                break;
+            case MenuChoice.PdfViewer:
+                _popup.ShowComponent<PdfViewerChoice>();
                 break;
             default:
-                Logger.LogInformation("Menu choice error");
+                _logger.LogInformation("Menu choice error");
                 break; 
         }
         return Task.CompletedTask;
