@@ -4,11 +4,13 @@
 @using mixi.Modules.UI
 
 @page "/home"
+@page "/"
 @rendermode InteractiveServer
 @layout MainLayout
 
 @inject MenuPopup MenuPopup
 @inject SignUpPopup SignUp
+@inject PdfPopup PdfPopup
 @inject ProtectedSessionStorage Storage
 @inject PasswordHash Password
 
@@ -26,6 +28,7 @@
         this.SignUp.IsVisibleChange += () => InvokeAsync(StateHasChanged);
         this.SignUp.IsLoggedChange += () => InvokeAsync(StateHasChanged);
         this.MenuPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        this.PdfPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
     }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -35,9 +38,11 @@
             MenuPopup.IsVisible = false;
             SignUp.IsVisible = false;
             SignUp.IsLogged = false;
+            PdfPopup.IsVisible = false;
             await Storage.SetAsync("MenuIsVisible", false);
             await  Storage.SetAsync("IsLogged", false);
-            await Storage.SetAsync("SignUpPopupIsVisible", false);  
+            await Storage.SetAsync("SignUpPopupIsVisible", false);
+            await Storage.SetAsync("PdfPopupIsVisible", false);
             if (Password.LoggedIn is false)
             {
                 SignUp.IsLogged = false;
@@ -59,6 +64,9 @@
             SignUp.IsLogged = isLogged.Value;
             var signUpPopupIsVisible = await  Storage.GetAsync<bool>("SignUpPopupIsVisible");
             SignUp.IsVisible = signUpPopupIsVisible.Value;
+            var pdfPopupIsVisible = await Storage.GetAsync<bool>("PdfPopupIsVisible");
+            PdfPopup.IsVisible = pdfPopupIsVisible.Value;
+
         }
   
     }
@@ -68,5 +76,6 @@
         this.SignUp.IsVisibleChange -= StateHasChanged;
         this.SignUp.IsLoggedChange -= StateHasChanged;
         this.MenuPopup.IsVisibleChange -= StateHasChanged;
+        this.PdfPopup.IsVisibleChange -= StateHasChanged;
     }
 }

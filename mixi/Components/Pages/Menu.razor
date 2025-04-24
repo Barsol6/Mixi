@@ -12,6 +12,7 @@
 @inject MenuPopup MenuPopup 
 @inject SignUpPopup SignUp
 @inject PasswordHash Password
+@inject NameGeneratorPopup NameGenPop
 @inject ProtectedSessionStorage Storage
 
 @implements IDisposable
@@ -32,6 +33,13 @@
                 </div>
             </div>
         </div>
+        <div class="data-box">
+            <div class="logButton">
+                <div class="closeButton-content" @onclick="LogOut">
+                    LOG OUT
+                </div>
+            </div>
+        </div>
     <MenuPopupContainer @ref="_popup"></MenuPopupContainer>
 </div>
 
@@ -47,7 +55,7 @@
         this.SignUp.IsLoggedChange += () => InvokeAsync(StateHasChanged);
     }
 
-    private Task ShowPopup(MenuChoice menuChoice)
+    private async Task ShowPopup(MenuChoice menuChoice)
     {
         switch (menuChoice)
         {
@@ -61,11 +69,22 @@
                 _logger.LogInformation("Menu choice error");
                 break; 
         }
-        return Task.CompletedTask;
     }
     
     public void Dispose()
     {
         this.SignUp.IsLoggedChange -= StateHasChanged;
+    }
+
+    private async Task LogOut()
+    {
+        NameGenPop.GeneratedName = String.Empty;
+        Console.WriteLine("dupa");
+        SignUp.Password = String.Empty;
+        Console.WriteLine("dupa");
+        SignUp.Username = String.Empty;
+        Console.WriteLine("dupa");
+        SignUp.IsLogged = false;
+        await Storage.SetAsync("IsLogged", false);
     }
 }
