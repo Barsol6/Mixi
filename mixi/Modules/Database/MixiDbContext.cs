@@ -16,4 +16,6 @@ public class MixiDbContext:DbContext
         
         base.OnModelCreating(modelBuilder);
     }
+
+  
 }

@@ -10,7 +10,7 @@ using mixi.Modules.Users;
 namespace mixi.Modules.Account;
 public class SignUp
 {
-    private ProtectedSessionStorage Storage;
+    
     public SignUp(SignUpPopup signUps, PasswordHash passwordHash, IUserRepository userRepository)
     {
         SignUps = signUps;
@@ -18,23 +18,34 @@ public class SignUp
         UserRepository = userRepository;
     }
 
-    
+    [Inject] private ProtectedSessionStorage Storage { get; set; }
     [Inject] private IUserRepository UserRepository { get; set; }
     [Inject] private PasswordHash PasswordHash { get; set; }
     [Inject] public SignUpPopup SignUps { get; set; }
     
     
-    public Task CreateAccount()
+    
+    public async  Task<bool> CreateAccount()
     {
         SignUps.Password = PasswordHash.HashPasswords(SignUps.Password, SignUps.Username);
-        var user = new User { Username = SignUps.Username, Password = SignUps.Password, UserType = SignUps.UserType}; 
+        var user = new User { Username = SignUps.Username, Password = SignUps.Password, UserType = SignUps.UserType};
+        var exists = UserRepository.CheckIfExists(SignUps.Username);
+        Console.WriteLine(exists);
+        if (exists is true)
+        {
+            Console.WriteLine("Account exists");
+            SignUps.Username = String.Empty;
+            SignUps.Password = String.Empty;
+            SignUps.PasswordRepeat = String.Empty;
+            return false;
+        }
         UserRepository.AddUserAsync(user);
         SignUps.IsVisible = false;
         Storage.SetAsync("SignUpPopupIsVisible", SignUps.IsVisible);
         SignUps.Username = String.Empty;
         SignUps.Password = String.Empty;
         SignUps.PasswordRepeat = String.Empty;
-        return Task.CompletedTask;
+        return true;
     }
     
 

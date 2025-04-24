@@ -266,7 +266,7 @@ body {
     right: 0;
 }
 .pdfCloseButton{
-    color: white;
+    color: black;
     padding: 2px;
     transition: 0.4s;
     cursor: pointer;
