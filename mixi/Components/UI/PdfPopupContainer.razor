@@ -11,7 +11,8 @@
 @implements IDisposable
 
 
-<div class="@(PdfPopup.IsVisible ? "popup" : "hidden")"  >
+<div class="@(PdfPopup.IsVisible ? "popup" : "hidden")">
+    <div class="pdfCloseButton" @onclick="(ClosePopup)">X</div>
     @if (ComponentType is not null)
     {
         <DynamicComponent Type="@ComponentType" Parameters="@Parameters" @ref="_component"/>
@@ -51,7 +52,7 @@
         PdfPopup.IsVisible = true;
         Signup.IsLogged = true;
         MenuPopup.IsVisible = false;
-        await Storage.SetAsync("MenuIsVisible", PdfPopup.IsVisible);
+        await Storage.SetAsync("PdfPopupIsVisible", PdfPopup.IsVisible);
         await Storage.SetAsync("IsLogged", Signup.IsLogged);
         
         StateHasChanged();
@@ -64,7 +65,11 @@
         this.PdfPopup.IsVisibleChange -= StateHasChanged;
     }
 
-
+    private async void ClosePopup()
+    {
+        PdfPopup.IsVisible = false;
+        await Storage.SetAsync("PdfPopupIsVisible", false);
+    }
 
 
 }

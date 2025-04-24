@@ -10,7 +10,8 @@
 @implements IDisposable
 
 
-<div class="@(SignUpPop.IsVisible ? "loginPopup" : "hidden")"  >
+<div class="@(SignUpPop.IsVisible ? "loginPopup" : "hidden")">
+    <div class="closeButton" @onclick="HidePopup">X</div>
     @if (ComponentType is not null)
     {
         <DynamicComponent Type="@ComponentType" Parameters="@Parameters" @ref="_component"/>

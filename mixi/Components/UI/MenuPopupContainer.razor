@@ -11,7 +11,7 @@
 @implements IDisposable
 
 
-<div class="@(MenuPopup.IsVisible ? "popup" : "hidden")"  >
+<div class="@(MenuPopup.IsVisible ? "popup" : "hidden")">
     @if (ComponentType is not null)
     {
         <DynamicComponent Type="@ComponentType" Parameters="@Parameters" @ref="_component"/>

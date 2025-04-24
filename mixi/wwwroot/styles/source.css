@@ -111,6 +111,18 @@ body {
     
 }
 
+.closeButtonBox{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 25%;
+    
+    
+}
+
 .data-box input{
     width: 14rem;
     padding: 5px ;
@@ -243,3 +255,32 @@ body {
     border-radius: 10px;
     z-index: auto;
 }
+
+.closeButton{
+    color: white;
+    padding: 2px;
+    transition: 0.4s;
+    cursor: pointer;
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+.pdfCloseButton{
+    color: black;
+    padding: 2px;
+    transition: 0.4s;
+    cursor: pointer;
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+
+.closeButton:hover .pdfCloseButton:hover{
+    color: rgb(255, 215, 137);
+    padding: 2px;
+    transition: 0.4s;
+    cursor: pointer;
+    position: fixed;
+    top: 0;
+    right: 0;
+} 

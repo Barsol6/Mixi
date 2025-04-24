@@ -1,19 +1,30 @@
-﻿@using mixi.Components.Pages
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using mixi.Components.Pages
 @using mixi.Components.UI
 @using mixi.Modules.Enums
 @using mixi.Modules.UI
 
 @inject PdfPopup PdfPopup
+@inject MenuPopup MenuPopup
+@inject ProtectedSessionStorage Storage
 
 @rendermode InteractiveServer
 
-
-<div class="data-box">
-    <div class="logButton">
-        <div class="logButton-content" @onclick="() => ShowPopup(PdfMenuChoice.Wh4E)">
-            WARHAMMER FANTASY 4E
+<div class="h-9/10 w-9/10 bg-black m-auto mt-0 flex-col flex  text-center items-center content-center place-content-center rounded-lg drop-shadow-md">
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="() => ShowPopup(PdfMenuChoice.Wh4E)">
+                WARHAMMER FANTASY 4E
+            </div>
         </div>
     </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="closeButton-content " @onclick="ClosePopup">
+                CLOSE
+            </div>
+        </div>
+        </div>
 </div>
 <PdfPopupContainer @ref="_pdfPopup"></PdfPopupContainer>
 
@@ -34,5 +45,11 @@
                 break; 
         }
         return Task.CompletedTask;
+    }
+    
+    private async void ClosePopup()
+    {
+        MenuPopup.IsVisible = false;
+        await Storage.SetAsync("MenuIsVisible", false);
     }
 }

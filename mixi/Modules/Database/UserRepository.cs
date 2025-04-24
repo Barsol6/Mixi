@@ -18,7 +18,14 @@ public class UserRepository : IUserRepository
         await _dbContext.SaveChangesAsync();
         return user;
     }
-
+    
+    public bool CheckIfExists(string username)
+    {
+        var exists = _dbContext
+            .Users.Any(x => x.Username == username);
+        Console.WriteLine(exists);
+        return exists;
+    }
     public async Task<User?> GetUserAsync(int id)
     {
         var user = await _dbContext

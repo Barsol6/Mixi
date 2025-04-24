@@ -36,17 +36,23 @@
             <label> USER TYPE </label>
             <br/>
         </div>
-            <div class="data-box" @onclick="HandleUserSignUp">
-                <div class="logButton">
-                    <div class="logButton-content">
-                        SIGN UP  
-                    </div>
+        <div class="data-box" @onclick="HandleUserSignUp">
+            <div class="logButton">
+                <div class="logButton-content">
+                    SIGN UP  
                 </div>
             </div>
+        </div>
+        <div class="data-box">
+            <div class="logButton">
+                <div class="closeButton-content">@_loginStatement</div>
+            </div>
+        </div>
 </div>
 
 @code {
-
+    private string _loginStatement = "FILL FORM";   
+    
     protected override void OnInitialized()
     {
         SignUpPop.Password = String.Empty;
@@ -70,7 +76,15 @@
             {
                 return;
             }
-            await SignUp.CreateAccount();
+            var exists = await SignUp.CreateAccount();
+            if (exists is false)
+            {
+                _loginStatement = "USERNAME ALREADY USED";
+            }
+            else if (exists is true)
+            {
+                _loginStatement = "SUCCES";
+            }
             StateHasChanged();
         }
     }

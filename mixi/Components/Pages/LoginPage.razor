@@ -42,13 +42,21 @@
                 <label> PASSWORD </label>
             </div>
             <br/>
-            <div class="data-box" @onclick="HandleUserLogin">
+            <div class="data-box p-2 mb-6" @onclick="HandleUserLogin">
                 <div class="logButton">
                     <div class="logButton-content">
                         LOG IN
                     </div>
                 </div>
             </div>
+            <div class="data-box p-2 mt-6"  @onclick="ShowSignUpPop">
+                <div class="logButton" >
+                    <div class="logButton-content">
+                        SIGN UP
+                    </div>
+                </div>
+            </div>
+         
         </div>
         <PopupContainer @ref="_popup"></PopupContainer>
     </div>
@@ -100,15 +108,20 @@
             }
             else if(_loginStatus == LoginStatus.NoAccount)
             {
-                SignUpPop.Password = String.Empty;
-                SignUpPop.Username = String.Empty;
-                SignUpPop.PasswordRepeat = String.Empty;
-                SignUpPop.UserType = string.Empty; 
-                _popup.ShowComponent<SignIn>();
-                await Storage.SetAsync("SignUpPopupIsVisible", true);  
+                ShowSignUpPop();
             }
             
         }
+    }
+
+    private async void ShowSignUpPop()
+    {
+        SignUpPop.Password = String.Empty;
+        SignUpPop.Username = String.Empty;
+        SignUpPop.PasswordRepeat = String.Empty;
+        SignUpPop.UserType = string.Empty; 
+        _popup.ShowComponent<SignIn>();
+        await Storage.SetAsync("SignUpPopupIsVisible", true);  
     }
     
     public void Dispose()
