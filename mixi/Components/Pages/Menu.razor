@@ -79,11 +79,8 @@
     private async Task LogOut()
     {
         NameGenPop.GeneratedName = String.Empty;
-        Console.WriteLine("dupa");
         SignUp.Password = String.Empty;
-        Console.WriteLine("dupa");
         SignUp.Username = String.Empty;
-        Console.WriteLine("dupa");
         SignUp.IsLogged = false;
         await Storage.SetAsync("IsLogged", false);
     }
