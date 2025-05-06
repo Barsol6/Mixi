@@ -11,11 +11,12 @@ namespace mixi.Modules.Account;
 public class SignUp
 {
     
-    public SignUp(SignUpPopup signUps, PasswordHash passwordHash, IUserRepository userRepository)
+    public SignUp(SignUpPopup signUps, PasswordHash passwordHash, IUserRepository userRepository, ProtectedSessionStorage storage)
     {
         SignUps = signUps;
         PasswordHash = passwordHash;
         UserRepository = userRepository;
+        Storage = storage;
     }
 
     [Inject] private ProtectedSessionStorage Storage { get; set; }
@@ -25,7 +26,7 @@ public class SignUp
     
     
     
-    public async  Task<bool> CreateAccount()
+    public async Task<bool> CreateAccount()
     {
         SignUps.Password = PasswordHash.HashPasswords(SignUps.Password, SignUps.Username);
         var user = new User { Username = SignUps.Username, Password = SignUps.Password, UserType = SignUps.UserType};
@@ -39,9 +40,9 @@ public class SignUp
             SignUps.PasswordRepeat = String.Empty;
             return false;
         }
-        UserRepository.AddUserAsync(user);
+        await UserRepository.AddUserAsync(user);
         SignUps.IsVisible = false;
-        Storage.SetAsync("SignUpPopupIsVisible", SignUps.IsVisible);
+        await Storage.SetAsync("SignUpPopupIsVisible", SignUps.IsVisible);
         SignUps.Username = String.Empty;
         SignUps.Password = String.Empty;
         SignUps.PasswordRepeat = String.Empty;
