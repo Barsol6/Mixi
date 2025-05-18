@@ -16,7 +16,6 @@
 - Blazor WebAssembly
 - C#
 - .NET
-- Tailwind CSS
 
 ## 🚀 Getting Started
 
@@ -30,38 +29,6 @@
 ```bash
 git clone https://github.com/Barsol6/mixi.git
 cd mixi
-```
-
-### Install Tailwind CSS
-
-1. Initialize Tailwind (if not already):
-
-```bash
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
-```
-
-2. Make sure `tailwind.config.js` includes the following:
-
-```js
-content: [
-  "./**/*.razor",
-  "./**/*.html"
-]
-```
-
-3. Add Tailwind directives to your `wwwroot/css/app.css` or similar:
-
-```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
-
-4. Build Tailwind assets (you can also automate this via your build pipeline):
-
-```bash
-npx tailwindcss -i ./wwwroot/css/app.css -o ./wwwroot/css/output.css --watch
 ```
 
 ### Build and Run the App
