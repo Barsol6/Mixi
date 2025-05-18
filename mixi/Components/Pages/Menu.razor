@@ -46,7 +46,7 @@
 @code {
     private MenuPopupContainer _popup = null!;
 
-    ILogger _logger;
+    private ILogger _logger = null!;
     
 
 
@@ -55,7 +55,7 @@
         this.SignUp.IsLoggedChange += () => InvokeAsync(StateHasChanged);
     }
 
-    private async Task ShowPopup(MenuChoice menuChoice)
+    private Task ShowPopup(MenuChoice menuChoice)
     {
         switch (menuChoice)
         {
@@ -66,9 +66,11 @@
                 _popup.ShowComponent<PdfViewerChoice>();
                 break;
             default:
-                _logger.LogInformation("Menu choice error");
+                (_logger ?? throw new InvalidOperationException()).LogInformation("Menu choice error");
                 break; 
         }
+
+        return Task.CompletedTask;
     }
     
     public void Dispose()

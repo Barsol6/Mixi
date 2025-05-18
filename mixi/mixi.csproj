@@ -91,9 +91,16 @@
     <Folder Include="wwwroot\js\" />
   </ItemGroup>
 
-  <Target Name="CopyPdfJsFiles" AfterTargets="Build">
+  <Target Name="NpmInstall" BeforeTargets="CopyPdfJsFiles">
     <Exec Command="npm install" WorkingDirectory="$(ProjectDir)" />
-    <Exec Command="npm run copy-pdfjs" WorkingDirectory="$(ProjectDir)" />
+  </Target>
+
+  <Target Name="CopyPdfJsFiles" BeforeTargets="Build"
+          Inputs="../node_modules/pdfjs-dist/build/pdf.mjs;../node_modules/pdfjs-dist/build/pdf.worker.mjs"
+          Outputs="wwwroot/pdfjs/pdf.mjs;wwwroot/pdfjs/pdf.worker.mjs">
+    <Message Text="CopyPdfJsFiles target running..." Importance="high" />
+    <Copy SourceFiles="../node_modules/pdfjs-dist/build/pdf.mjs;../node_modules/pdfjs-dist/build/pdf.worker.mjs"
+          DestinationFolder="wwwroot/pdfjs" />
   </Target>
 
 </Project>
