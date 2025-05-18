@@ -40,11 +40,14 @@
                 content: { promise: Promise.resolve(bytes.buffer) },
                 metaData: { fileName: fileName }
             }, {
+                showAnnotationTools: false,
                 embedMode: "FULL_WINDOW",
                 showDownloadPDF: true,
                 showPrintPDF: false,
                 enableFormFilling: true,
-                defaultViewMode: "FIT_PAGE"
+                defaultViewMode: "FIT_PAGE",
+                showBookmarks: false,
+                showThumbnails: false,
             });
         };
 

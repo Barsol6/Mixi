@@ -271,11 +271,12 @@ body {
     transition: 0.4s;
     cursor: pointer;
     position: fixed;
-    top: 0;
-    right: 0;
+    top: 10px;
+    right: 700px;
+    font-size: large;
 }
 
-.closeButton:hover .pdfCloseButton:hover{
+.closeButton:hover {
     color: rgb(255, 215, 137);
     padding: 2px;
     transition: 0.4s;
@@ -283,4 +284,11 @@ body {
     position: fixed;
     top: 0;
     right: 0;
-} 
+}
+
+.pdfCloseButton:hover{
+    color: darkred;
+    transition: 0.4s;
+    font-size: xxx-large;
+}
+

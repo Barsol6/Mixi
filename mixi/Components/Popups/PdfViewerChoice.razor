@@ -20,18 +20,53 @@
     </div>
     <div class="data-box">
         <div class="logButton">
+            <div class="logButton-content" @onclick="() => ShowPopup(PdfMenuChoice.Cthulhu)">
+                ZEW CTHULHU 7E
+            </div>
+        </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="() => ShowPopup(PdfMenuChoice.Vaesen)">
+                VAESEN
+            </div>
+        </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="() => ShowPopup(PdfMenuChoice.Fabula_Ultima)">
+                FABULA ULTIMA
+            </div>
+        </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="() => ShowPopup(PdfMenuChoice.Wrath_and_Glory)">
+                WARHAMMER 40K WRATH AND GLORY
+            </div>
+        </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="() => ShowPopup(PdfMenuChoice.Imperium_Maledictum)">
+                IMPERIUM MALEDICTUM
+            </div>
+        </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
             <div class="closeButton-content " @onclick="ClosePopup">
                 CLOSE
             </div>
         </div>
-        </div>
+    </div>
 </div>
 <PdfPopupContainer @ref="_pdfPopup"></PdfPopupContainer>
 
 @code {
     PdfPopupContainer _pdfPopup = null!;
     ILogger _logger;
-    
+
     private Task ShowPopup(PdfMenuChoice pdfMenuChoice)
     {
         switch (pdfMenuChoice)
@@ -40,16 +75,38 @@
                 PdfPopup.PdfName = "WHF4E.pdf";
                 _pdfPopup.ShowComponent<PdfViewer>();
                 break;
+            case PdfMenuChoice.Cthulhu:
+                PdfPopup.PdfName = "ZC7E.pdf";
+                _pdfPopup.ShowComponent<PdfViewer>();
+                break;
+            case PdfMenuChoice.Vaesen:
+                PdfPopup.PdfName = "VAESEN.pdf";
+                _pdfPopup.ShowComponent<PdfViewer>();
+                break;
+            case PdfMenuChoice.Fabula_Ultima:
+                PdfPopup.PdfName = "FU.pdf";
+                _pdfPopup.ShowComponent<PdfViewer>();
+                break;
+            case PdfMenuChoice.Imperium_Maledictum:
+                PdfPopup.PdfName = "IM.pdf";
+                _pdfPopup.ShowComponent<PdfViewer>();
+                break;
+            case PdfMenuChoice.Wrath_and_Glory:
+                PdfPopup.PdfName = "WG.pdf";
+                _pdfPopup.ShowComponent<PdfViewer>();
+                break;
             default:
                 _logger.LogInformation("Menu choice error");
-                break; 
+                break;
         }
+
         return Task.CompletedTask;
     }
-    
+
     private async void ClosePopup()
     {
         MenuPopup.IsVisible = false;
         await Storage.SetAsync("MenuIsVisible", false);
     }
+
 }
