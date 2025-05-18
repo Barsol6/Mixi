@@ -91,6 +91,9 @@
     <Folder Include="wwwroot\js\" />
   </ItemGroup>
 
-
+  <Target Name="CopyPdfJsFiles" AfterTargets="Build">
+    <Exec Command="npm install" WorkingDirectory="$(ProjectDir)" />
+    <Exec Command="npm run copy-pdfjs" WorkingDirectory="$(ProjectDir)" />
+  </Target>
 
 </Project>
