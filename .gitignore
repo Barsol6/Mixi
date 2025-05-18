@@ -4,4 +4,4 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 node_modules/
-wwwroot/pdfjs/
+mixi/wwwroot/pdfjs/

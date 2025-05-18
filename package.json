@@ -10,9 +10,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "tailwindcss": "^4.0.9"
-  },
   "dependencies": {
     "pdfjs-dist": "^5.2.133"
   }
