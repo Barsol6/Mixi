@@ -34,7 +34,7 @@ cd mixi
 ### Build and Run the App
 
 ```bash
-dotnet run --project Mixi
+dotnet run --project mixi
 ```
 
 Then open [http://localhost:5000](http://localhost:5000) (or whatever port it specifies).
