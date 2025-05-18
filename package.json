@@ -1,16 +1,19 @@
 {
   "name": "mixi",
   "version": "1.0.0",
-  "description": "",
+  "description": "**Mixi** is a self-hosted, minimalistic Blazor web application designed to assist with organizing and running tabletop role-playing games (TTRPGs). It offers tools for both Game Masters and players to streamline session prep, gameplay, and immersion.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "css:build": "npx tailwindcss -i ./mixi/wwwroot/styles/source.css -o ./mixi/wwwroot/styles/Style.css --minify"
+    "copy-pdfjs": "mkdir mixi\\wwwroot\\pdfjs && copy /Y node_modules\\pdfjs-dist\\build\\pdf.min.mjs mixi\\wwwroot\\pdfjs\\ && copy /Y node_modules\\pdfjs-dist\\build\\pdf.worker.min.mjs mixi\\wwwroot\\pdfjs\\"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "tailwindcss": "^4.0.9"
+  },
+  "dependencies": {
+    "pdfjs-dist": "^5.2.133"
   }
 }

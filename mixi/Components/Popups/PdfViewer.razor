@@ -12,52 +12,7 @@
 
 
 
-<div id="adobe-dc-view"></div>
-<script src="https://acrobatservices.adobe.com/view-sdk/viewer.js"></script>
-<script>
-    let adobeDCViewSdkReady = false;
 
-    document.addEventListener("adobe_dc_view_sdk.ready", () => {
-        adobeDCViewSdkReady = true;
-    });
-
-    function initializePdfViewer(clientId, containerId, base64Data, fileName) {
-        console.log("Initializing PDF viewer...");
-
-        const initViewer = () => {
-            const adobeDCView = new AdobeDC.View({
-                clientId: clientId,
-                divId: containerId
-            });
-
-            const binaryString = atob(base64Data);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-            }
-
-            adobeDCView.previewFile({
-                content: { promise: Promise.resolve(bytes.buffer) },
-                metaData: { fileName: fileName }
-            }, {
-                showAnnotationTools: false,
-                embedMode: "FULL_WINDOW",
-                showDownloadPDF: true,
-                showPrintPDF: false,
-                enableFormFilling: true,
-                defaultViewMode: "FIT_PAGE",
-                showBookmarks: false,
-                showThumbnails: false,
-            });
-        };
-
-        if (adobeDCViewSdkReady) {
-            initViewer();
-        } else {
-            document.addEventListener("adobe_dc_view_sdk.ready", initViewer);
-        }
-    }
-</script>
 
 @code {
     private const string ClientId = "443579f5eec94e33926127c9f8a579c1";
@@ -81,23 +36,9 @@
             var fullPath = Path.Combine(Env.WebRootPath, filePath);
             if (!File.Exists(fullPath))
             {
-                Console.WriteLine("PDF not found at: {fullPath}");
+                Console.WriteLine($"PDF not found at: {fullPath}");
                 return;
             }
-            var fileBytes = await File.ReadAllBytesAsync(fullPath);
-            if (fileBytes.Length == 0)
-            {
-                Console.WriteLine("Error: File bytes are empty or null");
-                return;
-            }
-
-            var base64String = Convert.ToBase64String(fileBytes);
-            await JsRuntime.InvokeVoidAsync(
-                "initializePdfViewer",
-                ClientId,
-                "adobe-dc-view",
-                base64String,
-                Path.GetFileName(filePath));
         }
         catch (Exception ex)
         {
