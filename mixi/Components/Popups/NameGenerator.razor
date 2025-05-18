@@ -77,6 +77,7 @@
     private void HidePopup()
     {
         MenuPopup.IsVisible = false;
+        NameGenPop.GeneratedName = String.Empty;
         Storage.SetAsync("MenuIsVisible", MenuPopup.IsVisible);
     }
 
