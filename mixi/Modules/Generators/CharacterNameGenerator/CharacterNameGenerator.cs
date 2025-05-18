@@ -15,7 +15,7 @@ public class CharacterNameGenerator:ICharacterNameGenerator
     private CryptoRandom _cryptoRandom = new CryptoRandom();
     Exception _exception = new();
 
-    public async Task<string?> GenerateNameAsync(NameType nameType, bool isNoble, string sex)
+    public Task<string> GenerateNameAsync(NameType nameType, bool isNoble, string sex)
     {
         var names = File.ReadAllText("Repository/NameRepository/" + sex + "/" + nameType + "Names.json");
         _names = JsonSerializer.Deserialize<NamesElements>(names);
@@ -24,23 +24,27 @@ public class CharacterNameGenerator:ICharacterNameGenerator
         {
             if (isNoble == false)
             {
-                _firstName = (int)_cryptoRandom.NextInt64(0, _names.first_names.Count-1);
-                _lastName = (int)_cryptoRandom.NextInt64(0, _names.last_names.Count-1);
-                return string.Concat(_names.first_names[_firstName]," ",_names.last_names[_lastName]);
+                if (_names.FirstNames != null && _names.LastNames != null)
+                {
+                    _firstName = (int)_cryptoRandom.NextInt64(0, _names.FirstNames.Count - 1);
+                    _lastName = (int)_cryptoRandom.NextInt64(0, _names.LastNames.Count - 1);
+                    return Task.FromResult(string.Concat(_names.FirstNames[_firstName], " ", _names.LastNames[_lastName]));
+                }
             }
             else if(isNoble)
             {
-                _firstName = (int)_cryptoRandom.NextInt64(0, _names.first_names.Count-1);
-                _lastName = (int)_cryptoRandom.NextInt64(0, _names.last_names.Count-1);
-                _middleName = (int)_cryptoRandom.NextInt64(0, _names.first_names.Count-1);
-                return string.Concat(_names.first_names[_firstName]," ", _names.first_names[_middleName]," ",_names.last_names[_lastName]);
+                if (_names.FirstNames != null && _names.LastNames != null)
+                {
+                    _firstName = (int)_cryptoRandom.NextInt64(0, _names.FirstNames.Count - 1);
+                    _lastName = (int)_cryptoRandom.NextInt64(0, _names.LastNames.Count - 1);
+                    _middleName = (int)_cryptoRandom.NextInt64(0, _names.FirstNames.Count - 1);
+                    return Task.FromResult(string.Concat(_names.FirstNames[_firstName], " ", _names.FirstNames[_middleName], " ",
+                        _names.FirstNames[_lastName]));
+                }
             }
          
         }
-        else
-        {
-            return _exception.StackTrace;
-        }
-        return _exception.StackTrace;
+
+        throw new InvalidOperationException();
     }
 }

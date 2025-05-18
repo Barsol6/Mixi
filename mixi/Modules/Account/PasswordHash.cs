@@ -11,7 +11,7 @@ namespace mixi.Modules.Account;
 public  class PasswordHash
 {
     private PasswordHasher<object> _passwordHasher = new PasswordHasher<object>();
-    private string _hashedPassword = String.Empty ;
+    private string? _hashedPassword = String.Empty ;
     public bool LoggedIn { get; set; } = false;
     
     
@@ -27,14 +27,14 @@ public  class PasswordHash
     [Inject] private IUserRepository UserRepository { get; set; }
    
 
-    public  string HashPasswords(string password, string username)
+    public  string? HashPasswords(string? password, string username)
     {
-       _hashedPassword = _passwordHasher.HashPassword(username, password);
+       _hashedPassword = _passwordHasher.HashPassword(username, password ?? throw new ArgumentNullException(nameof(password)));
 
        return _hashedPassword;
     }
 
-    public async Task<LoginStatus> CheckPassword(string password, string username)
+    public async Task<LoginStatus> CheckPassword(string? password, string username)
     {
         
         var user = await UserRepository.GetUserAsync(username);
@@ -46,7 +46,7 @@ public  class PasswordHash
          _hashedPassword = user.Password;
         
   
-         var passwordCheck = _passwordHasher.VerifyHashedPassword(username, _hashedPassword, password);
+         var passwordCheck = _passwordHasher.VerifyHashedPassword(username, _hashedPassword ?? throw new InvalidOperationException(), password ?? throw new ArgumentNullException(nameof(password)));
          if (passwordCheck is PasswordVerificationResult.Success)
          {
              LoggedIn = true;
