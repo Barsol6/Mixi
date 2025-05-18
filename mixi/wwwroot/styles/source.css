@@ -33,18 +33,18 @@ body {
     color: white;
 }
 .popup {
-    top: var(--popup-padding);
-    left: var(--popup-padding);
-    position: absolute;
-    background-color: rgba(0,0,0,0.5);
-    width: calc(100% - (var(--popup-padding) * 2));
-    height: calc(100% - (var(--popup-padding) * 2));
-    backdrop-filter: blur(1px);
+    top: 0;
+    left: 0;
+    position: fixed;
+    background-color: rgba(0,0,0,1);
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    z-index: auto;
+    z-index: 1000;
+    margin: 0;
 }
 .title {
     width: 90%;
@@ -60,7 +60,6 @@ body {
     place-items: center;
     border-radius: 50px;
     background-color: black;
-    backdrop-filter: blur(100px);
     filter: drop-shadow(5px 8px 30px black );
     flex-direction: row;
     flex: fit-content;
@@ -106,8 +105,8 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    height: 25%;
-    
+    height: fit-content;
+    padding: 2px;
     
 }
 
@@ -213,8 +212,8 @@ body {
 }
 
 .logButton-content{
-    width: fit-content;
-    height: fit-content;
+    width: inherit;
+    height: inherit;
     letter-spacing: 5px;
     font-size:1.2rem ;
     border-style: solid;
@@ -227,7 +226,7 @@ body {
 .logButton{
     
     width: 12rem;
-    height: 2.5rem;
+    height: fit-content;
     margin: 5px;
     border-radius: 10px;
     position: relative;
@@ -240,6 +239,8 @@ body {
     justify-content: center;
     opacity: 1;
     display: flex;
+    padding: 2px;
+    align-items: center;
 }
 
 .loginPopup {
@@ -290,5 +291,74 @@ body {
     color: darkred;
     transition: 0.4s;
     font-size: xxx-large;
+}
+
+.nameGenChoicePanel{
+    height: 90%;
+    width: 90%;
+    background-color: black;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.generatedName{
+    color: #ffd789;
+    background-color: black;
+    height: fit-content;
+    width: fit-content;
+    letter-spacing: 5px;
+    font-size: 1.2rem;
+    border-style: solid;
+    border-radius: initial;
+    padding-right: 6px;
+    padding-left: 6px;
+}
+
+.pdfChoicePanel{
+    height: 90%;
+    width: 90%;
+    background-color: black;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+}
+
+.signInPanel{
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap;
+    text-align: center;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    background-color: black;
+}
+
+.loginButton{
+    padding: 0.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: fit-content;
 }
 

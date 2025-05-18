@@ -14,11 +14,9 @@
 
 
 @layout LoginLayout
-@inject NavigationManager NavigationManager
 @inject PasswordHash PassHash
 @inject SignUpPopup SignUpPop
 @inject ProtectedSessionStorage Storage
-@inject MenuPopup MenuPop
 
 @implements IDisposable
 
@@ -42,14 +40,14 @@
                 <label> PASSWORD </label>
             </div>
             <br/>
-            <div class="data-box p-2 mb-6" @onclick="HandleUserLogin">
+            <div class="loginButton" @onclick="HandleUserLogin">
                 <div class="logButton">
                     <div class="logButton-content">
                         LOG IN
                     </div>
                 </div>
             </div>
-            <div class="data-box p-2 mt-6"  @onclick="ShowSignUpPop">
+            <div class="loginButton"  @onclick="ShowSignUpPop">
                 <div class="logButton" >
                     <div class="logButton-content">
                         SIGN UP

@@ -81,21 +81,15 @@
       <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
     </ItemGroup>
 
-  <ItemGroup>
-    <UpToDateCheckBuilt Include="C:/Users/barto/RiderProjects/mixi/tailwind.config.js" Set="Css" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="wwwroot\assets\CharacterSheets\WHF4E.pdf" />
-    <None Include="wwwroot\js\PdfViever.js" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\assets\CharacterSheets\Edited\" />
   </ItemGroup>
 
-  <Target Name="Tailwind" BeforeTargets="Build">
-    <Exec Command="npm run css:build"/>
-  </Target>
+
 
 </Project>
