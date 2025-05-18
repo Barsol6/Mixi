@@ -87,7 +87,6 @@
 
   <ItemGroup>
     <None Include="wwwroot\assets\CharacterSheets\WHF4E.pdf" />
-    <None Include="wwwroot\js\PdfViever.js" />
   </ItemGroup>
 
   <ItemGroup>
