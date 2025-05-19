@@ -16,6 +16,7 @@
 - Blazor WebAssembly
 - C#
 - .NET
+- SQLite
 
 ## 🚀 Getting Started
 
