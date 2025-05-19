@@ -22,7 +22,7 @@
 ### Prerequisites
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- Node.js & npm (for Tailwind CSS)
+- Node.js
 
 ### Clone the repository
 
