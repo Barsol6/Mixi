@@ -39,7 +39,6 @@ dotnet run --project mixi
 
 Then open [http://localhost:5000](http://localhost:5000) (or whatever port it specifies).
 
-> If it's a Blazor WebAssembly project, you can also run from Visual Studio with the browser set as launch target.
 
 
 ## 🧩 Planned Features
