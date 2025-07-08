@@ -96,11 +96,11 @@
   </Target>
 
   <Target Name="CopyPdfJsFiles" BeforeTargets="Build"
-          Inputs="../node_modules/pdfjs-dist/build/pdf.mjs;../node_modules/pdfjs-dist/build/pdf.worker.mjs"
-          Outputs="wwwroot/pdfjs/pdf.mjs;wwwroot/pdfjs/pdf.worker.mjs">
+          Inputs="..\node_modules\pdfjs-dist\build/pdf.mjs;..\node_modules\pdfjs-dist\build\pdf.worker.mjs"
+          Outputs="wwwroot\pdfjs\pdf.mjs;wwwroot\pdfjs\pdf.worker.mjs">
     <Message Text="CopyPdfJsFiles target running..." Importance="high" />
-    <Copy SourceFiles="../node_modules/pdfjs-dist/build/pdf.mjs;../node_modules/pdfjs-dist/build/pdf.worker.mjs"
-          DestinationFolder="wwwroot/pdfjs" />
+    <Copy SourceFiles="..\node_modules\pdfjs-dist\build\pdf.mjs;..\node_modules\pdfjs-dist\build\pdf.worker.mjs"
+          DestinationFolder="wwwroot\pdfjs" />
   </Target>
 
 </Project>
