@@ -22,11 +22,10 @@
 
 <div class="@(SignUpPop.IsLogged ? "hidden" : "container")">
     
+    <div class="@(SignUpPop.MouseStatus ? "loginContainerAfter" : "loginContainerBefore")" onmouseenter="@MouseEnter" onmouseleave="@MouseLeave">
     <div class="title">
        MIXI
     </div>
-    
-
     <div class="loginBox items-center">
 
         <div class="login">
@@ -59,19 +58,18 @@
         <PopupContainer @ref="_popup"></PopupContainer>
     </div>
    
-
+    </div>
 
 </div> 
 
 @code {
     private User _user = new();
     private LoginStatus _loginStatus;
-    
     private PopupContainer _popup = null!;
 
     protected override void OnInitialized()
-    {   
-        
+    {
+        this.SignUpPop.MouseStatusChange += () => InvokeAsync(StateHasChanged);
         this.SignUpPop.IsLoggedChange += () => InvokeAsync(StateHasChanged);
         this.SignUpPop.IsVisibleChange += () => InvokeAsync(StateHasChanged);
         this.SignUpPop.IsVisibleChange += () =>
@@ -126,6 +124,17 @@
     {
         this.SignUpPop.IsVisibleChange -= StateHasChanged;
         this.SignUpPop.IsLoggedChange -= StateHasChanged;
+        this.SignUpPop.MouseStatusChange -= StateHasChanged;
     }
-    
+
+    public void MouseEnter()
+    {
+        SignUpPop.MouseStatus = true;
+    }
+
+    public void MouseLeave()
+    {
+        SignUpPop.MouseStatus = false;
+    }
+
 }
