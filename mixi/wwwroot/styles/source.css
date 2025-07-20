@@ -31,6 +31,8 @@ body {
     display: flex;
     flex-direction: column;
     color: white;
+    align-items: center;
+    justify-content: center;
 }
 .popup {
     top: 0;
@@ -49,11 +51,9 @@ body {
 .title {
     width: 90%;
     font-family: "Comic Sans MS", sans-serif;
-    height: 20vh;
-    font-size: xxx-large;
-    color: white;
+    font-size: 5rem;
+    color: inherit;
     margin: auto;
-    margin-top: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -62,7 +62,6 @@ body {
     background-color: black;
     filter: drop-shadow(5px 8px 30px black );
     flex-direction: row;
-    flex: fit-content;
 }
 .loginBox {
     height: 400px;
@@ -163,7 +162,7 @@ body {
 .data-box input:focus ~ label   {
     top: 0px;
     left: 0;
-    color: rgb(255, 215, 137);
+    color: white;
     transition: 0.4s;
 }   
 
@@ -172,7 +171,7 @@ body {
     inset: 1px;
     transition: 0.4s;
     z-index: 0;
-    color: rgb(255, 215, 137);
+    color: white;
 }
 
 
@@ -362,3 +361,68 @@ body {
     height: fit-content;
 }
 
+.loginContainerBefore{
+    width: 50%;
+    height: 75%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border: 10px solid white;
+    flex-shrink: inherit;
+    transition: 500ms;
+}
+.loginContainerAfter{
+    width: 35%;
+    height: 75%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border: 10px solid white;
+    transition: 500ms;
+    flex-shrink: inherit;
+    border-radius: 20px;
+}
+
+.pdf-viewer-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+.pdfViewer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.pdfViewer .page {
+    margin: 1em auto;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.pdfViewer .textLayer {
+    pointer-events: none;
+}
+
+.pdfViewer .annotationLayer section {
+    pointer-events: auto;
+}
+#pdfContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+.pdfHost {
+    position: relative;
+    width: 100%;
+    height: 100vh; 
+}

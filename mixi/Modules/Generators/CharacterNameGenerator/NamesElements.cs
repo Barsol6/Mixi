@@ -2,6 +2,6 @@
 
 public class NamesElements
 {
-    public List<string>? FirstNames { get; init; }
-    public List<string>? LastNames { get; init; }
+    public List<string>? first_names { get; init; }
+    public List<string>? last_names { get; init; }
 }

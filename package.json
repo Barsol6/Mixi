@@ -11,6 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "pdfjs-dist": "^5.2.133"
+    "pdfjs-dist": "4.3.136"
   }
 }

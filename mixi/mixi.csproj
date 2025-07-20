@@ -64,11 +64,19 @@
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.js" />
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.map" />
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\LICENSE.txt" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\pdfjs\pdf.min.mjs" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\pdfjs\pdf.mjs" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\pdfjs\pdf.worker.min.mjs" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\pdfjs\pdf.worker.mjs" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\pdfjs\pdf_viewer.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\pdfjs\pdf_viewer.mjs" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\pdfjs\web\pdf_viewer.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\pdfjs\web\pdf_viewer.mjs" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Aspose.PDF" Version="25.3.0" />
       <PackageReference Include="CryptoRandom" Version="1.0.9" />
+      <PackageReference Include="iTextSharp" Version="5.5.13.3" />
       <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.12" />
       <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.12" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.12" />
@@ -81,26 +89,28 @@
       <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
     </ItemGroup>
 
-
-  <ItemGroup>
-    <None Include="wwwroot\assets\CharacterSheets\WHF4E.pdf" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\assets\CharacterSheets\Edited\" />
-    <Folder Include="wwwroot\js\" />
-  </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Uploads\" />
+      <Folder Include="Uploads\Pdfs\" />
+    </ItemGroup>
 
   <Target Name="NpmInstall" BeforeTargets="CopyPdfJsFiles">
     <Exec Command="npm install" WorkingDirectory="$(ProjectDir)" />
   </Target>
 
-  <Target Name="CopyPdfJsFiles" BeforeTargets="Build"
-          Inputs="..\node_modules\pdfjs-dist\build/pdf.mjs;..\node_modules\pdfjs-dist\build\pdf.worker.mjs"
-          Outputs="wwwroot\pdfjs\pdf.mjs;wwwroot\pdfjs\pdf.worker.mjs">
-    <Message Text="CopyPdfJsFiles target running..." Importance="high" />
-    <Copy SourceFiles="..\node_modules\pdfjs-dist\build\pdf.mjs;..\node_modules\pdfjs-dist\build\pdf.worker.mjs"
-          DestinationFolder="wwwroot\pdfjs" />
+  <Target Name="CopyPdfJsFiles" BeforeTargets="Build">
+    <Message Text="--- Copying correct PDF.js v4 module files (.mjs)... ---" Importance="high" />
+    <MakeDir Directories="wwwroot/js/pdfjs/web" />
+
+    <ItemGroup>
+      <PdfJsCoreModules Include="..\node_modules\pdfjs-dist\build\pdf.mjs;..\node_modules\pdfjs-dist\build\pdf.worker.mjs" />
+      <PdfJsViewerFiles Include="..\node_modules\pdfjs-dist\web\pdf_viewer.mjs;..\node_modules\pdfjs-dist\web\pdf_viewer.css" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(PdfJsCoreModules)" DestinationFolder="wwwroot/js/pdfjs/" />
+    <Copy SourceFiles="@(PdfJsViewerFiles)" DestinationFolder="wwwroot/js/pdfjs/web\" />
+
+    <Message Text="--- PDF.js file copy complete. ---" Importance="high" />
   </Target>
 
 </Project>

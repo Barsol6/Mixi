@@ -5,10 +5,27 @@ namespace mixi.Modules.UI;
 public class SignUpPopup
 {
  private bool _isVisible;
+ 
+ private bool _mouseStatus;
+ 
+ private bool _isLogged;
  public event Action? IsVisibleChange;
  public event Action? IsLoggedChange;
+ public event Action? MouseStatusChange;
 
- private bool _isLogged;
+ public bool MouseStatus
+ {
+  get=>_mouseStatus;
+  set
+  {
+   if (value != _mouseStatus)
+   {
+    _mouseStatus = value;
+    MouseStatusChange?.Invoke();
+   }
+  }
+ }
+
  public bool IsVisible
  {
   get => _isVisible;
