@@ -1,0 +1,95 @@
+﻿t@page "/uploadPdf"
+@using mixi.Modules.Database
+@using mixi.Modules.Pdf
+
+@rendermode InteractiveServer
+
+@inject IPdfRepository PdfRepository
+@inject NavigationManager NavigationManager
+
+<div class="popup">
+    <div class="closeButton" @onclick="CloseUploader">
+        <span >CLOSE</span>
+    </div>
+    <div class="pdfChoicePanel">
+        <h3>Send Character Sheet</h3>
+        <div class="data-box">
+            <InputFile OnChange="@(e => HandleFileSelected(e))" accept=".pdf" class="logButton"/>
+            
+            @if (_isUploading)
+            {
+                <p>Uploading...</p>
+            }
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <p>@_errorMessage</p>
+            }
+            <div class="logButton" @onclick="@(async ()=> { if (_fileSelected && !_isUploading) await UploadFile(); })" style="@(_fileSelected && !_isUploading ? "" : "opacity: 0.5; cursor: not-allowed;")">
+                <span class="logButton-content">SEND</span>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    private IBrowserFile _selectedFile;
+    private bool _fileSelected = false;
+    private bool _isUploading = false;
+    private string _errorMessage = String.Empty;
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        _selectedFile = e.File;
+        _fileSelected = true;
+        _errorMessage = string.Empty;
+        Console.WriteLine($"File selected: {_fileSelected}, ContentType: {_selectedFile.ContentType}");
+        if (!_selectedFile.ContentType.Equals("application/pdf",StringComparison.OrdinalIgnoreCase))
+        {
+            _errorMessage = "File must be PDF";
+            _fileSelected = false;
+        }
+        StateHasChanged();
+    }
+
+    private async Task UploadFile()
+    {
+        if (!_fileSelected || _isUploading)
+        {
+            return;
+        }
+
+        try
+        {
+            _isUploading = true;
+            _errorMessage = String.Empty;
+
+            using var memoryStream = new MemoryStream();
+            await _selectedFile.OpenReadStream(maxAllowedSize: 20 * 1024 * 1024).CopyToAsync(memoryStream);
+
+            var document = new PdfDocument
+            {
+                Name = _selectedFile.Name,
+                FormData = "{}",
+                Content = memoryStream.ToArray()
+            };
+
+            var id = await PdfRepository.SaveAsync(document, memoryStream.ToArray());
+
+            NavigationManager.NavigateTo($"/pdfViewer/{id}");
+        }
+        catch (Exception e)
+        {
+            _errorMessage = $"Uploading Error: {e.Message}";
+        }
+        finally
+        {
+            _isUploading = false;
+            StateHasChanged();
+        }
+    }
+    private void CloseUploader()
+    {
+        NavigationManager.NavigateTo("/home");
+        StateHasChanged();
+    }
+
+}

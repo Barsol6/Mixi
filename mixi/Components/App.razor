@@ -8,20 +8,18 @@
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="styles/source.css" />
     <link rel="icon" type="image/png" href="assets/favicon.ico" />
-
-    <HeadOutlet />
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100;200;300;400;500;600;700;800;900&amp;display=swap"
           rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="js/pdfjs/web/pdf_viewer.css" rel="stylesheet" />
+    <HeadOutlet @rendermode="InteractiveServer" />
 </head>
 
-<body class="d-flex flex-column h-100">
-    <Routes />
+<body>
+    <Routes @rendermode="InteractiveServer"/>
     <script src="_framework/blazor.web.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    </body>
 
 </html>

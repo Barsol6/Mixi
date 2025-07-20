@@ -1,0 +1,104 @@
+﻿    @page "/pdfViewer/{ID:int}"
+
+    @using mixi.Components.Layout
+    @using mixi.Modules.Database
+    @using mixi.Modules.Pdf
+
+    @inject IPdfRepository PdfRepository
+    @inject IJSRuntime JsRuntime
+    @inject NavigationManager NavigationManager
+
+    @rendermode InteractiveServer
+
+    @layout PdfViewerLayout
+
+    <div class="popup">
+        <div class="closeButton" @onclick="CloseViewer">
+            <div class="closeButton-content">
+                CLOSE
+            </div>
+        </div>
+        
+        <div class="pdfHost">
+            @if (_isLoading)
+            {
+                <p>Loading...</p>
+            }
+            else if (_document == null)
+            {
+                <p>Document not found.</p>
+            }
+            else
+            {
+                <div id="pdfContainer"></div>
+            }
+        </div>
+    </div>
+
+
+
+
+    @code {
+        [Parameter]
+        public int Id { get; set; }
+
+        private PdfDocument? _document;
+        private bool _isLoading = true;
+        private IJSObjectReference? _pdfModule;
+        
+        protected override async Task OnInitializedAsync()
+        {
+            try
+            {
+                _isLoading = true;
+                _document = await PdfRepository.GetByIdAsync(Id);
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Error: {e.Message}");
+            }
+            finally
+            {
+                _isLoading = false;
+            }
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender && _document != null)
+            {
+                try
+                {
+                    _pdfModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
+                        "import", $"./js/pdfViewer.mjs?v={DateTime.Now.Ticks}");
+
+                    var pdfContent = await PdfRepository.GetFileContentAsync(Id);
+                    if (pdfContent != null && _pdfModule != null)
+                    {
+                        var unlockedPdfContent = PdfHelper.UnlockPdfFormFields(pdfContent);
+                        
+                        var base64 = Convert.ToBase64String(unlockedPdfContent);
+                        
+                        await _pdfModule.InvokeVoidAsync("renderPdf", "pdfContainer", base64);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.Error.WriteLine($"Error loading PDF: {e.Message}");
+                }
+            }
+        }
+        
+        private void CloseViewer()
+        {
+            NavigationManager.NavigateTo("/");
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_pdfModule != null)
+            {
+                await _pdfModule.DisposeAsync();
+            }
+        }
+    }

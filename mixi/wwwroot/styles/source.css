@@ -384,3 +384,45 @@ body {
     flex-shrink: inherit;
     border-radius: 20px;
 }
+
+.pdf-viewer-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+.pdfViewer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.pdfViewer .page {
+    margin: 1em auto;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.pdfViewer .textLayer {
+    pointer-events: none;
+}
+
+.pdfViewer .annotationLayer section {
+    pointer-events: auto;
+}
+#pdfContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+.pdfHost {
+    position: relative;
+    width: 100%;
+    height: 100vh; 
+}

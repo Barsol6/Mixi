@@ -1,9 +1,8 @@
 using mixi.Components;
 using mixi.Modules.Database;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
+using mixi.Modules.Pdf;
 using mixi.Modules.Account;
-using mixi.Modules.Generators;
 using mixi.Modules.Generators.CharacterNameGenerator;
 using mixi.Modules.UI;
 
@@ -20,6 +19,8 @@ builder.Services.AddSingleton<ICharacterNameGenerator, CharacterNameGenerator>()
 builder.Services.AddSingleton<CharacterNameGenerator, CharacterNameGenerator>();
 builder.Services.AddScoped<PasswordHash>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPdfRepository, PdfRepository>();
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<SignUp>();
 builder.Services.AddSingleton<SignUpPopup,SignUpPopup>();
 builder.Services.AddSingleton<MenuPopup,MenuPopup>();
@@ -78,12 +79,15 @@ app.MapRazorComponents<App>()
 app.UseStaticFiles();
 
 
-
-using (var scope = app.Services.CreateScope())
+if (app.Environment.IsDevelopment())
 {
-    var db = scope.ServiceProvider.GetRequiredService<MixiDbContext>();
-    db.Database.Migrate();
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<MixiDbContext>();
+        db.Database.Migrate();
+    }
 }
+
 
 app.Run();
 
