@@ -1,50 +1,55 @@
 ﻿using System.Text.Json;
-using Microsoft.AspNetCore.Components;
 using mixi.Modules.Enums;
-using mixi.Modules.UI;
 using SecurityDriven.Core;
 
 namespace mixi.Modules.Generators.CharacterNameGenerator;
-
-public class CharacterNameGenerator:ICharacterNameGenerator
+public class CharacterNameGenerator : ICharacterNameGenerator
 {
-    private NamesElements? _names;
-    private int _firstName;
-    private int _lastName;
-    private int _middleName;
-    private CryptoRandom _cryptoRandom = new CryptoRandom();
-    Exception _exception = new();
-
-    public Task<string> GenerateNameAsync(NameType nameType, bool isNoble, string sex)
-    {
-        var names = File.ReadAllText("Repository/NameRepository/" + sex + "/" + nameType + "Names.json");
-        _names = JsonSerializer.Deserialize<NamesElements>(names);
-
-        if (_names != null)
+        private readonly CryptoRandom _cryptoRandom = new();
+        private readonly JsonSerializerOptions _jsonOptions = new()
         {
-            if (isNoble == false)
+            PropertyNameCaseInsensitive = true,
+            ReadCommentHandling = JsonCommentHandling.Skip
+        };
+
+        public async Task<string> GenerateNameAsync(NameType nameType, bool isNoble, string sex)
+        {
+            try
             {
-                if (_names.FirstNames != null && _names.LastNames != null)
+                if (string.IsNullOrWhiteSpace(sex))
+                    throw new ArgumentException("Sex must be specified", nameof(sex));
+                
+                var filePath = Path.Combine("Repository", "NameRepository", sex, $"{nameType}Names.json");
+                
+                if (!File.Exists(filePath))
+                    throw new FileNotFoundException($"Name data file not found at: {filePath}");
+                
+                await using var fileStream = File.OpenRead(filePath);
+                var names = await JsonSerializer.DeserializeAsync<NamesElements>(fileStream, _jsonOptions) 
+                    ?? throw new InvalidDataException("Deserialized name data is null");
+                
+                if (names.FirstNames == null || names.FirstNames.Count == 0)
+                    throw new InvalidDataException("First names collection is empty or null");
+                
+                if (names.LastNames == null || names.LastNames.Count == 0)
+                    throw new InvalidDataException("Last names collection is empty or null");
+                
+                var firstNameIndex = GetRandomIndex(names.FirstNames.Count);
+                var lastNameIndex = GetRandomIndex(names.LastNames.Count);
+
+                if (isNoble)
                 {
-                    _firstName = (int)_cryptoRandom.NextInt64(0, _names.FirstNames.Count - 1);
-                    _lastName = (int)_cryptoRandom.NextInt64(0, _names.LastNames.Count - 1);
-                    return Task.FromResult(string.Concat(_names.FirstNames[_firstName], " ", _names.LastNames[_lastName]));
+                    var middleNameIndex = GetRandomIndex(names.FirstNames.Count);
+                    return $"{names.FirstNames[firstNameIndex]} {names.FirstNames[middleNameIndex]} {names.LastNames[lastNameIndex]}";
                 }
+
+                return $"{names.FirstNames[firstNameIndex]} {names.LastNames[lastNameIndex]}";
             }
-            else if(isNoble)
+            catch (Exception ex) when (ex is not ArgumentException and not FileNotFoundException)
             {
-                if (_names.FirstNames != null && _names.LastNames != null)
-                {
-                    _firstName = (int)_cryptoRandom.NextInt64(0, _names.FirstNames.Count - 1);
-                    _lastName = (int)_cryptoRandom.NextInt64(0, _names.LastNames.Count - 1);
-                    _middleName = (int)_cryptoRandom.NextInt64(0, _names.FirstNames.Count - 1);
-                    return Task.FromResult(string.Concat(_names.FirstNames[_firstName], " ", _names.FirstNames[_middleName], " ",
-                        _names.FirstNames[_lastName]));
-                }
+                throw new InvalidOperationException($"Name generation failed for {nameType} {sex} (Noble: {isNoble})", ex);
             }
-         
         }
 
-        throw new InvalidOperationException();
-    }
+        private int GetRandomIndex(int maxValue) => (int)_cryptoRandom.NextInt64(0, maxValue - 1);
 }

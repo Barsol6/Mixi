@@ -1,8 +1,8 @@
 {
-  "first_names": [
+  "FirstNames": [
     "Anna", "Sophie", "Maria", "Emma", "Hannah", "Lina", "Mia", "Lea", "Luisa", "Clara", "Charlotte", "Johanna", "Lena", "Amelie", "Helena", "Carla", "Isabella", "Marlene", "Greta", "Jana", "Nele", "Elisa", "Paulina", "Victoria", "Antonia", "Franziska", "Lilli", "Maja", "Annalena", "Theresa", "Silke", "Ingrid", "Ulrike", "Gisela", "Doris", "Brigitte", "Bettina", "Sabine", "Petra", "Martina", "Regina", "Elke", "Sonja", "Anke", "Melanie", "Simone", "Andrea", "Katrin", "Veronika", "Heike", "Stefanie", "Yvonne", "Cornelia", "Rosalie", "Magdalena",  "Wilhelmine", "Frieda", "Henriette", "Gundula", "Edith", "Ilse", "Hedwig", "Beate", "Gertrud", "Hannelore", "Marion", "Christa", "Angelika", "Erika", "Annika", "Kerstin", "Judith", "Elfriede", "Therese"
   ],
-  "last_names": [
+  "LastNames": [
     "Müller", "Schmidt", "Fischer", "Weber", "Wagner", "Becker", "Schäfer", "Hoffmann", "Koch", "Bauer", "Richter", "Klein", "Wolf", "Schröder", "Neumann", "Schwarz", "Zimmermann", "Braun", "Krüger", "Hofmann", "Hartmann", "Lange", "Werner", "Simon", "Schulz", "Meyer", "Lehmann", "Schmid", "Pfeiffer", "Reinhardt", "Voigt", "Kühn", "Graf", "Schuster", "Bergmann", "Keller", "Roth", "Krause", "Jäger", "Seidel", "Arnold", "Winter", "Moser", "Dietrich", "Engel", "Beck", "Lorenz", "Fuchs", "Böttcher", "Reuter", "Hahn", "Ludwig", "Heinrich", "Schreiber", "Brandt", "Busch", "Ebert", "Metzger", "Baumann", "Heller", "Böhme", "Sauer", "Konrad", "Kern", "Götz", "Scholz", "Ott", "Steiner", "Hauser", "Vogel", "Meier", "Bachmann"
   ]
 }
