@@ -13,7 +13,7 @@
 
 ## 🛠️ Tech Stack
 
-- Blazor WebAssembly
+- Blazor Server
 - C#
 - .NET
 - SQLite
@@ -38,7 +38,7 @@ cd mixi
 dotnet run --project mixi
 ```
 
-Then open [http://localhost:5000](http://localhost:5000) (or whatever port it specifies).
+Then open [http://localhost:5171](http://localhost:5171) (or whatever port it specifies).
 
 
 
