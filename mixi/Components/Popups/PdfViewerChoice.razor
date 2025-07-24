@@ -6,6 +6,7 @@
 @inject ProtectedSessionStorage Storage
 @inject IPdfRepository PdfRepository
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
 
 @rendermode InteractiveServer
 
@@ -31,11 +32,15 @@
                @foreach (var document in documents)
                {
                    <div class="data-box">
-                       <div class="logButton" @onclick="() => ViewDocument(document.Id)">
-                           <span class="logButton-content">
+                       <div class="logButton" >
+                           <span class="logButton-content" @onclick="() => ViewDocument(document.Id)">
                                @document.Name
                            </span>
+                           <span class="logButton-content" @onclick="() => DeletePdf(document.Id)">
+                               DELETE
+                           </span>
                        </div>
+                      
                    </div>
                }
            </div>
@@ -92,6 +97,40 @@
     {
         MenuPopup.IsVisible = false;
         await Storage.SetAsync("MenuIsVisible", false);
+    }
+
+    private async void DeletePdf(int id)
+    {
+
+        if (!await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this character sheet? This cannot be undone."))
+        {
+            return;
+        }
+        _isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var success = await PdfRepository.DeleteAsync(id);
+
+            if (success)
+            {
+                documents = await PdfRepository.GetAllAsync();
+            }
+            else
+            {
+                Console.Error.WriteLine($"Failed to delete document with ID: {id}");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Error deleting document: {id}");
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
     }
 
 }
