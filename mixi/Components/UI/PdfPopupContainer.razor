@@ -12,7 +12,6 @@
 
 
 <div class="@(PdfPopup.IsVisible ? "popup" : "hidden")">
-    <div class="pdfCloseButton" @onclick="(ClosePopup)">CLOSE</div>
     @if (ComponentType is not null)
     {
         <DynamicComponent Type="@ComponentType" Parameters="@Parameters" @ref="_component"/>
@@ -65,11 +64,7 @@
         this.PdfPopup.IsVisibleChange -= StateHasChanged;
     }
 
-    private async void ClosePopup()
-    {
-        PdfPopup.IsVisible = false;
-        await Storage.SetAsync("PdfPopupIsVisible", false);
-    }
+
 
 
 }

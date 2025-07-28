@@ -183,6 +183,14 @@ body {
     color:red;
 }
 
+.closePdfButton-content:hover{
+    border-radius: inherit;
+    inset: 1px;
+    transition: 0.4s;
+    z-index: 0;
+    color:red;
+}
+
 
 
 
@@ -205,6 +213,19 @@ body {
     align-items: center;
     justify-content: center;
     background-color: black;
+    letter-spacing: 5px;
+    font-size:1.2rem ;
+    transition: .4s;
+}
+.closePdfButton-content{
+    color: darkred;
+    border-radius: inherit;
+    inset: 1px;
+    top: 0;
+    right: 0;
+    position: absolute;
+    display: flex;
+    background-color: rgba(0, 0, 0, 0);
     letter-spacing: 5px;
     font-size:1.2rem ;
     transition: .4s;
@@ -234,7 +255,6 @@ body {
     line-height: 2.5rem;
     color: white;
     font-weight: bold;
-    background-color: black;
     justify-content: center;
     opacity: 1;
     display: flex;
@@ -266,13 +286,13 @@ body {
     right: 0;
 }
 .pdfCloseButton{
-    color: black;
+    color: red;
     padding: 2px;
     transition: 0.4s;
     cursor: pointer;
-    position: fixed;
-    top: 10px;
-    right: 700px;
+    position: absolute;
+    top: 0;
+    right: 0;
     font-size: large;
 }
 
@@ -284,12 +304,13 @@ body {
     position: fixed;
     top: 0;
     right: 0;
+    right: 0;
 }
 
 .pdfCloseButton:hover{
     color: darkred;
     transition: 0.4s;
-    font-size: xxx-large;
+    font-size: xx-large;
 }
 
 .nameGenChoicePanel{
