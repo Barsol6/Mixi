@@ -1,16 +1,16 @@
-﻿t@page "/uploadPdf"
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using mixi.Modules.Database
 @using mixi.Modules.Pdf
+@using mixi.Modules.UI
 
 @rendermode InteractiveServer
 
 @inject IPdfRepository PdfRepository
-@inject NavigationManager NavigationManager
+@inject PdfPopup PdfPopup
+@inject ProtectedSessionStorage Storage
 
-<div class="popup">
-    <div class="closeButton" @onclick="CloseUploader">
-        <span >CLOSE</span>
-    </div>
+@implements IDisposable
+
     <div class="pdfChoicePanel">
         <h3>Send Character Sheet</h3>
         <div class="data-box">
@@ -27,15 +27,29 @@
             <div class="logButton" @onclick="@(async ()=> { if (_fileSelected && !_isUploading) await UploadFile(); })" style="@(_fileSelected && !_isUploading ? "" : "opacity: 0.5; cursor: not-allowed;")">
                 <span class="logButton-content">SEND</span>
             </div>
+            <div class="data-box">
+                <div class="logButton">
+                    <div class="closeButton-content " @onclick="() => ClosePopup()">
+                        CLOSE
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 @code {
+    
     private IBrowserFile _selectedFile;
     private bool _fileSelected = false;
     private bool _isUploading = false;
     private string _errorMessage = String.Empty;
 
+    protected override void OnInitialized()
+    {
+        this.PdfPopup.PdfNameChanged += () => InvokeAsync(StateHasChanged);
+        this.PdfPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        base.OnInitialized();
+    }
+    
     private void HandleFileSelected(InputFileChangeEventArgs e)
     {
         _selectedFile = e.File;
@@ -73,8 +87,7 @@
             };
 
             var id = await PdfRepository.SaveAsync(document, memoryStream.ToArray());
-
-            NavigationManager.NavigateTo($"/pdfViewer/{id}");
+            PdfPopup.PdfName = id;
         }
         catch (Exception e)
         {
@@ -86,10 +99,16 @@
             StateHasChanged();
         }
     }
-    private void CloseUploader()
+    private async void ClosePopup()
     {
-        NavigationManager.NavigateTo("/home");
-        StateHasChanged();
+        PdfPopup.IsVisible = false;
+        await Storage.SetAsync("PdfPopupIsVisible", false);
+    }
+    
+    public void Dispose()
+    {
+        this.PdfPopup.IsVisibleChange -= StateHasChanged;
+        this.PdfPopup.PdfNameChanged -= StateHasChanged;
     }
 
 }

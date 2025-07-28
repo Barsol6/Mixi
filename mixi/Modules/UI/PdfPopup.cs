@@ -2,11 +2,11 @@
 
 public class PdfPopup
 {
-    private string _pdfName = String.Empty;
+    private int _pdfName;
     
     public event Action? PdfNameChanged;
     
-    public string PdfName
+    public int PdfName
     {
         get => _pdfName;
         set

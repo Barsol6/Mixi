@@ -1,24 +1,19 @@
-﻿    @page "/pdfViewer/{ID:int}"
-
-    @using mixi.Components.Layout
+﻿    @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage    @using mixi.Components.Layout
     @using mixi.Modules.Database
     @using mixi.Modules.Pdf
+    @using mixi.Modules.UI
 
     @inject IPdfRepository PdfRepository
     @inject IJSRuntime JsRuntime
-    @inject NavigationManager NavigationManager
+    @inject PdfPopup PdfPopup
+    @inject ProtectedSessionStorage Storage
 
     @rendermode InteractiveServer
 
+    @implements IDisposable
+    
     @layout PdfViewerLayout
-
     <div class="popup">
-        <div class="closeButton" @onclick="CloseViewer">
-            <div class="closeButton-content">
-                CLOSE
-            </div>
-        </div>
-        
         <div class="pdfHost">
             @if (_isLoading)
             {
@@ -33,15 +28,19 @@
                 <div id="pdfContainer"></div>
             }
         </div>
+        <div >
+            <div class="logButton">
+                <div class="closePdfButton-content " @onclick="() => ClosePopup()">
+                    CLOSE
+                </div>
+            </div>
+        </div>
     </div>
 
 
 
 
     @code {
-        [Parameter]
-        public int Id { get; set; }
-
         private PdfDocument? _document;
         private bool _isLoading = true;
         private IJSObjectReference? _pdfModule;
@@ -51,7 +50,7 @@
             try
             {
                 _isLoading = true;
-                _document = await PdfRepository.GetByIdAsync(Id);
+                _document = await PdfRepository.GetByIdAsync(PdfPopup.PdfName);
             }
             catch (Exception e)
             {
@@ -72,7 +71,7 @@
                     _pdfModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
                         "import", $"./js/pdfViewer.mjs?v={DateTime.Now.Ticks}");
 
-                    var pdfContent = await PdfRepository.GetFileContentAsync(Id);
+                    var pdfContent = await PdfRepository.GetFileContentAsync(PdfPopup.PdfName);
                     if (pdfContent != null && _pdfModule != null)
                     {
                         var unlockedPdfContent = PdfHelper.UnlockPdfFormFields(pdfContent);
@@ -89,10 +88,7 @@
             }
         }
         
-        private void CloseViewer()
-        {
-            NavigationManager.NavigateTo("/");
-        }
+    
 
         public async ValueTask DisposeAsync()
         {
@@ -100,5 +96,17 @@
             {
                 await _pdfModule.DisposeAsync();
             }
+        }
+        
+        public void Dispose()
+        {
+            this.PdfPopup.IsVisibleChange -= StateHasChanged;
+            this.PdfPopup.PdfNameChanged -= StateHasChanged;
+        }
+        
+        private async void ClosePopup()
+        {
+            PdfPopup.IsVisible = false;
+            await Storage.SetAsync("PdfPopupIsVisible", false);
         }
     }

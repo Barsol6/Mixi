@@ -6,10 +6,9 @@
         console.error("PDF container not found:", containerId);
         return;
     }
-
-    // Clear and prepare container
+    
     mainContainer.innerHTML = '';
-    mainContainer.style.position = 'absolute'; // Ensure this is set
+    mainContainer.style.position = 'absolute'; 
     mainContainer.style.width = '100%';
     mainContainer.style.height = '100%';
 
@@ -25,7 +24,6 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdfjs/pdf.worker.mjs';
 
         const l10n = new GenericL10n("en-US");
-        // Convert base64 to Uint8Array
         const binaryString = atob(base64Data);
         const bytes = new Uint8Array(binaryString.length);
         for (let i = 0; i < binaryString.length; i++) {
@@ -34,8 +32,7 @@
 
         const eventBus = new EventBus();
         const linkService = new PDFLinkService({ eventBus });
-
-        // Create viewer with proper options
+        
         const pdfViewer = new PDFViewer({
             container: mainContainer,
             viewer: viewerDiv,
@@ -48,8 +45,7 @@
         });
 
         linkService.setViewer(pdfViewer);
-
-        // Load document
+        
         const pdfDoc = await pdfjsLib.getDocument({
             data: bytes,
             enableXfa: true
