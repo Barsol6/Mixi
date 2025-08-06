@@ -1,124 +1,248 @@
-﻿    @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage    @using mixi.Components.Layout
-    @using mixi.Modules.Database
-    @using mixi.Modules.Pdf
-    @using mixi.Modules.UI
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using mixi.Components.Layout
+@using mixi.Modules.Database
+@using mixi.Modules.Pdf
+@using mixi.Modules.UI
 
-    @inject IPdfRepository PdfRepository
-    @inject IJSRuntime JsRuntime
-    @inject PdfPopup PdfPopup
-    @inject ProtectedSessionStorage Storage
+@inject IPdfRepository PdfRepository
+@inject IJSRuntime JsRuntime
+@inject PdfPopup PdfPopup
+@inject ProtectedSessionStorage Storage
 
-    @rendermode InteractiveServer
+@rendermode InteractiveServer
+@implements IDisposable
+@layout PdfViewerLayout
 
-    @implements IDisposable
-    
-    @layout PdfViewerLayout
-    <div class="popup">
-        <div class="pdfHost">
-            @if (_isLoading)
+<div class="popup">
+    <div class="pdfHost">
+        @if (_isLoading)
+        {
+            <p>Loading...</p>
+        }
+        else if (_document == null)
+        {
+            <p>Document not found.</p>
+        }
+        else
+        {
+            <div id="pdfContainer" style="width:100%;height:100%;"></div>
+        }
+    </div>
+    <div>
+        <div class="logButton" @onclick="SaveChanges">
+            <div class="logButton-content">SAVE</div>
+        </div>
+        <div class="logButton" @onclick="ClosePopup">
+            <div class="closePdfButton-content">CLOSE</div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private PdfDocument? _document;
+    private bool _isLoading = true;
+    private IJSObjectReference? _pdfModule;
+    private bool _isSaving = false;
+    private string _statusMessage = string.Empty;
+    private bool _shouldRenderPdf = false;
+    private bool _isDisposed = false;
+
+
+    private void Log(string message) => Console.WriteLine($"[C# {DateTime.Now:HH:mm:ss.fff}] {message}");
+
+    protected override void OnInitialized()
+    {
+        Log("OnInitialized: Subscribing to events.");
+        PdfPopup.PdfNameChanged += OnPdfNameChanged;
+        PdfPopup.IsVisibleChange += OnVisibilityChanged;
+    }
+
+    private async void OnPdfNameChanged() => await InvokeAsync(LoadDocument);
+    private async void OnVisibilityChanged() => await InvokeAsync(() => 
+    {
+        if (!PdfPopup.IsVisible) ClosePopup();
+        else LoadDocument();
+    });
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDocument();
+    }
+
+    private async Task LoadDocument()
+    {
+        Log("LoadDocument: Starting...");
+        if (!PdfPopup.IsVisible || PdfPopup.PdfName <= 0)
+        {
+            Log("LoadDocument: Bailing out (not visible or no ID).");
+            return;
+        }
+
+        try
+        {
+            _isLoading = true;
+            _document = null; 
+            StateHasChanged();
+            Log("LoadDocument: UI state updated to Loading.");
+
+            _document = await PdfRepository.GetByIdAsync(PdfPopup.PdfName);
+            
+            if (_document != null)
             {
-                <p>Loading...</p>
-            }
-            else if (_document == null)
-            {
-                <p>Document not found.</p>
+                Log($"LoadDocument: Found document '{_document.Name}'. HasFormData: {!string.IsNullOrWhiteSpace(_document.FormData)}. Setting flag to render.");
+                _shouldRenderPdf = true;
             }
             else
             {
-                <div id="pdfContainer"></div>
+                Log("LoadDocument: Document not found in repository.");
             }
-        </div>
-        <div >
-            <div class="logButton">
-                <div class="closePdfButton-content " @onclick="() => ClosePopup()">
-                    CLOSE
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-
-    @code {
-        private PdfDocument? _document;
-        private bool _isLoading = true;
-        private IJSObjectReference? _pdfModule;
-        
-        protected override void OnInitialized()
+        }
+        catch (Exception ex)
         {
-            this.PdfPopup.PdfNameChanged += () => InvokeAsync(StateHasChanged);
-            this.PdfPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
-            base.OnInitialized();
+            Log($"LoadDocument: ERROR - {ex.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+            Log("LoadDocument: Finished. UI state updated.");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_document != null && _shouldRenderPdf)
+        {
+            Log("OnAfterRenderAsync: Condition met. Starting render/load process.");
+            _shouldRenderPdf = false;
+            
+            await RenderPdf();
+            
+            if (!_isDisposed && !string.IsNullOrWhiteSpace(_document.FormData) && _document.FormData != "{}")
+            {
+                Log("OnAfterRenderAsync: Document has form data. Will call LoadFormData.");
+                await LoadFormData();
+            }
+            else
+            {
+                Log("OnAfterRenderAsync: Document has no form data to load, or component is disposed.");
+            }
+        }
+    }
+
+    private async Task LoadFormData()
+    {
+        Log("LoadFormData: Starting.");
+        if (_isDisposed || _pdfModule == null || _document == null || string.IsNullOrWhiteSpace(_document.FormData))
+        {
+            Log("LoadFormData: Bailing out (disposed or missing module/document/data).");
+            return;
         }
         
-        protected override async Task OnInitializedAsync()
+        try
+        {
+            Log("LoadFormData: Starting to poll for form readiness...");
+            var maxWaitTime = TimeSpan.FromSeconds(5);
+            var pollInterval = TimeSpan.FromMilliseconds(100);
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+
+            bool isReady = false;
+            while (sw.Elapsed < maxWaitTime && !_isDisposed)
+            {
+                isReady = await _pdfModule.InvokeAsync<bool>("isFormReady", "pdfContainer");
+                Log($"LoadFormData: Polling... isFormReady = {isReady}");
+                if (isReady) break;
+                await Task.Delay(pollInterval);
+            }
+            sw.Stop();
+            Log($"LoadFormData: Polling finished after {sw.ElapsedMilliseconds}ms. isFormReady = {isReady}");
+
+            if (isReady && !_isDisposed)
+            {
+                Log("LoadFormData: Form is ready. Calling JS 'loadFormDataIntoPdf'.");
+                await _pdfModule.InvokeVoidAsync("loadFormDataIntoPdf", "pdfContainer", _document.FormData);
+                Log("LoadFormData: JS 'loadFormDataIntoPdf' call finished.");
+            }
+            else if(!isReady)
+            {
+                Log("LoadFormData WARNING: Timed out waiting for form elements to appear in the DOM.");
+            }
+        }
+        catch (Exception ex) { if (!_isDisposed) Log($"LoadFormData ERROR: {ex.Message}"); }
+    }
+    
+    private async Task RenderPdf()
+    {
+        Log("RenderPdf: Starting.");
+        if (_isDisposed || _document == null) return;
+        try
+        {
+            _pdfModule ??= await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/pdfViewer.mjs");
+            var pdfContent = await PdfRepository.GetFileContentAsync(_document.Id);
+            if (pdfContent == null) return;
+            var unlockedContent = PdfHelper.UnlockPdfFormFields(pdfContent);
+            var base64 = Convert.ToBase64String(unlockedContent);
+            
+            Log("RenderPdf: Calling JS 'renderPdf' and waiting for promise...");
+            await _pdfModule.InvokeAsync<object>("renderPdf", "pdfContainer", base64);
+            Log("RenderPdf: JS 'renderPdf' promise resolved.");
+        }
+        catch (Exception ex) { if (!_isDisposed) Log($"RenderPdf ERROR: {ex.Message}"); }
+    }
+
+    private async Task SaveChanges()
+    {
+        if (_isSaving || _pdfModule == null || _document == null) return;
+
+        _isSaving = true;
+        _statusMessage = "Saving...";
+        StateHasChanged();
+
+        try
+        {
+            var formData = await _pdfModule.InvokeAsync<string>("getFormDataFromPdf", "pdfContainer");
+            if (!string.IsNullOrEmpty(formData))
+            {
+                await PdfRepository.UpdateFormDatasAsync(_document.Id, formData);
+                _statusMessage = "Saved successfully";
+            }
+        }
+        catch (Exception ex)
+        {
+            _statusMessage = $"Error saving: {ex.Message}";
+            Console.Error.WriteLine($"Save error: {ex.Message}");
+        }
+        finally
+        {
+            _isSaving = false;
+            StateHasChanged();
+            await Task.Delay(3000);
+            _statusMessage = string.Empty;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ClosePopup()
+    {
+        if (_pdfModule != null)
         {
             try
             {
-                _isLoading = true;
-                _document = await PdfRepository.GetByIdAsync(PdfPopup.PdfName);
+                await _pdfModule.InvokeVoidAsync("cleanupPdfViewer", "pdfContainer");
             }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine($"Error: {e.Message}");
-            }
-            finally
-            {
-                _isLoading = false;
-            }
+            catch {}
         }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (_document != null)
-            {
-                try
-                {
-                    _pdfModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
-                        "import", $"./js/pdfViewer.mjs?v={DateTime.Now.Ticks}");
-                    
-                    var pdfContent = await PdfRepository.GetFileContentAsync(PdfPopup.PdfName);
-                    Console.WriteLine(PdfPopup.PdfName+"    "+ pdfContent);
-                    if (pdfContent != null && _pdfModule != null)
-                    {
-                        var unlockedPdfContent = PdfHelper.UnlockPdfFormFields(pdfContent);
-                        
-                        var base64 = Convert.ToBase64String(unlockedPdfContent);
-                        
-                        await _pdfModule.InvokeVoidAsync("renderPdf", "pdfContainer", base64);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.Error.WriteLine($"Error loading PDF: {e.Message}");
-                }
-            }
-        }
-        
-    
-
-        public async ValueTask DisposeAsync()
-        {
-            if (_pdfModule != null)
-            {
-                await _pdfModule.DisposeAsync();
-            }
-        }
-        
-        public void Dispose()
-        {
-            this.PdfPopup.IsVisibleChange -= StateHasChanged;
-            this.PdfPopup.PdfNameChanged -= StateHasChanged;
-        }
-        
-        private async void ClosePopup()
-        {
-            if (_pdfModule != null)
-            {
-                await _pdfModule.DisposeAsync();
-            }
-            PdfPopup.IsVisible = false;
-            await Storage.SetAsync("PdfPopupIsVisible", false);
-        }
+        PdfPopup.IsVisible = false;
+        await Storage.SetAsync("PdfPopupIsVisible", false);
     }
+
+
+    public void Dispose()
+    {
+        if (_isDisposed) return;
+        _isDisposed = true;
+        Log("Dispose: Component is being disposed.");
+        PdfPopup.PdfNameChanged -= OnPdfNameChanged;
+        PdfPopup.IsVisibleChange -= OnVisibilityChanged;
+    }
+}

@@ -66,13 +66,13 @@ public class FileStorageService: IFileStorageService
         
             _logger.LogInformation("Looking for file at: {FullPath}", fullPath);
             
-            if (!File.Exists(filePath))
+            if (!File.Exists(fullPath))
             {
-                _logger.LogWarning($"File {filePath} not found");
+                _logger.LogWarning($"File {filePath} not found at {fullPath}");
                 return null;
             }
 
-            return await File.ReadAllBytesAsync(filePath);
+            return await File.ReadAllBytesAsync(fullPath);
         }
         catch (Exception e)
         {
