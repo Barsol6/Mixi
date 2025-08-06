@@ -45,6 +45,13 @@
         private bool _isLoading = true;
         private IJSObjectReference? _pdfModule;
         
+        protected override void OnInitialized()
+        {
+            this.PdfPopup.PdfNameChanged += () => InvokeAsync(StateHasChanged);
+            this.PdfPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+            base.OnInitialized();
+        }
+        
         protected override async Task OnInitializedAsync()
         {
             try
@@ -64,14 +71,15 @@
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            if (firstRender && _document != null)
+            if (_document != null)
             {
                 try
                 {
                     _pdfModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
                         "import", $"./js/pdfViewer.mjs?v={DateTime.Now.Ticks}");
-
+                    
                     var pdfContent = await PdfRepository.GetFileContentAsync(PdfPopup.PdfName);
+                    Console.WriteLine(PdfPopup.PdfName+"    "+ pdfContent);
                     if (pdfContent != null && _pdfModule != null)
                     {
                         var unlockedPdfContent = PdfHelper.UnlockPdfFormFields(pdfContent);
@@ -106,6 +114,10 @@
         
         private async void ClosePopup()
         {
+            if (_pdfModule != null)
+            {
+                await _pdfModule.DisposeAsync();
+            }
             PdfPopup.IsVisible = false;
             await Storage.SetAsync("PdfPopupIsVisible", false);
         }
