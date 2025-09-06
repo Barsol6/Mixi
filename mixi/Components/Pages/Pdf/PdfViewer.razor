@@ -230,7 +230,11 @@
             {
                 await _pdfModule.InvokeVoidAsync("cleanupPdfViewer", "pdfContainer");
             }
-            catch {}
+            catch(Exception e)
+            {
+                Log($"Failed to close popup: {e}");
+            }
+            
         }
         PdfPopup.IsVisible = false;
         await Storage.SetAsync("PdfPopupIsVisible", false);
