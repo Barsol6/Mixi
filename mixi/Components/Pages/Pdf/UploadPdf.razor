@@ -13,36 +13,46 @@
 
     <div class="pdfChoicePanel">
         <h3>Send Character Sheet</h3>
-        <div class="data-box">
-            <InputFile OnChange="@(e => HandleFileSelected(e))" accept=".pdf" class="logButton"/>
-            
-            @if (_isUploading)
-            {
-                <p>Uploading...</p>
-            }
-            @if (!string.IsNullOrEmpty(_errorMessage))
-            {
-                <p>@_errorMessage</p>
-            }
-            <div class="logButton" @onclick="@(async ()=> { if (_fileSelected && !_isUploading) await UploadFile(); })" style="@(_fileSelected && !_isUploading ? "" : "opacity: 0.5; cursor: not-allowed;")">
-                <span class="logButton-content">SEND</span>
-            </div>
-            <div class="data-box">
-                <div class="logButton">
-                    <div class="closeButton-content " @onclick="() => ClosePopup()">
-                        CLOSE
+        <div class="login-box items-center">
+            <div class="login">
+                <div class="data-box">
+                    <InputFile OnChange="@(e => HandleFileSelected(e))" accept=".pdf" />
+                </div>
+                <div class="data-box">
+                    <input @bind="_fileName" type="text" required/>
+                    <span>PDF Name</span>
+                </div>
+                @if (_isUploading)
+                {
+                    <p>Uploading...</p>
+                }
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <p>@_errorMessage</p>
+                }
+                <div class="data-box">
+                    <div class="logButton" @onclick="@(async () => { if (_fileSelected && !_isUploading && _fileName!=String.Empty) await UploadFile(); })" style="@(_fileSelected && !_isUploading ? "" : "opacity: 0.5; cursor: not-allowed;")">
+                        <span class="logButton-content">SEND</span>
+                    </div>
+                </div>
+                <div class="data-box">
+                    <div class="logButton">
+                        <div class="closeButton-content " @onclick="() => ClosePopup()">
+                            CLOSE
+                        </div>
                     </div>
                 </div>
             </div>
+            </div>
         </div>
-    </div>
 @code {
     
     private IBrowserFile _selectedFile;
     private bool _fileSelected = false;
     private bool _isUploading = false;
     private string _errorMessage = String.Empty;
-
+    private string _fileName = String.Empty;
+    
     protected override void OnInitialized()
     {
         this.PdfPopup.PdfNameChanged += () => InvokeAsync(StateHasChanged);
@@ -81,7 +91,7 @@
 
             var document = new PdfDocument
             {
-                Name = _selectedFile.Name,
+                Name = _fileName,
                 FormData = "{}",
                 Content = memoryStream.ToArray()
             };
@@ -96,6 +106,8 @@
         finally
         {
             _isUploading = false;
+            ClosePopup();
+            
             StateHasChanged();
         }
     }
