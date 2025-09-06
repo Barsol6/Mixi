@@ -106,6 +106,8 @@
         finally
         {
             _isUploading = false;
+            ClosePopup();
+            
             StateHasChanged();
         }
     }
