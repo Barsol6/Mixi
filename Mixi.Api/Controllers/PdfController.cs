@@ -2,6 +2,8 @@
 using Mixi.Api.Modules.Pdf;
 using Mixi.Api.Modules.Database;
 using Mixi.Api.Modules.Database.Repositories.PdfRepositories;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Mixi.Api.Controllers;
 
@@ -92,9 +94,46 @@ namespace Mixi.Api.Controllers;
 
             return NoContent();
         }
+
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PdfListItemDto>>> GetPdfList()
+        {
+            var documents = await _pdfRepository.GetAllAsync();
+            
+            if (documents == null)
+            {
+                return Ok(new List<PdfListItemDto>());
+            }
+            
+            return Ok(documents.Select(doc => new PdfListItemDto
+            {
+                Id = doc.Id,
+                Name = doc.Name
+            }).ToList());
+        }
+        
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePdf(int id)
+        {
+            var success = await _pdfRepository.DeleteAsync(id);
+
+            if (!success)
+            {
+                return NotFound($"Document with ID {id} not found");
+            }
+            
+            return NoContent();
+        }
         
         public class FormDataUpdateDto
         {
             public string Data { get; set; }
+        }
+        
+        public class PdfListItemDto
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
         }
     }

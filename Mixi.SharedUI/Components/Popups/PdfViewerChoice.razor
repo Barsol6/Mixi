@@ -1,12 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@using mixi.Components.Pages.Pdf
-@using mixi.Components.UI
-@using mixi.Modules.Database
-@using mixi.Modules.Pdf
-@using mixi.Modules.UI
+@using Mixi.Api.Modules.Database.Repositories.PdfRepositories
+@using Mixi.Api.Modules.Pdf
+@using Mixi.Api.Modules.UI
+@using Mixi.SharedUI.Components.Pages.Pdf
+@using Mixi.SharedUI.Components.UI
 @inject MenuPopup MenuPopup
 @inject ProtectedSessionStorage Storage
-@inject IPdfRepository PdfRepository
+@inject HttpClient Http
 @inject IJSRuntime JsRuntime
 @inject PdfPopup PdfPopup
 @rendermode InteractiveServer
@@ -65,8 +65,14 @@
 <PdfPopupContainer @ref="_popup"> </PdfPopupContainer>
 
 @code {
+    private class PdfListItemDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+    
     private PdfPopupContainer? _popup;
-    private List<PdfDocument>? _documents;
+    private List<PdfListItemDto>? _documents;
     private bool _isLoading = true;
 
     protected override void OnInitialized()
@@ -79,28 +85,16 @@
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            _isLoading = true;
-            _documents = await PdfRepository.GetAllAsync();
-        }
-        catch (Exception e)
-        {
-            Console.Error.WriteLine($"Error: {e.Message}");
-        }
-        finally
-        {
-            _isLoading = false;
-            StateHasChanged();
-        }
+        await LoadDocuments();  
     }
 
-    private async void LoadDocuments()
+    private async Task LoadDocuments()
     {
         try
         {
             _isLoading = true;
-            _documents = await PdfRepository.GetAllAsync();
+            StateHasChanged();
+            _documents = await Http.GetFromJsonAsync<List<PdfListItemDto>>("api/pdfs");
         }
         catch (Exception e)
         {
@@ -137,11 +131,11 @@
 
         try
         {
-            var success = await PdfRepository.DeleteAsync(id);
+            var response = await Http.DeleteAsync($"api/pdfs/{id}");
 
-            if (success)
+            if (response.IsSuccessStatusCode)
             {
-                _documents = await PdfRepository.GetAllAsync();
+                await InvokeAsync(LoadDocuments);
             }
             else
             {
