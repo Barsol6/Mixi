@@ -72,6 +72,38 @@
       <_ContentIncludedByDefault Remove="wwwroot\js\pdfjs\pdf_viewer.mjs" />
       <_ContentIncludedByDefault Remove="wwwroot\js\pdfjs\web\pdf_viewer.css" />
       <_ContentIncludedByDefault Remove="wwwroot\js\pdfjs\web\pdf_viewer.mjs" />
+      <_ContentIncludedByDefault Remove="Components\App.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\BaseLayout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\Footer.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\LoginLayout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\MenuLayout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\NavMenu.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\PdfViewerLayout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\SectionLayout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Error.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Index.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\LoginPage.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Menu.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Pdf\PdfViewer.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Pdf\UploadPdf.razor" />
+      <_ContentIncludedByDefault Remove="Components\Popups\NameGenerator.razor" />
+      <_ContentIncludedByDefault Remove="Components\Popups\PdfViewerChoice.razor" />
+      <_ContentIncludedByDefault Remove="Components\Popups\SignIn.razor" />
+      <_ContentIncludedByDefault Remove="Components\Routes.razor" />
+      <_ContentIncludedByDefault Remove="Components\UI\MenuPopupContainer.razor" />
+      <_ContentIncludedByDefault Remove="Components\UI\PdfPopupContainer.razor" />
+      <_ContentIncludedByDefault Remove="Components\UI\PopupContainer.razor" />
+      <_ContentIncludedByDefault Remove="Components\_Imports.razor" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\pdfViewer.mjs" />
+      <_ContentIncludedByDefault Remove="Repository\NameRepository\Female\EnglishFemaleNames.json" />
+      <_ContentIncludedByDefault Remove="Repository\NameRepository\Female\FrenchFemaleNames.json" />
+      <_ContentIncludedByDefault Remove="Repository\NameRepository\Female\GermanFemaleNames.json" />
+      <_ContentIncludedByDefault Remove="Repository\NameRepository\Female\ItalianFemaleNames.json" />
+      <_ContentIncludedByDefault Remove="Repository\NameRepository\Male\EnglishMaleNames.json" />
+      <_ContentIncludedByDefault Remove="Repository\NameRepository\Male\FrenchMaleNames.json" />
+      <_ContentIncludedByDefault Remove="Repository\NameRepository\Male\GermanMaleNames.json" />
+      <_ContentIncludedByDefault Remove="Repository\NameRepository\Male\ItalianMaleNames.json" />
     </ItemGroup>
 
     <ItemGroup>
@@ -90,8 +122,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Uploads\" />
-      <Folder Include="Uploads\Pdfs\" />
+      <Folder Include="wwwroot\" />
     </ItemGroup>
 
   <Target Name="NpmInstall" BeforeTargets="CopyPdfJsFiles">

@@ -15,4 +15,34 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.14"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <AdditionalFiles Include="Components\App.razor" />
+      <AdditionalFiles Include="Components\Layout\BaseLayout.razor" />
+      <AdditionalFiles Include="Components\Layout\Footer.razor" />
+      <AdditionalFiles Include="Components\Layout\LoginLayout.razor" />
+      <AdditionalFiles Include="Components\Layout\MainLayout.razor" />
+      <AdditionalFiles Include="Components\Layout\MenuLayout.razor" />
+      <AdditionalFiles Include="Components\Layout\NavMenu.razor" />
+      <AdditionalFiles Include="Components\Layout\PdfViewerLayout.razor" />
+      <AdditionalFiles Include="Components\Layout\SectionLayout.razor" />
+      <AdditionalFiles Include="Components\Pages\Error.razor" />
+      <AdditionalFiles Include="Components\Pages\Index.razor" />
+      <AdditionalFiles Include="Components\Pages\LoginPage.razor" />
+      <AdditionalFiles Include="Components\Pages\Menu.razor" />
+      <AdditionalFiles Include="Components\Pages\Pdf\PdfViewer.razor" />
+      <AdditionalFiles Include="Components\Pages\Pdf\UploadPdf.razor" />
+      <AdditionalFiles Include="Components\Popups\NameGenerator.razor" />
+      <AdditionalFiles Include="Components\Popups\PdfViewerChoice.razor" />
+      <AdditionalFiles Include="Components\Popups\SignIn.razor" />
+      <AdditionalFiles Include="Components\Routes.razor" />
+      <AdditionalFiles Include="Components\UI\MenuPopupContainer.razor" />
+      <AdditionalFiles Include="Components\UI\PdfPopupContainer.razor" />
+      <AdditionalFiles Include="Components\UI\PopupContainer.razor" />
+      <AdditionalFiles Include="Components\_Imports.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Mixi.Api\Mixi.Api.csproj" />
+    </ItemGroup>
+
 </Project>
