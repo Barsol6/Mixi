@@ -1,4 +1,6 @@
-﻿namespace Mixi.Api.Modules.Pdf;
+﻿using iTextSharp.text.pdf;
+
+namespace Mixi.Api.Modules.Pdf;
 
 public static class PdfHelper
 {
