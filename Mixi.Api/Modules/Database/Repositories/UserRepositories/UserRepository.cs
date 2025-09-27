@@ -1,4 +1,5 @@
-﻿using Mixi.Api.Modules.Users;
+﻿using Microsoft.EntityFrameworkCore;
+using Mixi.Api.Modules.Users;
 
 namespace Mixi.Api.Modules.Database.Repositories.UserRepositories;
 

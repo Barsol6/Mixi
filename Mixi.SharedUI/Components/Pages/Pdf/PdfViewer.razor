@@ -1,15 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Mixi.SharedUI.Components.Layout
-@using Mixi.Api.Modules.Database.Repositories.PdfRepositories
-@using Mixi.Api.Modules.Pdf
-@using Mixi.Api.Modules.UI
+
+@using Mixi.Shared.Models.UI
 
 @inject HttpClient Http
 @inject IJSRuntime JsRuntime
 @inject PdfPopup PdfPopup
 @inject ProtectedSessionStorage Storage
 
-@rendermode InteractiveServer
 @implements IDisposable
 @layout PdfViewerLayout
 
@@ -86,7 +84,7 @@
     {
         try
         {
-            var formData = await Http.GetStringAsync($"api/pdfs/{_documentId}/formdata");
+            var formData = await Http.GetStringAsync($"api/pdfs/{_documentId}/getformdata");
 
             if (_pdfModule != null && !string.IsNullOrWhiteSpace(formData) && formData != "{}")
             {
@@ -131,7 +129,7 @@
             if (!string.IsNullOrEmpty(formDataString))
             {
                 var payload = new { Data = formDataString };
-                await Http.PutAsJsonAsync($"api/pdfs/{_documentId}/formdata", payload);
+                await Http.PutAsJsonAsync($"api/pdfs/{_documentId}/updateformdata", payload);
                 _statusMessage = "Saved successfully";
             }
         }

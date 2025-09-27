@@ -1,40 +1,37 @@
-﻿@using Mixi.Api.Modules.Account
-@using Mixi.Api.Modules.UI
-@using mixi.Modules.Account
-@using mixi.Modules.UI
-
-@inject SignUp SignUp
-@inject SignUpPopup SignUpPop
+﻿@using System.Net
+@using Mixi.Shared.Models.Account
 
 
+@inject HttpClient Http
+@inject Account Account
 
-@rendermode InteractiveServer
+
 
 <div class="signInPanel">
     <div class="title">
            <div>@_loginStatement</div>
     </div>
     <div class="data-box">
-        <input type="text" @bind="SignUpPop.Username" @onkeyup="Enter" required="required"/>
+        <input type="text" @bind="Account.Username" @onkeyup="Enter" required="required"/>
         <label> USERNAME </label>
         <br/>
     </div>
     <div class="data-box">
-        <input type="password" @bind="SignUpPop.Password" @onkeyup="Enter" required="required"/>
+        <input type="password" @bind="Account.Password" @onkeyup="Enter" required="required"/>
         <label> PASSWORD </label>
         <br/>
     </div>
     <div class="data-box">
-        <input type="password" @bind="SignUpPop.PasswordRepeat" @onkeyup="Enter" required="required"/>
+        <input type="password" @bind="Account.PasswordRepeat" @onkeyup="Enter" required="required"/>
         <label> REPEAT PASSWORD </label>
         <br/>
     </div>
     <div class="data-box">
-        <InputSelect @bind-Value="SignUpPop.UserType">
-            <option checked="@(SignUpPop.UserType == "GameMaster")">
+        <InputSelect @bind-Value="Account.UserType">
+            <option checked="@(Account.UserType == "GameMaster")">
                 Game Master
             </option>
-            <option checked="@(SignUpPop.UserType == "Player")">
+            <option checked="@(Account.UserType == "Player")">
                 Player
             </option>
         </InputSelect>
@@ -55,8 +52,8 @@
     
     protected override void OnInitialized()
     {
-        SignUpPop.Password = String.Empty;
-        SignUpPop.Username = String.Empty;
+        Account.Password = String.Empty;
+        Account.Username = String.Empty;
         base.OnInitialized();
     }
 
@@ -70,18 +67,18 @@
 
     private async Task HandleUserSignUp()
     {
-        if (SignUpPop.Username != String.Empty && SignUpPop.Password != String.Empty && SignUpPop.PasswordRepeat != String.Empty)
+        if (Account.Username != String.Empty && Account.Password != String.Empty && Account.PasswordRepeat != String.Empty)
         {
-            if (SignUpPop.Password != SignUpPop.PasswordRepeat)
+            if (Account.Password != Account.PasswordRepeat)
             {
                 return;
             }
-            var exists = await SignUp.CreateAccount();
-            if (exists is false)
+            var exists = await Http.PostAsJsonAsync("api/user/register", Account);
+            if (exists.StatusCode == HttpStatusCode.Conflict)
             {
                 _loginStatement = "USERNAME ALREADY USED";
             }
-            else if (exists)
+            else if (exists.IsSuccessStatusCode)
             {
                 _loginStatement = "SUCCES";
             }

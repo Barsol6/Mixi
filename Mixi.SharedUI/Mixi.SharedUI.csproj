@@ -16,7 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Components\App.razor" />
       <AdditionalFiles Include="Components\Layout\BaseLayout.razor" />
       <AdditionalFiles Include="Components\Layout\Footer.razor" />
       <AdditionalFiles Include="Components\Layout\LoginLayout.razor" />
@@ -34,15 +33,14 @@
       <AdditionalFiles Include="Components\Popups\NameGenerator.razor" />
       <AdditionalFiles Include="Components\Popups\PdfViewerChoice.razor" />
       <AdditionalFiles Include="Components\Popups\SignIn.razor" />
-      <AdditionalFiles Include="Components\Routes.razor" />
       <AdditionalFiles Include="Components\UI\MenuPopupContainer.razor" />
       <AdditionalFiles Include="Components\UI\PdfPopupContainer.razor" />
       <AdditionalFiles Include="Components\UI\PopupContainer.razor" />
-      <AdditionalFiles Include="Components\_Imports.razor" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Mixi.Api\Mixi.Api.csproj" />
+      <ProjectReference Include="..\Mixi.Shared.Models\Mixi.Shared.Models.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using Mixi.Shared.Models.Account;
+using Mixi.Shared.Models.UI;
 
 namespace Mixi.App;
 
@@ -18,6 +20,17 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
+        builder.Services.AddScoped(sp => new HttpClient
+        {
+           BaseAddress= new Uri("https://localhost:7001")
+        });
+        
+        builder.Services.AddSingleton<SignUpPopup,SignUpPopup>();
+        builder.Services.AddSingleton<MenuPopup,MenuPopup>();
+        builder.Services.AddSingleton<NameGeneratorPopup,NameGeneratorPopup>();
+        builder.Services.AddSingleton<PdfPopup,PdfPopup>();
+        builder.Services.AddSingleton<Account, Account>();
+        
         return builder.Build();
     }
 }

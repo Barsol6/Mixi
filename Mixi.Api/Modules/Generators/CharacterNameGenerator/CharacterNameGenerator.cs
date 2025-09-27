@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Mixi.Api.Modules.Enums;
+using SecurityDriven.Core;
 
 namespace Mixi.Api.Modules.Generators.CharacterNameGenerator;
 public class CharacterNameGenerator : ICharacterNameGenerator

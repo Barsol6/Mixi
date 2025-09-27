@@ -8,7 +8,7 @@ using System.Linq;
 namespace Mixi.Api.Controllers;
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/pdfs/[controller]")]
     public class PdfController : ControllerBase
     {
         private readonly IPdfRepository _pdfRepository;
@@ -69,7 +69,7 @@ namespace Mixi.Api.Controllers;
             return File(unlockedContent, "application/pdf");
         }
         
-        [HttpGet ("{id}/formdata")]
+        [HttpGet ("{id}/getformdata")]
         public async Task<IActionResult> GetPdfFormData(int id)
         {
             var document = await _pdfRepository.GetByIdAsync(id);
@@ -82,7 +82,7 @@ namespace Mixi.Api.Controllers;
             return Ok(document.FormData);
         }
         
-        [HttpPut ("{id}/formdata")]
+        [HttpPut ("{id}/updateformdata")]
         public async Task<IActionResult> UpdatePdfFormData(int id, [FromBody] FormDataUpdateDto dto)
         {
 
@@ -96,7 +96,7 @@ namespace Mixi.Api.Controllers;
         }
 
 
-        [HttpGet]
+        [HttpGet ("getlist")]
         public async Task<ActionResult<IEnumerable<PdfListItemDto>>> GetPdfList()
         {
             var documents = await _pdfRepository.GetAllAsync();
@@ -113,7 +113,7 @@ namespace Mixi.Api.Controllers;
             }).ToList());
         }
         
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}/delete")]
         public async Task<IActionResult> DeletePdf(int id)
         {
             var success = await _pdfRepository.DeleteAsync(id);

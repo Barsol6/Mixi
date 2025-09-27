@@ -1,4 +1,4 @@
-﻿namespace Mixi.Api.Modules.UI;
+﻿namespace Mixi.Shared.Models.UI;
 
 public class NameGeneratorPopup
 {
@@ -17,5 +17,6 @@ public class NameGeneratorPopup
             }
         }
     }
+    
 }
 

@@ -32,14 +32,14 @@ public  class PasswordHash
        return _hashedPassword;
     }
 
-    public async Task<LoginStatus> CheckPassword(string? password, string username)
+    public async Task<bool> CheckPassword(string? password, string username)
     {
         
         var user = await UserRepository.GetUserAsync(username);
         
         if (user is null)
         {
-            return LoginStatus.NoAccount;
+            return false;
         }
          _hashedPassword = user.Password;
         
@@ -51,9 +51,9 @@ public  class PasswordHash
          }
          return passwordCheck switch
          {
-             PasswordVerificationResult.Failed => LoginStatus.Fail,
-             PasswordVerificationResult.Success => LoginStatus.Success,
-             _ => LoginStatus.Fail
+             PasswordVerificationResult.Failed => false,
+             PasswordVerificationResult.Success => true,
+             _ => false
          };
     }
 }

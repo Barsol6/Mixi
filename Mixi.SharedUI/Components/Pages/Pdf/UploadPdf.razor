@@ -1,10 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@using Mixi.Api.Modules.UI
-@using Mixi.Api.Modules.Database
-@using Mixi.Api.Modules.Pdf
+@using Mixi.Shared.Models.UI
 
 
-@rendermode InteractiveServer
 
 @inject HttpClient Http
 @inject PdfPopup PdfPopup
@@ -95,8 +92,8 @@
             using var streamContent = new StreamContent(fileStream);
             streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(_selectedFile.ContentType);
 
-            content.Add(streamContent, "file", _selectedFile.Name);
-            content.Add(new StringContent(_fileName), "name");
+            content.Add(streamContent, "formFile", _selectedFile.Name);
+            content.Add(new StringContent(_fileName), "fileName");
 
             var response = await Http.PostAsync("api/pdfs/upload", content);
 
