@@ -36,6 +36,7 @@ export function renderPdf(containerId, base64Data) {
 
             const pdfjsLib = await import('./pdfjs/pdf.js');
             const { PDFViewer, EventBus, PDFLinkService, GenericL10n } = await import('./pdfjs/web/pdf_viewer.js');
+            
             pdfjsLib.GlobalWorkerOptions.workerSrc = './pdf.worker.js';
 
             const eventBus = new EventBus();
