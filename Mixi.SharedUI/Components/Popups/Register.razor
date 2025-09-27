@@ -1,0 +1,111 @@
+﻿@using System.Net
+@using Mixi.Shared.Models.Account
+@using Mixi.Shared.Models.UI
+
+
+@inject HttpClient Http
+@inject Account Account
+@inject SignUpPopup SignUpPop
+
+@implements IDisposable
+
+<div class="signInPanel">
+    <div class="title">
+        <div>@_loginStatement</div>
+    </div>
+    
+    <div class="data-box">
+        <input type="text" @bind="Account.Username" @onkeyup="Enter" required="required"/>
+        <label> USERNAME </label>
+        <br/>
+    </div>
+    <div class="data-box">
+        <input type="password" @bind="Account.Password" @onkeyup="Enter" required="required"/>
+        <label> PASSWORD </label>
+        <br/>
+    </div>
+    <div class="data-box">
+        <input type="password" @bind="Account.PasswordRepeat" @onkeyup="Enter" required="required"/>
+        <label> REPEAT PASSWORD </label>
+        <br/>
+    </div>
+    <div class="data-box">
+        <InputSelect @bind-Value="Account.UserType">
+            <option checked="@(Account.UserType == "GameMaster")">
+                Game Master
+            </option>
+            <option checked="@(Account.UserType == "Player")">
+                Player
+            </option>
+        </InputSelect>
+        <label> USER TYPE </label>
+        <br/>
+    </div>
+    <div class="data-box" @onclick="HandleUserSignUp">
+        <div class="logButton">
+            <div class="logButton-content">
+                SIGN UP
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    
+    
+    private string _loginStatement = "FILL FORM";   
+    
+    protected override void OnInitialized()
+    {
+        this.SignUpPop.IsLoggedChange += () => InvokeAsync(StateHasChanged);
+        this.SignUpPop.IsVisibleChange += () =>
+        {
+            Account.Password = String.Empty;
+            Account.Username = String.Empty;
+            Account.PasswordRepeat = String.Empty;
+        };
+        base.OnInitialized();
+    }
+
+    private async Task Enter(KeyboardEventArgs e)
+    {
+        if (e.Code is "Enter" or "NumpadEnter" )
+        {
+            await HandleUserSignUp();   
+        }
+    }
+
+    private async Task HandleUserSignUp()
+    {
+        if (Account.Username != String.Empty && Account.Password != String.Empty && Account.PasswordRepeat != String.Empty)
+        {
+            if (Account.Password != Account.PasswordRepeat)
+            {
+                return;
+            }
+            var exists = await Http.PostAsJsonAsync("api/User/register", Account);
+            
+            if (exists.StatusCode == HttpStatusCode.Conflict)
+            {
+                _loginStatement = "USERNAME ALREADY USED";
+                StateHasChanged();
+            }
+            else if (exists.IsSuccessStatusCode)
+            {
+                _loginStatement = "SUCCES";
+                StateHasChanged();
+                Account.Username = String.Empty;
+                Account.Password = String.Empty;
+                Account.PasswordRepeat = String.Empty;
+            }
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        this.SignUpPop.IsLoggedChange -= StateHasChanged;
+    }
+
+
+}

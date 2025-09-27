@@ -1,0 +1,163 @@
+﻿
+@using Mixi.Shared.Models.UI
+@using Mixi.SharedUI.Components.Pages.Pdf
+@using Mixi.SharedUI.Components.UI
+@inject MenuPopup MenuPopup
+@inject HttpClient Http
+@inject IJSRuntime JsRuntime
+@inject PdfPopup PdfPopup
+
+@implements IDisposable
+
+<div class="pdfChoicePanel">
+   @if (_isLoading)
+   {
+       <p>Ładowanie dokumentów...</p>
+   }
+   else
+   {
+       <div class="data-box">
+           <div class="logButton" @onclick="UploadNewPdf">
+               <span class="logButton-content">
+                   DODAJ NOWY PDF
+               </span>
+           </div>
+       </div>
+       
+       @if (_documents != null && _documents.Any())
+       {
+           <div>
+               <h4>Your character sheets:</h4>
+               @foreach (var document in _documents)
+               {
+                   <div class="data-box">
+                       <div class="logButton" >
+                           <span class="logButton-content" @onclick="() => ViewDocument(document.Id)">
+                               @document.Name
+                           </span>
+                           <span class="logButton-content" @onclick="() => DeletePdf(document.Id)">
+                               DELETE
+                           </span>
+                       </div>
+                      
+                   </div>
+               }
+           </div>
+       }
+       else
+       {
+           <p>You have no character sheets yet.</p>
+       }
+       <div class="data-box">
+           <div class="logButton">
+               <div class="closeButton-content " @onclick="() => HidePopup()">
+                   CLOSE
+               </div>
+           </div>
+       </div>
+   }
+</div>
+
+<PdfPopupContainer @ref="_popup"> </PdfPopupContainer>
+
+@code {
+    private class PdfListItemDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+    
+    private PdfPopupContainer? _popup;
+    private List<PdfListItemDto>? _documents;
+    private bool _isLoading = true;
+
+    protected override void OnInitialized()
+    {
+        this.PdfPopup.PdfNameChanged += () => InvokeAsync(StateHasChanged);
+        this.PdfPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        this.PdfPopup.IsVisibleChange += () => InvokeAsync(LoadDocuments);
+        base.OnInitialized();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDocuments();  
+    }
+
+    private async Task LoadDocuments()
+    {
+        try
+        {
+            _isLoading = true;
+            StateHasChanged();
+            _documents = await Http.GetFromJsonAsync<List<PdfListItemDto>>("api/Pdf/getlist");
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Error: {e.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ViewDocument(int id)
+    {
+        PdfPopup.PdfName = id;
+        _popup?.ShowComponent<PdfViewer>();
+    }
+
+    private void UploadNewPdf()
+    {
+        _popup?.ShowComponent<UploadPdf>();
+    }
+    
+
+    private async void DeletePdf(int id)
+    {
+
+        if (!await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this character sheet? This cannot be undone."))
+        {
+            return;
+        }
+        _isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var response = await Http.DeleteAsync($"api/Pdf/{id}/delete");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await InvokeAsync(LoadDocuments);
+            }
+            else
+            {
+                Console.Error.WriteLine($"Failed to delete document with ID: {id}");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Error deleting document: {id}");
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        this.PdfPopup.IsVisibleChange -= StateHasChanged;
+        this.PdfPopup.PdfNameChanged -= StateHasChanged;
+    }
+    
+    private void HidePopup()
+    {
+        MenuPopup.IsVisible = false;
+    }
+
+}

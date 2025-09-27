@@ -1,0 +1,133 @@
+﻿@using Mixi.Shared.Models.UI
+
+
+
+@inject HttpClient Http
+@inject PdfPopup PdfPopup
+
+
+@implements IDisposable
+
+    <div class="pdfChoicePanel">
+        <h3>Send Character Sheet</h3>
+        <div class="login-box items-center">
+            <div class="login">
+                <div class="data-box">
+                    <InputFile OnChange="@(e => HandleFileSelected(e))" accept=".pdf" />
+                </div>
+                <div class="data-box">
+                    <input @bind="_fileName" type="text" required/>
+                    <span>PDF Name</span>
+                </div>
+                @if (_isUploading)
+                {
+                    <p>Uploading...</p>
+                }
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <p>@_errorMessage</p>
+                }
+                <div class="data-box">
+                    <div class="logButton" @onclick="@(async () => { if (_fileSelected && !_isUploading && _fileName!=String.Empty) await UploadFile(); })" style="@(_fileSelected && !_isUploading ? "" : "opacity: 0.5; cursor: not-allowed;")">
+                        <span class="logButton-content">SEND</span>
+                    </div>
+                </div>
+                <div class="data-box">
+                    <div class="logButton">
+                        <div class="closeButton-content " @onclick="() => ClosePopup()">
+                            CLOSE
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+@code {
+    
+    private IBrowserFile _selectedFile;
+    private bool _fileSelected = false;
+    private bool _isUploading = false;
+    private string _errorMessage = String.Empty;
+    private string _fileName = String.Empty;
+    
+    protected override void OnInitialized()
+    {
+        this.PdfPopup.PdfNameChanged += () => InvokeAsync(StateHasChanged);
+        this.PdfPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        base.OnInitialized();
+    }
+    
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        _selectedFile = e.File;
+        _fileSelected = true;
+        _errorMessage = string.Empty;
+        Console.WriteLine($"File selected: {_fileSelected}, ContentType: {_selectedFile.ContentType}");
+        if (!_selectedFile.ContentType.Equals("application/pdf",StringComparison.OrdinalIgnoreCase))
+        {
+            _errorMessage = "File must be PDF";
+            _fileSelected = false;
+        }
+        StateHasChanged();
+    }
+
+    private async Task UploadFile()
+    {
+        if (!_fileSelected || _isUploading || string.IsNullOrEmpty(_fileName))
+        {
+            return;
+        }
+
+        _isUploading = true;
+        _errorMessage = string.Empty;
+        
+        StateHasChanged();
+
+        try
+        {
+            using var content = new MultipartFormDataContent();
+            using var fileStream = _selectedFile.OpenReadStream(maxAllowedSize: 20 * 1024 * 1024);
+            using var streamContent = new StreamContent(fileStream);
+            streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(_selectedFile.ContentType);
+
+            content.Add(streamContent, "FormFile", _selectedFile.Name);
+            content.Add(new StringContent(_fileName), "FileName");
+
+            var response = await Http.PostAsync("api/Pdf/upload", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<UploadResult>();
+                PdfPopup.PdfName = result.id;
+                ClosePopup();
+            }
+            else
+            {
+                _errorMessage = $"Upload failed: {await response.Content.ReadAsStringAsync()}";
+            }
+        }
+        catch (Exception e)
+        {
+            _errorMessage = $"Uploading error: {e.Message}";
+        }
+        finally
+        {
+            _isUploading = false;
+            StateHasChanged();
+        }
+    }
+    
+    private class UploadResult { public int id { get; set; } }
+    
+    private async void ClosePopup()
+    {
+        PdfPopup.IsVisible = false;
+    }
+    
+    public void Dispose()
+    {
+        this.PdfPopup.IsVisibleChange -= StateHasChanged;
+        this.PdfPopup.PdfNameChanged -= StateHasChanged;
+    }
+
+}

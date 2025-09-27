@@ -1,0 +1,48 @@
+﻿@using Mixi.Shared.Models.UI
+@using Mixi.SharedUI.Components.Layout
+
+@page "/home"
+@page "/"
+@layout MainLayout
+
+@inject MenuPopup MenuPopup
+@inject SignUpPopup SignUp
+@inject PdfPopup PdfPopup
+
+@implements IDisposable
+
+<LoginPage @ref="_loginPage"> </LoginPage>
+<Menu @ref="_menu"> </Menu>
+@code {
+
+    LoginPage _loginPage = new LoginPage();
+    Menu _menu = new Menu();
+    
+    protected override void OnInitialized()
+    {
+        this.SignUp.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        this.SignUp.IsLoggedChange += () => InvokeAsync(StateHasChanged);
+        this.MenuPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        this.PdfPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            MenuPopup.IsVisible = false;
+            SignUp.IsVisible = false;
+            SignUp.IsLogged = false;
+            PdfPopup.IsVisible = false;
+            StateHasChanged();
+        }
+    }
+    
+    public void Dispose()
+    {
+        this.SignUp.IsVisibleChange -= StateHasChanged;
+        this.SignUp.IsLoggedChange -= StateHasChanged;
+        this.MenuPopup.IsVisibleChange -= StateHasChanged;
+        this.PdfPopup.IsVisibleChange -= StateHasChanged;
+    }
+}

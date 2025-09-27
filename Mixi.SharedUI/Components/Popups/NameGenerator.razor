@@ -1,0 +1,130 @@
+﻿@using Mixi.Api.Modules.Enums
+@using Mixi.Shared.Models.UI
+@using Mixi.Shared.Models.Generators
+
+
+
+@inject MenuPopup MenuPopup
+@inject NameGeneratorPopup NameGenPop
+@inject HttpClient Http
+
+
+<div class="choicePanel">
+            <div class="generatedName">
+                @NameGenPop.GeneratedName
+            </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="() => GenerateName(NameType.EnglishMale, _sex[0]) ">
+                English Male
+            </div>
+        </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick=" () => GenerateName(NameType.EnglishFemale, _sex[1])">
+                English Female
+            </div>
+        </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick=" () => GenerateName(NameType.GermanMale, _sex[0])">
+                German Male
+            </div>
+        </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick=" () => GenerateName(NameType.GermanFemale, _sex[1])">
+                German Female
+            </div>
+        </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick=" () => GenerateName(NameType.FrenchMale, _sex[0])">
+                French Male
+            </div>
+        </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick=" () => GenerateName(NameType.FrenchFemale, _sex[1])">
+                French Female
+            </div>
+        </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="closeButton-content " @onclick="() => HidePopup()">
+                CLOSE
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool _isNoble = false;
+    private bool _isGenerating = false;
+    private List<string> _sex = ["Male", "Female"];
+    
+    
+    private string? _generatedName = String.Empty;
+    
+    private void HidePopup()
+    {
+        MenuPopup.IsVisible = false;
+        NameGenPop.GeneratedName = String.Empty;
+    }
+
+    private async Task GenerateName(NameType nameType, string sex)
+    {
+        if (_isGenerating)
+        {
+            return;
+        }
+
+        _isGenerating = true;
+
+        try
+        {
+            var request = new NamesGenerator
+            {
+                NameType = nameType,
+                IsNoble = _isNoble,
+                Sex = sex
+            };
+
+            var response = await Http.PostAsJsonAsync("api/generator/NameGenerator/name_generator", request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<GenerateNameResponse>();
+                if (result != null)
+                {
+                    NameGenPop.GeneratedName = result.GeneratedName;
+                }
+            }
+            else
+            {
+                NameGenPop.GeneratedName = "Error generating name.";
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        finally
+        {
+            _isGenerating = false;
+        }
+    
+    }
+
+    private class GenerateNameResponse
+    {
+        public string GeneratedName { get; set; } = string.Empty;
+    }
+}

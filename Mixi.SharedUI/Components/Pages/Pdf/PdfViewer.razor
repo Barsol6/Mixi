@@ -1,0 +1,186 @@
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Mixi.SharedUI.Components.Layout
+
+@using Mixi.Shared.Models.UI
+
+@inject HttpClient Http
+@inject IJSRuntime JsRuntime
+@inject PdfPopup PdfPopup
+
+@implements IDisposable
+@layout PdfViewerLayout
+
+<div class="popup">
+    <div class="pdfHost">
+        @if (_isLoading)
+        {
+            <p>Loading...</p>
+        }
+        else
+        {
+            <div id="pdfContainer" style="width:100%;height:100%;"></div>
+        }
+    </div>
+    <div>
+        <div class="logButton" @onclick="SaveChanges">
+            <div class="logButton-content">SAVE</div>
+        </div>
+        <div class="logButton" @onclick="ClosePopup">
+            <div class="closePdfButton-content">CLOSE</div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int _documentId;
+    private bool _isLoading = true;
+    private IJSObjectReference? _pdfModule;
+    private bool _isSaving = false;
+    private string _statusMessage = string.Empty;
+    private bool _shouldRenderPdf = false;
+    private bool _isDisposed = false;
+    private bool _isReadyToRender = false;
+    private string? _pdfBase64Data; 
+    private void Log(string message) => Console.WriteLine($"[C# {DateTime.Now:HH:mm:ss.fff}] {message}");
+
+    protected override void OnInitialized()
+    {
+        Log("OnInitialized: Subscribing to events.");
+        PdfPopup.PdfNameChanged += OnPdfNameChanged;
+        PdfPopup.IsVisibleChange += OnVisibilityChanged;
+    }
+
+    private async void OnPdfNameChanged() => await InvokeAsync(LoadDocument);
+    private async void OnVisibilityChanged() => await InvokeAsync(() => 
+    {
+        if (!PdfPopup.IsVisible) ClosePopup();
+        else LoadDocument();
+    });
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (PdfPopup.IsVisible && PdfPopup.PdfName > 0)
+        {
+            await LoadDocument();
+        }
+    }
+
+    private async Task LoadDocument()
+    {
+        if (!PdfPopup.IsVisible || PdfPopup.PdfName <= 0) return;
+        _isLoading = true;
+        _documentId = PdfPopup.PdfName;
+        StateHasChanged();
+
+        try
+        {
+            var pdfBytes = await Http.GetByteArrayAsync($"api/Pdf/{_documentId}/content");
+            if (pdfBytes != null)
+            {
+                _pdfBase64Data = Convert.ToBase64String(pdfBytes);
+                _isReadyToRender = true;
+            }
+        } 
+        catch (Exception ex)
+        {
+         
+            Log($"LoadDocument BŁĄD: {ex.ToString()}");
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_isReadyToRender && !string.IsNullOrEmpty(_pdfBase64Data))
+        {
+           
+            _isReadyToRender = false; 
+
+            try
+            {
+                _pdfModule ??= await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Mixi.SharedUI/js/pdfViewer.js");
+                await _pdfModule.InvokeVoidAsync("renderPdf", "pdfContainer", _pdfBase64Data);
+                
+                await LoadFormData();
+            }
+            catch (Exception ex)
+            {
+                Log($"OnAfterRenderAsync BŁĄD: {ex.ToString()}");
+            }
+        } 
+    }
+
+    private async Task LoadFormData()
+    {
+        try
+        {
+            var formData = await Http.GetStringAsync($"api/Pdf/{_documentId}/getformdata");
+
+            if (_pdfModule != null && !string.IsNullOrWhiteSpace(formData) && formData != "{}")
+            {
+                await _pdfModule.InvokeVoidAsync("loadFormDataIntoPdf", "pdfContainer", formData);
+            }
+        }
+        catch (Exception ex)
+        {
+            _statusMessage = $"Error: {ex.Message}";
+        }
+    }
+    
+
+    private async Task SaveChanges()
+    {
+        if (_isSaving || _pdfModule == null || _documentId <= 0) return;
+
+        _isSaving = true;
+        StateHasChanged();
+
+        try
+        {
+            var formDataString = await _pdfModule.InvokeAsync<string>("getFormDataFromPdf", "pdfContainer");
+            if (!string.IsNullOrEmpty(formDataString))
+            {
+                var payload = new { Data = formDataString };
+                await Http.PutAsJsonAsync($"api/Pdf/{_documentId}/updateformdata", payload);
+                _statusMessage = "Saved successfully";
+            }
+        }
+        catch (Exception ex)
+        {
+            _statusMessage = $"Error: {ex.Message}";
+        }
+        finally { _isSaving = false; StateHasChanged(); }
+    }
+
+    private async Task ClosePopup()
+    {
+        if (_pdfModule != null)
+        {
+            try
+            {
+                await _pdfModule.InvokeVoidAsync("cleanupPdfViewer", "pdfContainer");
+            }
+            catch(Exception e)
+            {
+                Log($"Failed to close popup: {e}");
+            }
+            
+        }
+        PdfPopup.IsVisible = false;
+    }
+
+
+    public void Dispose()
+    {
+        if (_isDisposed) return;
+        _isDisposed = true;
+        Log("Dispose: Component is being disposed.");
+        PdfPopup.PdfNameChanged -= OnPdfNameChanged;
+        PdfPopup.IsVisibleChange -= OnVisibilityChanged;
+    }
+}

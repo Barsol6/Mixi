@@ -1,0 +1,7 @@
+﻿services:
+  mixi.api:
+    image: mixi.api
+    build:
+      context: .
+      dockerfile: Mixi.Api/Dockerfile
+
