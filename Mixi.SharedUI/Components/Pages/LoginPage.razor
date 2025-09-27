@@ -85,7 +85,7 @@
     {
         if (Account.Username != String.Empty && Account.Password != String.Empty)
         {
-            var response = await Http.PostAsJsonAsync("api/user/login", Account);
+            var response = await Http.PostAsJsonAsync("api/User/login", Account);
             
             if (response.IsSuccessStatusCode)
             {

@@ -9,7 +9,7 @@ using Org.BouncyCastle.Asn1.X509;
 namespace Mixi.Api.Controllers;
 
 [ApiController]
-[Route("api/user/[controller]")]
+[Route("api/[controller]")]
 
 public class UserController : ControllerBase
 {
@@ -17,7 +17,7 @@ public class UserController : ControllerBase
     private readonly PasswordHash _passwordHash;
     
     
-    public UserController(UserRepository userRepository, PasswordHash passwordHash)
+    public UserController(IUserRepository userRepository, PasswordHash passwordHash)
     {
         _userRepository = userRepository;
         _passwordHash = passwordHash;
@@ -33,6 +33,7 @@ public class UserController : ControllerBase
 
         if (_userRepository.CheckIfExists((account.Username)))
         {
+            Console.WriteLine("dupa");
             return Conflict(new {message = "Account already exists"});
         }
         
@@ -47,7 +48,7 @@ public class UserController : ControllerBase
         
         await _userRepository.AddUserAsync(newUser);
         
-        return StatusCode(201, new {message = "Account created"});;
+        return Ok(new {message = "Account created"});;
 
     }
 
@@ -68,11 +69,11 @@ public class UserController : ControllerBase
 
         if (passwordCheck.Result is false)
         {
-         return Unauthorized(new {message = "Invalid password"});   
+            return Unauthorized(new {message = "Invalid password"});   
         }
         else
         {
-           return Ok(new {message = "Login successful"}); 
+           return StatusCode( 201, new {message = "Login successful"}); 
         }
      
 

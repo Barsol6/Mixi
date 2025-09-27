@@ -6,7 +6,6 @@
 @inject HttpClient Http
 @inject IJSRuntime JsRuntime
 @inject PdfPopup PdfPopup
-@inject ProtectedSessionStorage Storage
 
 @implements IDisposable
 @layout PdfViewerLayout
@@ -40,8 +39,8 @@
     private string _statusMessage = string.Empty;
     private bool _shouldRenderPdf = false;
     private bool _isDisposed = false;
-
-
+    private bool _isReadyToRender = false;
+    private string? _pdfBase64Data; 
     private void Log(string message) => Console.WriteLine($"[C# {DateTime.Now:HH:mm:ss.fff}] {message}");
 
     protected override void OnInitialized()
@@ -60,31 +59,67 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadDocument();
+        if (PdfPopup.IsVisible && PdfPopup.PdfName > 0)
+        {
+            await LoadDocument();
+        }
     }
 
     private async Task LoadDocument()
     {
         if (!PdfPopup.IsVisible || PdfPopup.PdfName <= 0) return;
-    
         _isLoading = true;
         _documentId = PdfPopup.PdfName;
         StateHasChanged();
 
-        await RenderPdf(); 
-        await LoadFormData(); 
-
-        _isLoading = false;
-        StateHasChanged();
+        try
+        {
+            var pdfBytes = await Http.GetByteArrayAsync($"api/Pdf/{_documentId}/content");
+            if (pdfBytes != null)
+            {
+                _pdfBase64Data = Convert.ToBase64String(pdfBytes);
+                _isReadyToRender = true;
+            }
+        } 
+        catch (Exception ex)
+        {
+         
+            Log($"LoadDocument BŁĄD: {ex.ToString()}");
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
     }
 
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_isReadyToRender && !string.IsNullOrEmpty(_pdfBase64Data))
+        {
+           
+            _isReadyToRender = false; 
+
+            try
+            {
+                _pdfModule ??= await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Mixi.SharedUI/js/pdfViewer.js");
+                await _pdfModule.InvokeVoidAsync("renderPdf", "pdfContainer", _pdfBase64Data);
+                
+                await LoadFormData();
+            }
+            catch (Exception ex)
+            {
+                Log($"OnAfterRenderAsync BŁĄD: {ex.ToString()}");
+            }
+        } 
+    }
 
     private async Task LoadFormData()
     {
         try
         {
-            var formData = await Http.GetStringAsync($"api/pdfs/{_documentId}/getformdata");
+            var formData = await Http.GetStringAsync($"api/Pdf/{_documentId}/getformdata");
 
             if (_pdfModule != null && !string.IsNullOrWhiteSpace(formData) && formData != "{}")
             {
@@ -97,24 +132,6 @@
         }
     }
     
-    private async Task RenderPdf()
-    {
-        try
-        {
-            _pdfModule ??= await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/pdfViewer.mjs");
-
-            var pdfBytes = await Http.GetByteArrayAsync($"api/pdfs/{_documentId}/content");
-
-            if (pdfBytes == null) return;
-
-            var base64 = Convert.ToBase64String(pdfBytes);
-            await _pdfModule.InvokeAsync<object>("renderPdf", "pdfContainer", base64);
-        }
-        catch (Exception ex)
-        {
-            _statusMessage = $"Error: {ex.Message}";
-        }
-    }
 
     private async Task SaveChanges()
     {
@@ -129,7 +146,7 @@
             if (!string.IsNullOrEmpty(formDataString))
             {
                 var payload = new { Data = formDataString };
-                await Http.PutAsJsonAsync($"api/pdfs/{_documentId}/updateformdata", payload);
+                await Http.PutAsJsonAsync($"api/Pdf/{_documentId}/updateformdata", payload);
                 _statusMessage = "Saved successfully";
             }
         }
@@ -155,7 +172,6 @@
             
         }
         PdfPopup.IsVisible = false;
-        await Storage.SetAsync("PdfPopupIsVisible", false);
     }
 
 

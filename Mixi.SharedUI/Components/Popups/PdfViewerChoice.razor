@@ -90,7 +90,7 @@
         {
             _isLoading = true;
             StateHasChanged();
-            _documents = await Http.GetFromJsonAsync<List<PdfListItemDto>>("api/getlist");
+            _documents = await Http.GetFromJsonAsync<List<PdfListItemDto>>("api/Pdf/getlist");
         }
         catch (Exception e)
         {
@@ -127,7 +127,7 @@
 
         try
         {
-            var response = await Http.DeleteAsync($"api/{id}/delete");
+            var response = await Http.DeleteAsync($"api/Pdf/{id}/delete");
 
             if (response.IsSuccessStatusCode)
             {

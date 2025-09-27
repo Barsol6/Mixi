@@ -22,7 +22,7 @@ public static class MauiProgram
 
         builder.Services.AddScoped(sp => new HttpClient
         {
-           BaseAddress= new Uri("https://localhost:7001")
+           BaseAddress= new Uri("https://localhost:7079")
         });
         
         builder.Services.AddSingleton<SignUpPopup,SignUpPopup>();

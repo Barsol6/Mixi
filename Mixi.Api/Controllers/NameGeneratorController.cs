@@ -20,6 +20,7 @@ public class NameGeneratorController: ControllerBase
     [HttpPost("name_generator")]
     public async Task<IActionResult> GenerateName([FromBody] NamesGenerator namesGenerator)
     {
+        Console.WriteLine(namesGenerator.NameType);
         var name = await _characterNameGenerator.GenerateNameAsync(namesGenerator.NameType, namesGenerator.IsNoble, namesGenerator.Sex);
         return Ok(new {generatedName =  name});
     }

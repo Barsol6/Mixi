@@ -96,7 +96,7 @@
                 Sex = sex
             };
 
-            var response = await Http.PostAsJsonAsync("api/generator/name_generator", request);
+            var response = await Http.PostAsJsonAsync("api/generator/NameGenerator/name_generator", request);
 
             if (response.IsSuccessStatusCode)
             {

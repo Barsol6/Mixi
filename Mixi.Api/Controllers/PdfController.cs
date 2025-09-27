@@ -4,11 +4,12 @@ using Mixi.Api.Modules.Database;
 using Mixi.Api.Modules.Database.Repositories.PdfRepositories;
 using System.Collections.Generic;
 using System.Linq;
+using Mixi.Api.Requests;
 
 namespace Mixi.Api.Controllers;
 
     [ApiController]
-    [Route("api/pdfs/[controller]")]
+    [Route("api/[controller]")]
     public class PdfController : ControllerBase
     {
         private readonly IPdfRepository _pdfRepository;
@@ -19,14 +20,14 @@ namespace Mixi.Api.Controllers;
         }
         
         [HttpPost ("upload")]
-        public async Task<IActionResult> UploadPdf([FromForm] IFormFile formFile, [FromForm] string fileName)
+        public async Task<IActionResult> UploadPdf([FromForm] UploadPdfRequests request)
         {
-            if (formFile == null || formFile.Length == 0 )
+            if (request.FormFile == null || request.FormFile.Length == 0 )
             {
                 return BadRequest("No file uploaded");
             }
 
-            if (formFile.ContentType != "application/pdf")
+            if (request.FormFile.ContentType != "application/pdf")
             {
                 return BadRequest("File is not a PDF");
             }
@@ -34,12 +35,12 @@ namespace Mixi.Api.Controllers;
             try
             {
                 using var memoryStream = new MemoryStream();
-                await formFile.CopyToAsync(memoryStream);
+                await request.FormFile.CopyToAsync(memoryStream);
                 var fileBytes = memoryStream.ToArray();
 
                 var document = new PdfDocument
                 {
-                    Name = fileName,
+                    Name = request.FileName,
                     Content = fileBytes,
                     FormData = "{}"
                 };

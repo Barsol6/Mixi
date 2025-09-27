@@ -16,8 +16,9 @@ export function cleanupPdfViewer(containerId) {
 
 export function renderPdf(containerId, base64Data) {
     return new Promise(async (resolve, reject) => {
-       
+        console.log("[JS] renderPdf: Rozpoczęto.");
         try {
+            console.log('dupa');
             await cleanupPdfViewer(containerId);
             const mainContainer = document.getElementById(containerId);
             if (!mainContainer) {
@@ -33,9 +34,9 @@ export function renderPdf(containerId, base64Data) {
             viewerDiv.className = 'pdfViewer';
             mainContainer.appendChild(viewerDiv);
 
-            const pdfjsLib = await import('/js/pdfjs/pdf.mjs');
-            const { PDFViewer, EventBus, PDFLinkService, GenericL10n } = await import('/js/pdfjs/web/pdf_viewer.mjs');
-            pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdfjs/pdf.worker.mjs';
+            const pdfjsLib = await import('./pdfjs/pdf.js');
+            const { PDFViewer, EventBus, PDFLinkService, GenericL10n } = await import('./pdfjs/web/pdf_viewer.js');
+            pdfjsLib.GlobalWorkerOptions.workerSrc = './pdf.worker.js';
 
             const eventBus = new EventBus();
             const pdfDoc = await pdfjsLib.getDocument({ data: atob(base64Data) }).promise;

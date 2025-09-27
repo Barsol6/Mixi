@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Mixi.Api;
 using Mixi.Api.Modules.Account;
 using Mixi.Api.Modules.Database;
 using Mixi.Api.Modules.Database.Repositories.PdfRepositories;
@@ -12,7 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Mixi.Api", Version = "v1" });
+    }
+);
 builder.Services.AddControllers();
 builder.Services.AddScoped<PasswordHash>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
