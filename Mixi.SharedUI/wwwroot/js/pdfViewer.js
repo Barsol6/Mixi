@@ -16,9 +16,8 @@ export function cleanupPdfViewer(containerId) {
 
 export function renderPdf(containerId, base64Data) {
     return new Promise(async (resolve, reject) => {
-        console.log("[JS] renderPdf: Rozpoczęto.");
+
         try {
-            console.log('dupa');
             await cleanupPdfViewer(containerId);
             const mainContainer = document.getElementById(containerId);
             if (!mainContainer) {
@@ -112,7 +111,7 @@ export async function loadFormDataIntoPdf(containerId, jsonData) {
                             instance.pdfDoc.annotationStorage.setValue(field.id, { fieldValue: valueToSet });
                         }
                     }
-                } 
+                }
             }
         }
     } catch (error) {

@@ -42,5 +42,37 @@
       <ProjectReference Include="..\Mixi.Api\Mixi.Api.csproj" />
       <ProjectReference Include="..\Mixi.Shared.Models\Mixi.Shared.Models.csproj" />
     </ItemGroup>
+    
+    <Target Name="NpmInstall" BeforeTargets="CopyPdfJsFiles">
+        <Exec Command="npm install" WorkingDirectory="$(ProjectDir)" />
+    </Target>
 
+    <Target Name="CopyPdfJsFiles" BeforeTargets="Build">
+        <Message Text="--- Copying correct PDF.js v4 module files (.mjs)... ---" Importance="high" />
+        <MakeDir Directories="wwwroot/js/pdfjs/web" />
+   
+    
+        <ItemGroup>
+            <PdfJsCoreModules Include="..\node_modules\pdfjs-dist\build\pdf.mjs;..\node_modules\pdfjs-dist\build\pdf.worker.mjs" />
+            <PdfJsViewerFiles Include="..\node_modules\pdfjs-dist\web\pdf_viewer.mjs;..\node_modules\pdfjs-dist\web\pdf_viewer.css" />
+        </ItemGroup>
+    
+        <Copy SourceFiles="@(PdfJsCoreModules)" DestinationFolder="wwwroot/js/pdfjs/" />
+        <Copy SourceFiles="@(PdfJsViewerFiles)" DestinationFolder="wwwroot/js/pdfjs/web\" />
+        
+
+        <Message Text="--- Converting .mjs files to .js files... ---" Importance="high" />
+        
+        <ItemGroup>
+            <MjsFiles Include="wwwroot/js/pdfjs/**/*.mjs" />
+            <JsFiles Include="@(MjsFiles->'%(RootDir)%(Directory)%(Filename).js')" />
+        </ItemGroup>
+
+        <Copy SourceFiles="@(MjsFiles)" DestinationFiles="@(JsFiles)" />
+        
+        <Message Text="--- Removing original .mjs files... ---" Importance="high" />
+        <Delete Files="@(MjsFiles)" />
+
+        <Message Text="--- PDF.js file copy, conversion, and cleanup complete. ---" Importance="high" />
+    </Target>
 </Project>

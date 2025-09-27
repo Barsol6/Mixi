@@ -73,9 +73,7 @@
 
     protected override void OnInitialized()
     {
-        this.PdfPopup.PdfNameChanged += () => InvokeAsync(StateHasChanged);
-        this.PdfPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
-        this.PdfPopup.IsVisibleChange += () => InvokeAsync(LoadDocuments);
+        this.PdfPopup.IsVisibleChange += OnIsVisibleChange;
         base.OnInitialized();
     }
 
@@ -83,7 +81,18 @@
     {
         await LoadDocuments();  
     }
+    
 
+    private async void OnIsVisibleChange()
+    {
+        await InvokeAsync(StateHasChanged);
+        
+        if (!PdfPopup.IsVisible)
+        {
+            await InvokeAsync(LoadDocuments);
+        }
+    }
+    
     private async Task LoadDocuments()
     {
         try
@@ -106,6 +115,7 @@
     private void ViewDocument(int id)
     {
         PdfPopup.PdfName = id;
+        PdfPopup.IsVisible = true;
         _popup?.ShowComponent<PdfViewer>();
     }
 
@@ -151,8 +161,7 @@
 
     public void Dispose()
     {
-        this.PdfPopup.IsVisibleChange -= StateHasChanged;
-        this.PdfPopup.PdfNameChanged -= StateHasChanged;
+        this.PdfPopup.IsVisibleChange -= OnIsVisibleChange;
     }
     
     private void HidePopup()
