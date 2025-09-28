@@ -3,19 +3,21 @@
 @using Mixi.Shared.Models.Account
 @using Mixi.Shared.Models.UI
 @using Mixi.SharedUI.Components.Layout
-@using Mixi.SharedUI.Components.Popups
 @using Mixi.SharedUI.Components.UI
 @using NameGenerator = Mixi.Shared.Models.UI.NameGeneratorPopup
 @layout MenuLayout
 
+@page "/menu"
+
 @inject SignUpPopup SignUp
 @inject NameGenerator NameGenPop
 @inject Account Account
+@inject NavigationManager NavigationManager
 
 @implements IDisposable
 
 
-<div class="@(SignUp.IsLogged ? "container" : "hidden")">
+<div class="container">
         <div class="data-box">
             <div class="logButton">
                 <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.NameGenerator)">
@@ -57,10 +59,10 @@
         switch (menuChoice)
         {
             case MenuChoice.NameGenerator:
-                _popup.ShowComponent<Popups.NameGenerator>();
+                NavigationManager.NavigateTo("/generators/name_generator");
                 break;
             case MenuChoice.PdfViewer:
-                _popup.ShowComponent<PdfViewerChoice>();
+                NavigationManager.NavigateTo("/pdf/viewer_choice");
                 break;
             default:
                 (_logger ?? throw new InvalidOperationException()).LogInformation("Menu choice error");
@@ -80,6 +82,6 @@
         NameGenPop.GeneratedName = String.Empty;
         Account.Password = String.Empty;
         Account.Username = String.Empty;
-        SignUp.IsLogged = false;
+        NavigationManager.NavigateTo("/login");
     }
 }

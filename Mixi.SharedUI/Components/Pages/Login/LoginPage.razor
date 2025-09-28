@@ -3,13 +3,14 @@
 @using Mixi.Shared.Models.UI
 @using Mixi.SharedUI.Components.Layout
 @using Mixi.SharedUI.Components.UI
-@using Mixi.SharedUI.Components.Popups
 
+@page "/login"
 
 @layout LoginLayout
 @inject HttpClient Http
 @inject Account Account
 @inject SignUpPopup SignUpPop
+@inject NavigationManager NavigationManager
 
 @implements IDisposable
 
@@ -89,7 +90,7 @@
             
             if (response.IsSuccessStatusCode)
             {
-                SignUpPop.IsLogged = true;
+                NavigationManager.NavigateTo("/menu");
             }
             else if(response.StatusCode == HttpStatusCode.NotFound)
             {
@@ -97,7 +98,7 @@
             }
             else if(response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                SignUpPop.IsLogged = false;
+                return;
             }
             
         }
@@ -109,7 +110,7 @@
         Account.Username = String.Empty;
         Account.PasswordRepeat = String.Empty;
         Account.UserType = string.Empty; 
-        _popup.ShowComponent<Register>();
+        NavigationManager.NavigateTo("/register");
     }
     
     public void Dispose()
