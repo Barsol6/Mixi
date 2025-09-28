@@ -1,5 +1,6 @@
 ﻿@using Mixi.Shared.Models.UI
 @using Mixi.SharedUI.Components.Layout
+@using Mixi.SharedUI.Components.Pages.Login
 
 @page "/home"
 @page "/"
@@ -8,15 +9,13 @@
 @inject MenuPopup MenuPopup
 @inject SignUpPopup SignUp
 @inject PdfPopup PdfPopup
+@inject NavigationManager NavigationManager
 
 @implements IDisposable
 
-<LoginPage @ref="_loginPage"> </LoginPage>
-<Menu @ref="_menu"> </Menu>
 @code {
 
-    LoginPage _loginPage = new LoginPage();
-    Menu _menu = new Menu();
+
     
     protected override void OnInitialized()
     {
@@ -24,6 +23,7 @@
         this.SignUp.IsLoggedChange += () => InvokeAsync(StateHasChanged);
         this.MenuPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
         this.PdfPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        NavigationManager.NavigateTo("/login");
     }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)

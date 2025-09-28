@@ -30,9 +30,6 @@
       <AdditionalFiles Include="Components\Pages\Menu.razor" />
       <AdditionalFiles Include="Components\Pages\Pdf\PdfViewer.razor" />
       <AdditionalFiles Include="Components\Pages\Pdf\UploadPdf.razor" />
-      <AdditionalFiles Include="Components\Popups\NameGenerator.razor" />
-      <AdditionalFiles Include="Components\Popups\PdfViewerChoice.razor" />
-      <AdditionalFiles Include="Components\Popups\SignIn.razor" />
       <AdditionalFiles Include="Components\UI\MenuPopupContainer.razor" />
       <AdditionalFiles Include="Components\UI\PdfPopupContainer.razor" />
       <AdditionalFiles Include="Components\UI\PopupContainer.razor" />

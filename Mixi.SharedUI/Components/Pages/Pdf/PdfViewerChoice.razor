@@ -2,10 +2,12 @@
 @using Mixi.Shared.Models.UI
 @using Mixi.SharedUI.Components.Pages.Pdf
 @using Mixi.SharedUI.Components.UI
-@inject MenuPopup MenuPopup
 @inject HttpClient Http
 @inject IJSRuntime JsRuntime
 @inject PdfPopup PdfPopup
+@inject NavigationManager NavigationManager
+
+@page "/pdf/viewer_choice"
 
 @implements IDisposable
 
@@ -166,7 +168,7 @@
     
     private void HidePopup()
     {
-        MenuPopup.IsVisible = false;
+        NavigationManager.NavigateTo("/menu");
     }
 
 }

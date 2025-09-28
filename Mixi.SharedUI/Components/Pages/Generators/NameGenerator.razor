@@ -2,12 +2,12 @@
 @using Mixi.Shared.Models.UI
 @using Mixi.Shared.Models.Generators
 
+@page "/generators/name_generator"
 
 
-@inject MenuPopup MenuPopup
 @inject NameGeneratorPopup NameGenPop
 @inject HttpClient Http
-
+@inject NavigationManager NavigationManager
 
 <div class="choicePanel">
             <div class="generatedName">
@@ -74,8 +74,7 @@
     
     private void HidePopup()
     {
-        MenuPopup.IsVisible = false;
-        NameGenPop.GeneratedName = String.Empty;
+        NavigationManager.NavigateTo("/menu");
     }
 
     private async Task GenerateName(NameType nameType, string sex)
