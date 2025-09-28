@@ -27,7 +27,7 @@
 ### Clone the repository
 
 ```bash
-git clone https://github.com/Barsol6/mixi.git
+git clone https://github.com/Barsol6/Mixi.git
 cd mixi
 ```
 
