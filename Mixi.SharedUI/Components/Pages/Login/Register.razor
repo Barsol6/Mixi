@@ -7,6 +7,7 @@
 @inject HttpClient Http
 @inject Account Account
 @inject SignUpPopup SignUpPop
+@inject NavigationManager NavigationManager
 
 @implements IDisposable
 
@@ -46,6 +47,13 @@
         <div class="logButton">
             <div class="logButton-content">
                 SIGN UP
+            </div>
+        </div>
+    </div>
+    <div class="data-box" @onclick="Close">
+        <div class="logButton">
+            <div class="closeButtonBox">
+                Close
             </div>
         </div>
     </div>
@@ -98,6 +106,7 @@
                 Account.Username = String.Empty;
                 Account.Password = String.Empty;
                 Account.PasswordRepeat = String.Empty;
+                NavigationManager.NavigateTo("/login");
             }
             StateHasChanged();
         }
@@ -106,6 +115,12 @@
     public void Dispose()
     {
         this.SignUpPop.IsLoggedChange -= StateHasChanged;
+    }
+
+    public void Close()
+    {
+        NavigationManager.NavigateTo("/login");
+        StateHasChanged();
     }
 
 
