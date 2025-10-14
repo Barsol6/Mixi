@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Mixi.Api.Modules.Pdf;
+using Mixi.Api.Modules.Users;
 
 namespace Mixi.Api.Modules.Database.Repositories.PdfRepositories;
 
@@ -32,13 +33,11 @@ public class PdfRepository:IPdfRepository
         }
     }
 
-    public async Task<List<PdfDocument>> GetAllAsync()
+    public async Task<List<PdfDocument>> GetAllAsync(string id)
     {
         try
         {
-            return await _dbContext.PdfDocuments
-                .OrderByDescending(x => x.CreatedAt)
-                .ToListAsync();
+            return await _dbContext.PdfDocuments.Where(x => x.UserName == id).ToListAsync();
         }
         catch (Exception e)
         {
@@ -93,6 +92,7 @@ public class PdfRepository:IPdfRepository
                 existingPdfDocument.StorageStrategy = pdfDocument.StorageStrategy;
                 existingPdfDocument.FormData = pdfDocument.FormData;
                 existingPdfDocument.UpdatedAt = DateTime.UtcNow;
+                existingPdfDocument.UserName = pdfDocument.UserName;
 
                 _dbContext.Update(existingPdfDocument);
 

@@ -1,9 +1,10 @@
 ﻿@using Mixi.Shared.Models.UI
 
-@page "/pdf/upload"
+@page "/pdf/upload/{UserName}"
 
 @inject HttpClient Http
 @inject PdfPopup PdfPopup
+@inject NavigationManager NavigationManager
 
 
 @implements IDisposable
@@ -50,6 +51,9 @@
     private string _errorMessage = String.Empty;
     private string _fileName = String.Empty;
     
+    [Parameter]
+    public string UserName { get; set; }
+    
     protected override void OnInitialized()
     {
         this.PdfPopup.PdfNameChanged += () => InvokeAsync(StateHasChanged);
@@ -93,7 +97,7 @@
             content.Add(streamContent, "FormFile", _selectedFile.Name);
             content.Add(new StringContent(_fileName), "FileName");
 
-            var response = await Http.PostAsync("api/Pdf/upload", content);
+            var response = await Http.PostAsync($"api/Pdf/{UserName}/upload", content);
 
             if (response.IsSuccessStatusCode)
             {
@@ -121,7 +125,7 @@
     
     private async void ClosePopup()
     {
-        PdfPopup.IsVisible = false;
+       NavigationManager.NavigateTo($"/pdf/viewer_choice/{UserName}");
     }
     
     public void Dispose()

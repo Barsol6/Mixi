@@ -2,7 +2,7 @@
 @using Mixi.Shared.Models.UI
 @using Mixi.Shared.Models.Generators
 
-@page "/generators/name_generator"
+@page "/generators/name_generator/{UserName}"
 
 
 @inject NameGeneratorPopup NameGenPop
@@ -69,12 +69,14 @@
     private bool _isGenerating = false;
     private List<string> _sex = ["Male", "Female"];
     
+    [Parameter]
+    public string UserName { get; set; }
     
     private string? _generatedName = String.Empty;
     
     private void HidePopup()
     {
-        NavigationManager.NavigateTo("/menu");
+        NavigationManager.NavigateTo($"/menu/{UserName}");
     }
 
     private async Task GenerateName(NameType nameType, string sex)

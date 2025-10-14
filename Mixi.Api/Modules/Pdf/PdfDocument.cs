@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Mixi.Api.Modules.Users;
 
 namespace Mixi.Api.Modules.Pdf;
 
@@ -25,10 +26,17 @@ public class PdfDocument
     public DateTime CreatedAt { get; set; } 
     
     public DateTime UpdatedAt { get; set; }
+    
+    [Required]
+    [MaxLength(255)] 
+    public string UserName { get; set; }
+    
+    public int? UserId { get; set; }
 
+    public User? User { get; set; } 
     
 
-   
+
 }
 public enum StorageStrategy
 {

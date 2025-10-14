@@ -12,6 +12,10 @@
         <PackageReference Include="iTextSharp" Version="5.5.13.3" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.14"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.12" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.12">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.12" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.12" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
@@ -25,6 +29,10 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Mixi.Shared.Models\Mixi.Shared.Models.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations\" />
     </ItemGroup>
 
 </Project>

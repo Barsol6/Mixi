@@ -8,11 +8,11 @@ using Mixi.Api.Modules.Database;
 
 #nullable disable
 
-namespace mixi.Migrations
+namespace Mixi.Api.Migrations
 {
     [DbContext(typeof(MixiDbContext))]
-    [Migration("20250720151804_Initial")]
-    partial class Initial
+    [Migration("20251010174842_Mixiv2")]
+    partial class Mixiv2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,7 +20,7 @@ namespace mixi.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.12");
 
-            modelBuilder.Entity("mixi.Modules.Pdf.PdfDocument", b =>
+            modelBuilder.Entity("Mixi.Api.Modules.Pdf.PdfDocument", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -55,6 +55,14 @@ namespace mixi.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt")
@@ -63,10 +71,12 @@ namespace mixi.Migrations
                     b.HasIndex("Name")
                         .HasDatabaseName("IX_PdfDocument_Name");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("PdfDocuments");
                 });
 
-            modelBuilder.Entity("mixi.Modules.Users.User", b =>
+            modelBuilder.Entity("Mixi.Api.Modules.Users.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -76,17 +86,40 @@ namespace mixi.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Password")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserType")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Username")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_Users_CreatedAt");
+
+                    b.HasIndex("Username")
+                        .HasDatabaseName("IX_Users_Username");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Mixi.Api.Modules.Pdf.PdfDocument", b =>
+                {
+                    b.HasOne("Mixi.Api.Modules.Users.User", "User")
+                        .WithMany("PdfDocuments")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Mixi.Api.Modules.Users.User", b =>
+                {
+                    b.Navigation("PdfDocuments");
                 });
 #pragma warning restore 612, 618
         }
