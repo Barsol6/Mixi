@@ -19,8 +19,8 @@ namespace Mixi.Api.Controllers;
             _pdfRepository = pdfRepository;
         }
         
-        [HttpPost ("upload")]
-        public async Task<IActionResult> UploadPdf([FromForm] UploadPdfRequests request)
+        [HttpPost ("{id}/upload")]
+        public async Task<IActionResult> UploadPdf([FromForm] UploadPdfRequests request, string id)
         {
             if (request.FormFile == null || request.FormFile.Length == 0 )
             {
@@ -42,7 +42,8 @@ namespace Mixi.Api.Controllers;
                 {
                     Name = request.FileName,
                     Content = fileBytes,
-                    FormData = "{}"
+                    FormData = "{}",
+                    UserName = id,
                 };
 
                 var newId = await _pdfRepository.SaveAsync(document, fileBytes);
@@ -97,10 +98,10 @@ namespace Mixi.Api.Controllers;
         }
 
 
-        [HttpGet ("getlist")]
-        public async Task<ActionResult<IEnumerable<PdfListItemDto>>> GetPdfList()
+        [HttpGet ("{id}/getlist")]
+        public async Task<ActionResult<IEnumerable<PdfListItemDto>>> GetPdfList(string id)
         {
-            var documents = await _pdfRepository.GetAllAsync();
+            var documents = await _pdfRepository.GetAllAsync(id);
             
             if (documents == null)
             {
@@ -110,7 +111,7 @@ namespace Mixi.Api.Controllers;
             return Ok(documents.Select(doc => new PdfListItemDto
             {
                 Id = doc.Id,
-                Name = doc.Name
+                Name = doc.Name ?? "No name"
             }).ToList());
         }
         

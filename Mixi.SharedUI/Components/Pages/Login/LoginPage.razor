@@ -14,7 +14,7 @@
 
 @implements IDisposable
 
-<div class="@(SignUpPop.IsLogged ? "hidden" : "container")">
+<div class="container">
     
     <div class="@(SignUpPop.MouseStatus ? "loginContainerAfter" : "loginContainerBefore")" onmouseenter="@MouseEnter" onmouseleave="@MouseLeave">
     <div class="title">
@@ -73,6 +73,8 @@
         base.OnInitializedAsync();
     }
 
+    [Parameter]
+    public string UserName { get; set; }
 
     private async Task Enter(KeyboardEventArgs e)
     {
@@ -87,10 +89,12 @@
         if (Account.Username != String.Empty && Account.Password != String.Empty)
         {
             var response = await Http.PostAsJsonAsync("api/User/login", Account);
+
+            UserName = Account.Username;
             
             if (response.IsSuccessStatusCode)
             {
-                NavigationManager.NavigateTo("/menu");
+                NavigationManager.NavigateTo($"/menu/{UserName}");
             }
             else if(response.StatusCode == HttpStatusCode.NotFound)
             {
