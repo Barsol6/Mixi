@@ -27,10 +27,6 @@ public class MixiDbContext:DbContext
                 .HasDatabaseName("IX_Users_Username");
             entity.HasIndex(x => x.CreatedAt)
                 .HasDatabaseName("IX_Users_CreatedAt");
-            entity.HasMany(x => x.PdfDocuments)
-                .WithOne(x => x.User)
-                .HasForeignKey(x => x.UserId)
-                .IsRequired(false);
         });
         
         modelBuilder.Entity<PdfDocument>(entity =>
@@ -59,6 +55,7 @@ public class MixiDbContext:DbContext
                 .IsRequired()
                 .HasMaxLength(255);
         });
+
         
         base.OnModelCreating(modelBuilder);
     }

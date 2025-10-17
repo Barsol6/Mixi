@@ -5,3 +5,13 @@ riderModule.iml
 /_ReSharper.Caches/
 node_modules/
 Mixi.SharedUI/wwwroot/js/pdfjs
+.idea/
+.vs/
+*.sln.iml
+secrets.json
+~/.microsoft/usersecrets/
+*.nupkg
+*.log
+*.user
+*.suo
+*.sln.docstates

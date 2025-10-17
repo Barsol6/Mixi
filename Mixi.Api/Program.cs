@@ -28,7 +28,7 @@ builder.Services.AddSingleton<CharacterNameGenerator, CharacterNameGenerator>();
 
 builder.Services.AddDbContext<MixiDbContext>(options =>
 {
-    options.UseSqlite("Data Source = mixi.db");
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 builder.Services.AddCors(options =>
