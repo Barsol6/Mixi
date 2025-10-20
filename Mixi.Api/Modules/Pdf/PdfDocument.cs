@@ -1,42 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Mixi.Api.Modules.Users;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Mixi.Api.Modules.Pdf;
 
 public class PdfDocument
 {
-    
-    [Key]
-    public int Id { get; set; }
-    
-    [Required]
-    [MaxLength(255)]
-    public string? Name { get; set; }
-    
-    [Required]
-    public byte[] Content { get; set; }
-    
-    [MaxLength(512)]
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; } = string.Empty;
+    public string FileName { get; set; } 
+    public byte[]? FileContent { get; set; }
     public string? FilePath { get; set; }
-    
+    public DateTime CreatedAt { get; set; }
     public StorageStrategy StorageStrategy { get; set; }
-    
     public string? FormData { get; set; }
-    
-    public DateTime CreatedAt { get; set; } 
-    
     public DateTime UpdatedAt { get; set; }
-    
-    [Required]
-    [MaxLength(255)] 
-    public string UserName { get; set; }
-    
-    public int? UserId { get; set; }
-
-    public User? User { get; set; } 
-    
-
-
+    public string? UserName { get; set; }
 }
 public enum StorageStrategy
 {

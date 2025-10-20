@@ -1,30 +1,31 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text.RegularExpressions;
 using Mixi.Api.Modules.Pdf;
-using Mixi.Api.Modules.Users;
+using MongoDB.Bson;
+using MongoDB.Driver;
+
 
 namespace Mixi.Api.Modules.Database.Repositories.PdfRepositories;
 
 public class PdfRepository:IPdfRepository
 {
-    private readonly MixiDbContext _dbContext;
+    private readonly MongoMixiDbContext _mongoDbContext;
     private readonly ILogger<PdfRepository> _logger;
     private readonly IFileStorageService _fileStorageService;
     
-    public PdfRepository(MixiDbContext dbContext,
+    public PdfRepository(MongoMixiDbContext dbContext,
         ILogger<PdfRepository> logger,
         IFileStorageService fileStorageService)
     {
-        _dbContext = dbContext;
+        _mongoDbContext = dbContext;
         _logger = logger;
         _fileStorageService = fileStorageService;
     }
     
-    public async Task<PdfDocument?> GetByIdAsync(int id)
+    public async Task<PdfDocument?> GetByIdAsync(string id)
     {
         try
         {
-            var document = await _dbContext.PdfDocuments.FindAsync(id);
-            return document;
+            return await _mongoDbContext.PdfDocuments.Find(p => p.Id == id).FirstOrDefaultAsync();
         }
         catch (Exception e)
         {
@@ -33,11 +34,15 @@ public class PdfRepository:IPdfRepository
         }
     }
 
-    public async Task<List<PdfDocument>> GetAllAsync(string id)
+    public async Task<List<PdfDocument>> GetAllAsync(string userName)
     {
         try
         {
-            return await _dbContext.PdfDocuments.Where(x => x.UserName == id).ToListAsync();
+            var filter = Builders<PdfDocument>.Filter.Regex(
+                x => x.UserName,
+                new MongoDB.Bson.BsonRegularExpression($"^{Regex.Escape(userName)}$", "i")
+            );
+            return await _mongoDbContext.PdfDocuments.Find(filter).ToListAsync();
         }
         catch (Exception e)
         {
@@ -46,13 +51,13 @@ public class PdfRepository:IPdfRepository
         }
     }
     
-    public async Task<int> SaveAsync(PdfDocument pdfDocument, byte[] fileContent)
+    public async Task<string> SaveAsync(PdfDocument pdfDocument, byte[] fileContent)
     {
         if (fileContent == null || fileContent.Length == 0)
         {
             throw new ArgumentException("File content cannot be null or empty");
         }
-        using var transaction = await _dbContext.Database.BeginTransactionAsync();
+    
 
         try
         {
@@ -61,18 +66,21 @@ public class PdfRepository:IPdfRepository
 
             if (pdfDocument.StorageStrategy == StorageStrategy.Database)
             {
-                pdfDocument.Content = fileContent;
+                pdfDocument.FileContent = fileContent;
                 pdfDocument.FilePath = null;
             }
             else
             {
-                pdfDocument.FilePath = await _fileStorageService.SaveFileAsync(fileContent, pdfDocument.Name);
-                pdfDocument.Content = Array.Empty<byte>();
+                pdfDocument.FilePath = await _fileStorageService.SaveFileAsync(fileContent, pdfDocument.FileName);
+                pdfDocument.FileContent = Array.Empty<byte>();
             }
 
-            if (pdfDocument.Id != 0)
+            var isNew = pdfDocument.Id == string.Empty;
+            
+            if (!isNew)
             {
-                var existingPdfDocument = await _dbContext.PdfDocuments.FindAsync(pdfDocument.Id);
+                var existingPdfDocument = await _mongoDbContext.PdfDocuments.Find(x => x.Id == pdfDocument.Id).FirstOrDefaultAsync();
+               
                 if (existingPdfDocument is null)
                 {
                     throw new KeyNotFoundException($"PdfDocument with id {pdfDocument.Id} not found");
@@ -86,18 +94,13 @@ public class PdfRepository:IPdfRepository
                     await _fileStorageService.DeleteFileAsync(existingPdfDocument.FilePath);
                 }
 
-                existingPdfDocument.Name = pdfDocument.Name;
-                existingPdfDocument.Content = pdfDocument.Content;
+                existingPdfDocument.FileName = pdfDocument.FileName;
+                existingPdfDocument.FileContent = pdfDocument.FileContent;
                 existingPdfDocument.FilePath = pdfDocument.FilePath;
                 existingPdfDocument.StorageStrategy = pdfDocument.StorageStrategy;
                 existingPdfDocument.FormData = pdfDocument.FormData;
                 existingPdfDocument.UpdatedAt = DateTime.UtcNow;
                 existingPdfDocument.UserName = pdfDocument.UserName;
-
-                _dbContext.Update(existingPdfDocument);
-
-                pdfDocument = existingPdfDocument;
-
             }
             else
             {
@@ -108,18 +111,15 @@ public class PdfRepository:IPdfRepository
                 {
                     pdfDocument.FormData = "{}";
                 }
-
-                _dbContext.Add(pdfDocument);
+                
+                await _mongoDbContext.PdfDocuments.InsertOneAsync(pdfDocument);
             }
+            
 
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return pdfDocument.Id;
+            return pdfDocument.Id.ToString();;
         }
         catch (Exception e)
         {
-            await transaction.RollbackAsync();
             
             if (pdfDocument.StorageStrategy == StorageStrategy.File &&
                 !string.IsNullOrEmpty(pdfDocument.FilePath))
@@ -131,11 +131,11 @@ public class PdfRepository:IPdfRepository
         }
     }
     
-    public async Task<byte[]?> GetFileContentAsync(int id)
+    public async Task<byte[]?> GetFileContentAsync(string id)
     {
         try
         {
-            var document = await _dbContext.PdfDocuments.FindAsync(id);
+            var document = await GetByIdAsync(id);
             if (document is null)
             {
                 _logger.LogError($"PdfDocument with id {id} not found");
@@ -144,26 +144,16 @@ public class PdfRepository:IPdfRepository
 
             if (document.StorageStrategy == StorageStrategy.Database)
             {
-                return document.Content;
+                return document.FileContent;
             }
             else if (document.StorageStrategy == StorageStrategy.File &&
                      !string.IsNullOrEmpty(document.FilePath))
             {
                 return await _fileStorageService.GetFileAsync(document.FilePath);
             }
-            var content = await _fileStorageService.GetFileAsync(document.FilePath);
-            if (content == null)
-            {
-                _logger.LogWarning("File content not found for document {Id} at path: {FilePath}", 
-                    id, document.FilePath);
-                if (document.Content != null && document.Content.Length > 0)
-                {
-                    _logger.LogInformation("Using database content as fallback for document {Id}", id);
-                    return document.Content;
-                }
-            }
 
-            return content;
+            _logger.LogError($"File content for PdfDocument with id {id} not found");
+            return null;
         }
         catch (Exception e)
         {
@@ -172,13 +162,13 @@ public class PdfRepository:IPdfRepository
         }
     }
 
-    public async Task<bool> UpdateFormDatasAsync(int id, string formData)
+    public async Task<bool> UpdateFormDatasAsync(string id, string formData)
     {
-        using var transaction = await _dbContext.Database.BeginTransactionAsync();
-
         try
         {
-            var pdfDocument = await _dbContext.PdfDocuments.FindAsync(id);
+            
+            
+            var pdfDocument = await _mongoDbContext.PdfDocuments.Find(x => x.Id == id).FirstOrDefaultAsync();
             
             if (pdfDocument is null)
             {
@@ -189,27 +179,24 @@ public class PdfRepository:IPdfRepository
             pdfDocument.FormData = formData;
             pdfDocument.UpdatedAt = DateTime.UtcNow;
             
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
+            await _mongoDbContext.PdfDocuments.ReplaceOneAsync(x => x.Id == id, pdfDocument);
             
             _logger.LogInformation($"FormData for PdfDocument with id {id} updated");
             return true;
         }
         catch (Exception e)
         {
-            await transaction.RollbackAsync();
             _logger.LogError(e, "Error while updating form data");
             throw;
         }
     }
     
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(string id)
     {
-        using var transaction = await _dbContext.Database.BeginTransactionAsync();
-
+       
         try
         {
-            var document = await _dbContext.PdfDocuments.FindAsync(id);
+            var document = await _mongoDbContext.PdfDocuments.Find(x => x.Id == id).FirstOrDefaultAsync();
             if (document is null)
             {
                 _logger.LogError($"PdfDocument with id {id} not found");
@@ -223,16 +210,13 @@ public class PdfRepository:IPdfRepository
                 _logger.LogInformation($"File {document.FilePath} deleted");
             }
             
-            _dbContext.PdfDocuments.Remove(document);
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-            
+            await _mongoDbContext.PdfDocuments.DeleteOneAsync(x => x.Id == document.Id);
+     
             _logger.LogInformation($"PdfDocument with id {id} deleted");
             return true;
         }
         catch (Exception e)
         {
-            await transaction.RollbackAsync();
             _logger.LogError(e, "Error while deleting pdf document");
             throw;
         }
@@ -243,10 +227,11 @@ public class PdfRepository:IPdfRepository
     {
         try
         {
-           return await _dbContext.PdfDocuments
-               .OrderByDescending(x => x.CreatedAt)
-                .Take(count)
-                .ToListAsync();
+           return await _mongoDbContext.PdfDocuments
+               .Find(_ => true )
+               .SortByDescending(x => x.CreatedAt)
+               .Limit(count)
+               .ToListAsync();
         }
         catch (Exception ex)
         {

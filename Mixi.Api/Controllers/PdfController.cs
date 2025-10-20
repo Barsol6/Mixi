@@ -5,6 +5,7 @@ using Mixi.Api.Modules.Database.Repositories.PdfRepositories;
 using System.Collections.Generic;
 using System.Linq;
 using Mixi.Api.Requests;
+using MongoDB.Bson;
 
 namespace Mixi.Api.Controllers;
 
@@ -40,8 +41,8 @@ namespace Mixi.Api.Controllers;
 
                 var document = new PdfDocument
                 {
-                    Name = request.FileName,
-                    Content = fileBytes,
+                    FileName = request.FileName,
+                    FileContent = fileBytes,
                     FormData = "{}",
                     UserName = id,
                 };
@@ -57,7 +58,7 @@ namespace Mixi.Api.Controllers;
         }
         
         [HttpGet ("{id}/content")]
-        public async Task<IActionResult> GetPdf(int id)
+        public async Task<IActionResult> GetPdf(string id)
         {
             var pdfContent = await _pdfRepository.GetFileContentAsync(id);
 
@@ -72,7 +73,7 @@ namespace Mixi.Api.Controllers;
         }
         
         [HttpGet ("{id}/getformdata")]
-        public async Task<IActionResult> GetPdfFormData(int id)
+        public async Task<IActionResult> GetPdfFormData(string id)
         {
             var document = await _pdfRepository.GetByIdAsync(id);
 
@@ -85,7 +86,7 @@ namespace Mixi.Api.Controllers;
         }
         
         [HttpPut ("{id}/updateformdata")]
-        public async Task<IActionResult> UpdatePdfFormData(int id, [FromBody] FormDataUpdateDto dto)
+        public async Task<IActionResult> UpdatePdfFormData(string id, [FromBody] FormDataUpdateDto dto)
         {
 
             if (dto == null || string.IsNullOrWhiteSpace(dto.Data))
@@ -108,15 +109,17 @@ namespace Mixi.Api.Controllers;
                 return Ok(new List<PdfListItemDto>());
             }
             
-            return Ok(documents.Select(doc => new PdfListItemDto
+            var documentss = documents.Select(doc => new PdfListItemDto
             {
                 Id = doc.Id,
-                Name = doc.Name ?? "No name"
-            }).ToList());
+                Name = doc.FileName ?? "No name"
+            }).ToList();
+            
+            return Ok(documentss);
         }
         
         [HttpDelete("{id}/delete")]
-        public async Task<IActionResult> DeletePdf(int id)
+        public async Task<IActionResult> DeletePdf(string id)
         {
             var success = await _pdfRepository.DeleteAsync(id);
 
@@ -135,7 +138,7 @@ namespace Mixi.Api.Controllers;
         
         public class PdfListItemDto
         {
-            public int Id { get; set; }
+            public string Id { get; set; }
             public string Name { get; set; }
         }
     }

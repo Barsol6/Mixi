@@ -2,6 +2,7 @@
 @using Mixi.Shared.Models.UI
 @using Mixi.SharedUI.Components.Pages.Pdf
 @using Mixi.SharedUI.Components.UI
+@using MongoDB.Bson
 @inject HttpClient Http
 @inject IJSRuntime JsRuntime
 @inject PdfPopup PdfPopup
@@ -26,8 +27,9 @@
            </div>
        </div>
        
-       @if (_documents != null && _documents.Any() && _documents[0].Id!=0)
+       @if (_documents != null)
        {
+           dupa();
            <div>
                <h4>Your character sheets:</h4>
                @foreach (var document in _documents)
@@ -50,6 +52,7 @@
        {
            <p>You have no character sheets yet.</p>
        }
+       
        <div class="data-box">
            <div class="logButton">
                <div class="closeButton-content " @onclick="() => HidePopup()">
@@ -66,9 +69,10 @@
     [Parameter]
     public string UserName { get; set; }
     
+    private string dupa123 = "false";
     private class PdfListItemDto
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
     }
     
@@ -81,8 +85,12 @@
     {
         await LoadDocuments();  
     }
-    
 
+     private async void dupa()
+     {
+         Console.WriteLine(dupa123);
+     }
+    
     private async void OnIsVisibleChange()
     {
         await InvokeAsync(StateHasChanged);
@@ -99,6 +107,7 @@
         {
             _isLoading = true;
             StateHasChanged();
+            Console.WriteLine(UserName);
             _documents = await Http.GetFromJsonAsync<List<PdfListItemDto>>($"api/Pdf/{UserName}/getlist");
         }
         catch (Exception e)
@@ -107,12 +116,13 @@
         }
         finally
         {
+           
             _isLoading = false;
             StateHasChanged();
         }
     }
 
-    private void ViewDocument(int id)
+    private void ViewDocument(string id)
     {
         PdfPopup.PdfName = id;
         PdfPopup.IsVisible = true;
@@ -125,7 +135,7 @@
     }
     
 
-    private async void DeletePdf(int id)
+    private async Task DeletePdf(string id)
     {
 
         if (!await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this character sheet? This cannot be undone."))
@@ -168,5 +178,5 @@
     {
         NavigationManager.NavigateTo($"/menu/{UserName}");
     }
-
+    
 }

@@ -1,4 +1,6 @@
-﻿@using Mixi.Shared.Models.UI
+﻿@using System.Security.AccessControl
+@using Mixi.Shared.Models.UI
+@using MongoDB.Bson
 
 @page "/pdf/upload/{UserName}"
 
@@ -121,7 +123,7 @@
         }
     }
     
-    private class UploadResult { public int id { get; set; } }
+    private class UploadResult { public string id { get; set; } }
     
     private async void ClosePopup()
     {

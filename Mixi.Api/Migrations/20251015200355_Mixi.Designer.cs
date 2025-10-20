@@ -11,7 +11,7 @@ using Mixi.Api.Modules.Database;
 
 namespace Mixi.Api.Migrations
 {
-    [DbContext(typeof(MixiDbContext))]
+    [DbContext(typeof(MSSQLMixiDbContext))]
     [Migration("20251015200355_Mixi")]
     partial class Mixi
     {

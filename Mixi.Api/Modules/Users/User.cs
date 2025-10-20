@@ -18,8 +18,7 @@ public class User
     public string UserType { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public ICollection<PdfDocument> PdfDocuments { get; } = new List<PdfDocument>();
+    
 
 
 }
