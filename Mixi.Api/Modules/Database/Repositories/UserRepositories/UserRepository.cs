@@ -5,9 +5,9 @@ namespace Mixi.Api.Modules.Database.Repositories.UserRepositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly MixiDbContext _dbContext;
+    private readonly MSSQLMixiDbContext _dbContext;
 
-    public UserRepository(MixiDbContext dbContext)
+    public UserRepository(MSSQLMixiDbContext dbContext)
     {
         _dbContext = dbContext;
     }

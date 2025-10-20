@@ -5,6 +5,7 @@ using Mixi.Api.Modules.Database.Repositories.PdfRepositories;
 using Mixi.Api.Modules.Database.Repositories.UserRepositories;
 using Mixi.Api.Modules.Generators.CharacterNameGenerator;
 using Mixi.Api.Modules.Pdf;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,9 +27,16 @@ builder.Services.AddSingleton<ICharacterNameGenerator, CharacterNameGenerator>()
 builder.Services.AddSingleton<CharacterNameGenerator, CharacterNameGenerator>();
 
 
-builder.Services.AddDbContext<MixiDbContext>(options =>
+builder.Services.AddDbContext<MSSQLMixiDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+builder.Services.AddSingleton<IMongoClient>(new MongoClient(builder.Configuration.GetConnectionString("MongoDbConnection")));
+builder.Services.AddSingleton<MongoMixiDbContext>(sp =>
+{
+    var client = sp.GetRequiredService<IMongoClient>();
+    return new MongoMixiDbContext(client, "MixiDB");
 });
 
 builder.Services.AddCors(options =>
@@ -73,9 +81,10 @@ if (app.Environment.IsDevelopment())
 {
     using (var scope = app.Services.CreateScope())
     {
-        var db = scope.ServiceProvider.GetRequiredService<MixiDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<MSSQLMixiDbContext>();
         db.Database.Migrate();
     }
+    
 }
 
 

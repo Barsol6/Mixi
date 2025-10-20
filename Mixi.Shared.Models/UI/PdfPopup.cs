@@ -1,12 +1,14 @@
-﻿namespace Mixi.Shared.Models.UI;
+﻿using MongoDB.Bson;
+
+namespace Mixi.Shared.Models.UI;
 
 public class PdfPopup
 {
-    private int _pdfName;
+    private string _pdfName;
     
     public event Action? PdfNameChanged;
     
-    public int PdfName
+    public string PdfName
     {
         get => _pdfName;
         set

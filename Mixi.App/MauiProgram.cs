@@ -15,10 +15,9 @@ public static class MauiProgram
 
         builder.Services.AddMauiBlazorWebView();
 
-#if DEBUG
+
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
-#endif
 
         builder.Services.AddScoped(sp => new HttpClient
         {
@@ -30,6 +29,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<NameGeneratorPopup,NameGeneratorPopup>();
         builder.Services.AddSingleton<PdfPopup,PdfPopup>();
         builder.Services.AddSingleton<Account, Account>();
+        
         
         return builder.Build();
     }
