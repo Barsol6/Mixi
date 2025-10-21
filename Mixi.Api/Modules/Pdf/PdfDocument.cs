@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Mixi.Api.Modules.Users;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Mixi.Api.Modules.Pdf;
