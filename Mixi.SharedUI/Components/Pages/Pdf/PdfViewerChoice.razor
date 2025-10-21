@@ -15,14 +15,14 @@
 <div class="pdfChoicePanel">
    @if (_isLoading)
    {
-       <p>Ładowanie dokumentów...</p>
+       <p>Loading Character Sheets...</p>
    }
    else
    {
        <div class="data-box">
            <div class="logButton" @onclick="UploadNewPdf">
                <span class="logButton-content">
-                   DODAJ NOWY PDF
+                    ADD NEW CHARACTER SHEET
                </span>
            </div>
        </div>
@@ -102,7 +102,6 @@
         {
             _isLoading = true;
             StateHasChanged();
-            Console.WriteLine(UserName);
             _documents = await Http.GetFromJsonAsync<List<PdfListItemDto>>($"api/Pdf/{UserName}/getlist");
         }
         catch (Exception e)
