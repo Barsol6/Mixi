@@ -35,4 +35,8 @@
       <ProjectReference Include="..\Mixi.Shared.Models\Mixi.Shared.Models.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Modules\Database\Repositories\MusicRepository\" />
+    </ItemGroup>
+
 </Project>
