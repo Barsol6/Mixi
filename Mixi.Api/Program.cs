@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Mixi.Api.Modules.Account;
 using Mixi.Api.Modules.Database;
+using Mixi.Api.Modules.Database.Repositories.NotesRepositories;
 using Mixi.Api.Modules.Database.Repositories.PdfRepositories;
 using Mixi.Api.Modules.Database.Repositories.UserRepositories;
 using Mixi.Api.Modules.Generators.CharacterNameGenerator;
@@ -22,6 +23,7 @@ builder.Services.AddScoped<PasswordHash>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPdfRepository, PdfRepository>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+builder.Services.AddScoped<INotesRepository, NotesRepository>();
 builder.Services.AddScoped<SignUp>();
 builder.Services.AddSingleton<ICharacterNameGenerator, CharacterNameGenerator>();
 builder.Services.AddSingleton<CharacterNameGenerator, CharacterNameGenerator>();

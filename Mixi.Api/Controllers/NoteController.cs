@@ -25,19 +25,20 @@ public class NoteController : ControllerBase
         {
             var note = new Note
             {
-                Text = request.NoteText,
+                Text = String.Empty,
                 CreatedAt = DateTime.Now,
                 UserName = id,
                 UpdatedAt = DateTime.Now,
-                Name = request.NoteName
+                Name = request.NoteName,
             };
 
             var newId = await _notesRepository.SaveAsync(note);
-
+            
             return Ok(new { id = newId });
         }
         catch (Exception e)
         {
+            Console.WriteLine(e);
             return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
@@ -68,8 +69,9 @@ public class NoteController : ControllerBase
         var notesList = notes.Select(note => new NoteListItemDto
         {
             Id = note.Id,
-            Name = note.Name
+            Name = note.Name ?? "No name"
         }).ToList();
+        
         
         return Ok(notesList);
     }
@@ -86,11 +88,25 @@ public class NoteController : ControllerBase
         
         return NoContent();
     }
+
+    [HttpPut("{id}/save")]
+    public async Task<IActionResult> SaveNote(string id, [FromBody] NoteDataUpdate note)
+    {
+        await _notesRepository.SaveAsync(id, note.Data, note.Name);
+        return Ok();
+    }
     
     
     public class NoteListItemDto
     {
         public string Id { get; set; }
         public string Name { get; set; }
+    }
+
+    public class NoteDataUpdate
+    {
+        public string Data { get; set; }
+        
+        public string? Name { get; set; }
     }
 }

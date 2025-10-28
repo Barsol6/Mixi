@@ -110,6 +110,7 @@ public class PdfRepository:IPdfRepository
                 if (string.IsNullOrEmpty(pdfDocument.FormData))
                 {
                     pdfDocument.FormData = "{}";
+                    pdfDocument.FormData = "{}";
                 }
                 
                 await _mongoDbContext.PdfDocuments.InsertOneAsync(pdfDocument);

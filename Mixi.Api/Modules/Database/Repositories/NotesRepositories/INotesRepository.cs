@@ -5,7 +5,8 @@ namespace Mixi.Api.Modules.Database.Repositories.NotesRepositories;
 public interface INotesRepository
 {
     Task<List<Note>> GetAllAsync(string userName);
-    Task<Note> GetByIdAsync(string id);
+    Task<Note?> GetByIdAsync(string id);
     Task<string> SaveAsync(Note note);
     Task<bool> DeleteAsync(string id);
+    Task<bool> SaveAsync(string id, string text, string name);
 }

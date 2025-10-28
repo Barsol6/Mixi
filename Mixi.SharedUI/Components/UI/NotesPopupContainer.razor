@@ -1,5 +1,9 @@
 @using Mixi.Shared.Models.UI
+
+
 @inject NotePopup Notes;
+
+@implements IDisposable
 
 <div class="@(Notes.IsVisible ? "popup" : "hidden")">
     @if (ComponentType is not null)

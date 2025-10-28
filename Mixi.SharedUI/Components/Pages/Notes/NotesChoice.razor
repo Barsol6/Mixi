@@ -1,12 +1,10 @@
 @using Mixi.Shared.Models.UI
-@using Mixi.SharedUI.Components.UI
 
 @inject HttpClient Http
 @inject NotePopup Note
 @inject IJSRuntime JsRuntime
 @inject NavigationManager NavigationManager
 
-@implements IDisposable 
 
 @page "/notes/notes_choice/{UserName}"
 
@@ -20,7 +18,7 @@
         <div class="data-box">
             <div class="logButton" @onclick="CreateNewNote">
                 <span class="logButton-content">
-                    ADD NEW CHARACTER SHEET
+                    ADD NEW NOTE
                 </span>
             </div>
         </div>
@@ -33,7 +31,7 @@
                 {
                     <div class="data-box">
                         <div class="logButton" >
-                            <span class="logButton-content" @onclick="() => ViewNote(note.Id)">
+                            <span class="logButton-content" @onclick="() => ViewNote(note.Id, note.Name)">
                                 @note.Name
                             </span>
                             <span class="logButton-content" @onclick="() => DeleteNote(note.Id)">
@@ -50,7 +48,9 @@
         }
         <div class="data-box">
             <div class="logButton">
-                <div class="logButton-content" @onclick="() => HidePopup()"></div>
+                <div class="closeButton-content" @onclick="() => HidePopup()">
+                    CLOSE
+                </div>
             </div>
         </div>
         
@@ -67,7 +67,11 @@
         public string Name { get; set; }
     }
 
-    private NotesPopupContainer? _popup;
+    private class NoteId
+    {
+        public string Id { get; set; }
+    }
+    
     private List<NoteListItemDto>? _list;
     private bool _isLoading = true;
 
@@ -105,18 +109,58 @@
         }
     }
     
-    private void ViewNote(string id)
+    private void ViewNote(string id, string name)
     {
-        Note.NoteName = id;
+        Note.NoteId = id;
         Note.IsVisible = true;
-        _popup?.ShowComponent<NoteEditor>();
+        Note.NoteName = name;
+        NavigationManager.NavigateTo($"/notes/editor/{UserName}");
     }
 
-    private void CreateNewNote()
+    private async Task CreateNewNote()
     {
-        Note.NoteName = "New Note";
-        Note.IsVisible = true;
-        _popup?.ShowComponent<NoteEditor>();
+        try
+        {
+            Note.NoteName = "New Note";
+            Note.IsVisible = true;
+
+            using var content = new MultipartFormDataContent();
+
+            content.Add(new StringContent(Note.NoteName), "NoteName");
+
+            var response = await Http.PostAsync($"api/Note/{UserName}/create", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var newNoteData = await response.Content.ReadFromJsonAsync<NoteId>();
+                
+                
+
+                if (newNoteData != null)
+                {
+                    Note.NoteId = newNoteData.Id;
+                    Note.IsVisible = true;
+                    NavigationManager.NavigateTo($"/notes/editor/{UserName}");
+                  
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine("Api returned success but no data");
+                }
+            }
+            else
+            {
+                Console.Error.WriteLine($"Failed to create note. Status: {response.StatusCode}");
+
+            }
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"FATAL ERROR in CreateNewNote: {e.Message}");
+            Console.Error.WriteLine(e.StackTrace);
+        }
+
+
     }
     
     private async Task DeleteNote(string id)
@@ -131,7 +175,7 @@
 
         try
         {
-            var response = await Http.DeleteAsync($"apu/api/Note/{id}/delete");
+            var response = await Http.DeleteAsync($"api/Note/{id}/delete");
 
             if (response.IsSuccessStatusCode)
             {
@@ -153,11 +197,6 @@
         }
     }
 
-    public void Dispose()
-    {
-        this.Note.IsVisibleChange -= OnIsVisibleChange;
-    }
-    
     private void HidePopup()
     {
         NavigationManager.NavigateTo($"/menu/{UserName}");

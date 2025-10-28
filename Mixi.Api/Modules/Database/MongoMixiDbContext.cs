@@ -1,6 +1,5 @@
 using Mixi.Api.Modules.Notes;
 using Mixi.Api.Modules.Pdf;
-using Mixi.Api.Modules.Users;
 using MongoDB.Driver;
 
 

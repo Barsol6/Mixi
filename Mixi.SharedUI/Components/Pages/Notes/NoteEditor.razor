@@ -1,0 +1,143 @@
+@using Mixi.Api.Modules.Notes
+@using Mixi.Shared.Models.UI
+@using Mixi.SharedUI.Components.Layout
+
+@page "/notes/editor/{UserName}"
+
+@inject HttpClient Http
+@inject NotePopup NotePopup
+@inject NavigationManager NavigationManager
+
+@layout PdfViewerLayout
+
+
+<div class="popup">
+    <div class="pdfHost">
+        @if (_isLoading)
+        {
+            <p>Loading...</p>
+        }
+        else
+        {
+            <div id="pdfContainer" style="width:100%;height:100%;">
+                <textarea @bind="_noteName" id = "noteName"></textarea>
+                <textarea id="noteText" style="width:100%;height:100%;" @bind="_noteText"></textarea>
+            </div>
+        }
+    </div>
+    <div>
+        <div class="logButton" @onclick="SaveChanges">
+            <div class="logButton-content">SAVE</div>
+        </div>
+        <div class="logButton" @onclick="ClosePopup">
+            <div class="closePdfButton-content">CLOSE</div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string UserName { get; set; }
+
+    private bool _isLoading = true;
+    private bool _isSaving = false;
+    private string _noteId;
+    private string _noteText;
+    private string _noteName;
+    
+    private void Log(string message) => Console.WriteLine($"[C# {DateTime.Now:HH:mm:ss.fff}] {message}");
+
+
+    protected override void OnInitialized()
+    {
+        NotePopup.NoteNameChanged += OnNoteNameChanged;
+        NotePopup.IsVisibleChange += OnVisibilityChanged;
+    }
+
+    private async void OnNoteNameChanged() => await InvokeAsync(LoadNote);
+
+    private async void OnVisibilityChanged() => await InvokeAsync(() =>
+    {
+        if (!NotePopup.IsVisible)
+        {
+            ClosePopup();
+        }
+        else
+        {
+            LoadNote();
+        }
+    });
+    
+    protected override async Task OnInitializedAsync()
+    {
+        if (NotePopup.IsVisible)
+        {
+            await LoadNote();
+        }
+    }
+
+    private async Task LoadNote()
+    {
+        if (!NotePopup.IsVisible) return;
+        _isLoading = true;
+        _noteId = NotePopup.NoteId;
+        _noteName = NotePopup.NoteName;
+        
+        StateHasChanged();
+
+        try
+        {
+             var text = await Http.GetStringAsync($"api/Note/{_noteId}/content");
+
+             _noteText = text;
+
+        }
+        catch (Exception e)
+        {
+            Log($"LoadDocument Error: {e.ToString()}");
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SaveChanges()
+    {
+        if (_isSaving) return;
+
+        _isSaving = true;
+        
+        StateHasChanged();
+
+        try
+        {
+            var noteText = new { Data = _noteText, Name = _noteName };
+
+            await Http.PutAsJsonAsync($"/api/Note/{_noteId}/save", noteText);
+        }
+        catch (Exception e)
+        {
+            Log($"Save Change error: {e}");
+        }
+        finally
+        {
+            _isSaving = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ClosePopup()
+    {
+        NavigationManager.NavigateTo($"notes/notes_choice/{UserName}");
+    }
+
+    public void Dispose()
+    {
+        NotePopup.NoteNameChanged -= OnNoteNameChanged;
+        NotePopup.IsVisibleChange -= OnVisibilityChanged;
+    }
+
+
+}

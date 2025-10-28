@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using Mixi.Api.Modules.Notes;
 using MongoDB.Driver;
+using MongoDB.Bson;
 
 namespace Mixi.Api.Modules.Database.Repositories.NotesRepositories;
 
@@ -16,7 +17,7 @@ public class NotesRepository:INotesRepository
         _logger = logger;
     }
 
-    public async Task<Note> GetByIdAsync(string id)
+    public async Task<Note?> GetByIdAsync(string id)
     {
         try
         {
@@ -25,7 +26,7 @@ public class NotesRepository:INotesRepository
         catch (Exception e)
         {
             _logger.LogError(e, "Error while getting note by id");
-            return null;
+            throw;
         }
     }
     
@@ -46,12 +47,36 @@ public class NotesRepository:INotesRepository
         }
     }
 
+    public async Task<bool> SaveAsync(string id, string text, string name)
+    {
+        try
+        {
+            var note = await _context.NotesCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+            if (note is null)
+            {
+                _logger.LogError($"Note with id {id} not found");
+                return false;
+            }
+            
+            note.Text = text;
+            note.Name = name;
+            note.UpdatedAt = DateTime.UtcNow;
+            await _context.NotesCollection.ReplaceOneAsync(x => x.Id == id, note);
+            _logger.LogInformation($"Note with id {id} updated");
+            return true;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error while updating note");
+            throw;
+        }
+    }
+    
     public async Task<string> SaveAsync(Note note)
     {
         try
         {
             var isNew = note.Id == string.Empty;
-
             if (!isNew)
             {
                 var existingNote = await _context.NotesCollection.Find(x => x.Id == note.Id).FirstOrDefaultAsync();
@@ -66,15 +91,18 @@ public class NotesRepository:INotesRepository
                 existingNote.CreatedAt = note.CreatedAt;
                 existingNote.Name = note.Name;
 
+                await _context.NotesCollection.ReplaceOneAsync(x => x.Id == existingNote.Id, existingNote);
             }
             else
             {
                 note.CreatedAt = DateTime.UtcNow;
                 note.UpdatedAt = DateTime.UtcNow;
+             
+                
                 await _context.NotesCollection.InsertOneAsync(note);
             }
 
-            return note.Id.ToString();
+            return note.Id;
         }
         catch (Exception e)
         {
