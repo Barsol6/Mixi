@@ -1,3 +1,4 @@
+using Mixi.Api.Modules.Notes;
 using Mixi.Api.Modules.Pdf;
 using MongoDB.Driver;
 
@@ -14,4 +15,5 @@ public class MongoMixiDbContext
    }
    
    public IMongoCollection<PdfDocument> PdfDocuments => Database.GetCollection<PdfDocument>("PdfDocuments");
+   public IMongoCollection<Note>  NotesCollection => Database.GetCollection<Note>("Notes");
 }

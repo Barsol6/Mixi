@@ -34,6 +34,13 @@
         </div>
         <div class="data-box">
             <div class="logButton">
+                <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.Notes)">
+                    NOTES
+                </div>
+            </div>
+        </div>
+        <div class="data-box">
+            <div class="logButton">
                 <div class="closeButton-content" @onclick="LogOut">
                     LOG OUT
                 </div>
@@ -65,6 +72,9 @@
             case MenuChoice.PdfViewer:
                 NavigationManager.NavigateTo($"/pdf/viewer_choice/{UserName}");
                 break;
+            case MenuChoice.Notes:
+                NavigationManager.NavigateTo($"/notes/notes_choice/{UserName}");
+                break;
             default:
                 (_logger ?? throw new InvalidOperationException()).LogInformation("Menu choice error");
                 break; 
@@ -85,5 +95,12 @@
         Account.Username = String.Empty;
         NavigationManager.NavigateTo("/login");
         StateHasChanged();
+    }
+    
+    private enum MenuChoice
+    {
+        NameGenerator,
+        PdfViewer,
+        Notes,
     }
 }

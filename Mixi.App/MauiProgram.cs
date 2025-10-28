@@ -29,6 +29,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<NameGeneratorPopup,NameGeneratorPopup>();
         builder.Services.AddSingleton<PdfPopup,PdfPopup>();
         builder.Services.AddSingleton<Account, Account>();
+        builder.Services.AddSingleton<NotePopup, NotePopup>();
         
         
         return builder.Build();

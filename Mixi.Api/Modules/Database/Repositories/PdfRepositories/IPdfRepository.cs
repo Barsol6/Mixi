@@ -1,6 +1,4 @@
 ﻿using Mixi.Api.Modules.Pdf;
-using Mixi.Api.Modules.Users;
-using MongoDB.Bson;
 
 namespace Mixi.Api.Modules.Database.Repositories.PdfRepositories;
 

@@ -1,0 +1,205 @@
+@using Mixi.Shared.Models.UI
+
+@inject HttpClient Http
+@inject NotePopup Note
+@inject IJSRuntime JsRuntime
+@inject NavigationManager NavigationManager
+
+
+@page "/notes/notes_choice/{UserName}"
+
+<div class="pdfChoicePanel">
+    @if (_isLoading)
+    {
+        <p>Loading notes...</p>
+    }
+    else
+    {
+        <div class="data-box">
+            <div class="logButton" @onclick="CreateNewNote">
+                <span class="logButton-content">
+                    ADD NEW NOTE
+                </span>
+            </div>
+        </div>
+        
+        @if (_list != null)
+        {
+            <div>
+                <h4>Your notes:</h4>
+                @foreach (var note in _list)
+                {
+                    <div class="data-box">
+                        <div class="logButton" >
+                            <span class="logButton-content" @onclick="() => ViewNote(note.Id, note.Name)">
+                                @note.Name
+                            </span>
+                            <span class="logButton-content" @onclick="() => DeleteNote(note.Id)">
+                                DELETE
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>You have no notes yet.</p>
+        }
+        <div class="data-box">
+            <div class="logButton">
+                <div class="closeButton-content" @onclick="() => HidePopup()">
+                    CLOSE
+                </div>
+            </div>
+        </div>
+        
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string UserName { get; set; }
+
+    private class NoteListItemDto
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    private class NoteId
+    {
+        public string Id { get; set; }
+    }
+    
+    private List<NoteListItemDto>? _list;
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadNotes();
+    }
+
+    private async void OnIsVisibleChange()
+    {
+        await InvokeAsync(StateHasChanged);
+
+        if (!Note.IsVisible)
+        {
+            await InvokeAsync(LoadNotes);
+        }
+    }
+
+    private async Task LoadNotes()
+    {
+        try
+        {
+            _isLoading = true;
+            StateHasChanged();
+            _list = await Http.GetFromJsonAsync<List<NoteListItemDto>>($"api/note/{UserName}/getlist");
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Error: {e.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+    
+    private void ViewNote(string id, string name)
+    {
+        Note.NoteId = id;
+        Note.IsVisible = true;
+        Note.NoteName = name;
+        NavigationManager.NavigateTo($"/notes/editor/{UserName}");
+    }
+
+    private async Task CreateNewNote()
+    {
+        try
+        {
+            Note.NoteName = "New Note";
+            Note.IsVisible = true;
+
+            using var content = new MultipartFormDataContent();
+
+            content.Add(new StringContent(Note.NoteName), "NoteName");
+
+            var response = await Http.PostAsync($"api/Note/{UserName}/create", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var newNoteData = await response.Content.ReadFromJsonAsync<NoteId>();
+                
+                
+
+                if (newNoteData != null)
+                {
+                    Note.NoteId = newNoteData.Id;
+                    Note.IsVisible = true;
+                    NavigationManager.NavigateTo($"/notes/editor/{UserName}");
+                  
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine("Api returned success but no data");
+                }
+            }
+            else
+            {
+                Console.Error.WriteLine($"Failed to create note. Status: {response.StatusCode}");
+
+            }
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"FATAL ERROR in CreateNewNote: {e.Message}");
+            Console.Error.WriteLine(e.StackTrace);
+        }
+
+
+    }
+    
+    private async Task DeleteNote(string id)
+    {
+        if (!await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this character sheet? This cannot be undone."))
+        {
+            return;
+        }
+
+        _isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var response = await Http.DeleteAsync($"api/Note/{id}/delete");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await InvokeAsync(LoadNotes);
+            }
+            else
+            {
+                Console.Error.WriteLine($"Failed to delete note with ID: {id}");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Error deleting document: {id}");
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void HidePopup()
+    {
+        NavigationManager.NavigateTo($"/menu/{UserName}");
+    }
+
+}
