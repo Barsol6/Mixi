@@ -1,3 +1,5 @@
+using Mixi.Shared.Models.Enums;
+
 namespace Mixi.Api.Modules.Music;
 
 public class PlaylistItem
