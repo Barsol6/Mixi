@@ -17,7 +17,7 @@ public class PlaylistItem
     public string Artist { get; set; }
     public string Album { get; set; }
     public string? ImageUrl { get; set; }
-    public double? Duration { get; set; }
+    public double Duration { get; set; }
     
     
     

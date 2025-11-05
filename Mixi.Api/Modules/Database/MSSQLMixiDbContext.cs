@@ -10,6 +10,10 @@ public class MSSQLMixiDbContext:DbContext
         :base(options){ } 
     
     public virtual DbSet<User> Users { get; set; }
+    
+    public virtual DbSet<Playlist> Playlist { get; set; }
+    
+    public virtual DbSet<PlaylistItem> PlaylistItem { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
