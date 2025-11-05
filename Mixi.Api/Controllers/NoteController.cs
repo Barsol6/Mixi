@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Mixi.Api.Modules.Database.Repositories.NotesRepositories;
 using Mixi.Api.Modules.Notes;
@@ -5,6 +7,7 @@ using Mixi.Api.Requests;
 
 namespace Mixi.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 
@@ -16,18 +19,23 @@ public class NoteController : ControllerBase
     {
         _notesRepository = notesRepository;
     }
-
-    [HttpPost("{id}/create")]
-    public async Task<IActionResult> CreateNote([FromForm] CreateNoteRequest request, string id)
+    
+    private string? GetUserName()
     {
+        return User.FindFirst(ClaimTypes.Name)?.Value;
+    }
 
+    [HttpPost("create")]
+    public async Task<IActionResult> CreateNote([FromForm] CreateNoteRequest request)
+    {
+        var username = GetUserName();
         try
         {
             var note = new Note
             {
                 Text = String.Empty,
                 CreatedAt = DateTime.Now,
-                UserName = id,
+                UserName = username,
                 UpdatedAt = DateTime.Now,
                 Name = request.NoteName,
             };
@@ -89,10 +97,12 @@ public class NoteController : ControllerBase
         return NoContent();
     }
 
-    [HttpPut("{id}/save")]
-    public async Task<IActionResult> SaveNote(string id, [FromBody] NoteDataUpdate note)
+    [HttpPut("save")]
+    public async Task<IActionResult> SaveNote([FromBody] NoteDataUpdate note)
     {
-        await _notesRepository.SaveAsync(id, note.Data, note.Name);
+        var _userName = GetUserName();
+        
+        await _notesRepository.SaveAsync(_userName, note.Data, note.Name);
         return Ok();
     }
     

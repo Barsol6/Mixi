@@ -4,11 +4,14 @@ using Mixi.Api.Modules.Database;
 using Mixi.Api.Modules.Database.Repositories.PdfRepositories;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Mixi.Api.Requests;
 using MongoDB.Bson;
 
 namespace Mixi.Api.Controllers;
 
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class PdfController : ControllerBase
@@ -19,9 +22,14 @@ namespace Mixi.Api.Controllers;
         {
             _pdfRepository = pdfRepository;
         }
+
+        private string? GetUserName()
+        {
+            return User.FindFirst(ClaimTypes.Name)?.Value;
+        }
         
-        [HttpPost ("{id}/upload")]
-        public async Task<IActionResult> UploadPdf([FromForm] UploadPdfRequests request, string id)
+        [HttpPost ("upload")]
+        public async Task<IActionResult> UploadPdf([FromForm] UploadPdfRequests request)
         {
             if (request.FormFile == null || request.FormFile.Length == 0 )
             {
@@ -44,7 +52,7 @@ namespace Mixi.Api.Controllers;
                     FileName = request.FileName,
                     FileContent = fileBytes,
                     FormData = "{}",
-                    UserName = id,
+                    UserName = GetUserName(),
                 };
 
                 var newId = await _pdfRepository.SaveAsync(document, fileBytes);
@@ -99,10 +107,11 @@ namespace Mixi.Api.Controllers;
         }
 
 
-        [HttpGet ("{id}/getlist")]
-        public async Task<ActionResult<IEnumerable<PdfListItemDto>>> GetPdfList(string id)
+        [HttpGet ("getlist")]
+        public async Task<ActionResult<IEnumerable<PdfListItemDto>>> GetPdfList()
         {
-            var documents = await _pdfRepository.GetAllAsync(id);
+            var username = GetUserName();
+            var documents = await _pdfRepository.GetAllAsync(username);
             
             if (documents == null)
             {
@@ -121,6 +130,8 @@ namespace Mixi.Api.Controllers;
         [HttpDelete("{id}/delete")]
         public async Task<IActionResult> DeletePdf(string id)
         {
+            
+            var username = GetUserName();
             var success = await _pdfRepository.DeleteAsync(id);
 
             if (!success)

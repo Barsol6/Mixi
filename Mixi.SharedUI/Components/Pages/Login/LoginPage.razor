@@ -11,6 +11,7 @@
 @inject Account Account
 @inject SignUpPopup SignUpPop
 @inject NavigationManager NavigationManager
+@inject ISecureStorage SecureStorage
 
 @implements IDisposable
 
@@ -59,6 +60,12 @@
 @code {
     private PopupContainer _popup = null!;
 
+    public class LoginResponseDto
+    {
+        public string Message { get; set; }
+        public string Token { get; set; }
+    }
+    
     protected override void OnInitialized()
     {
         this.SignUpPop.MouseStatusChange += () => InvokeAsync(StateHasChanged);
@@ -94,7 +101,16 @@
             
             if (response.IsSuccessStatusCode)
             {
-                NavigationManager.NavigateTo($"/menu/{UserName}");
+                var loginResult = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
+
+                if (loginResult != null && !string.IsNullOrEmpty(loginResult.Token))
+                {
+
+                    await SecureStorage.SetAsync("auth_token", loginResult.Token);
+                    
+                    NavigationManager.NavigateTo($"/menu/{UserName}");
+                }
+                
             }
             else if(response.StatusCode == HttpStatusCode.NotFound)
             {

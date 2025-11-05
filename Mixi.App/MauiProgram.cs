@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Mixi.App.Services.Authentication;
 using Mixi.Shared.Models.Account;
 using Mixi.Shared.Models.UI;
 
@@ -9,6 +10,19 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
+        
+        builder.Services.AddSingleton<ISecureStorage>(SecureStorage.Default);
+        
+        builder.Services.AddTransient<AuthTokenHandler>();
+        
+        builder.Services.AddHttpClient("MyApi", async (serviceProvider, client) =>
+        {
+            client.BaseAddress = new Uri("https://localhost:7079");
+        }).AddHttpMessageHandler<AuthTokenHandler>();
+        
+        builder.Services.AddScoped(sp => 
+            sp.GetRequiredService<IHttpClientFactory>().CreateClient("MyApi"));        
+
         builder
             .UseMauiApp<App>()
             .ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
