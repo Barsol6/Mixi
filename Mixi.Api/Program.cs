@@ -11,6 +11,7 @@ using MongoDB.Driver;
 using MongoDB.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,10 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 20 * 1024 * 1024;
+});
 
 builder.Services.AddSwaggerGen(options =>
     {

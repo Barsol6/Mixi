@@ -32,11 +32,7 @@ public static class MauiProgram
 
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
-
-        builder.Services.AddScoped(sp => new HttpClient
-        {
-           BaseAddress= new Uri("https://localhost:7079")
-        });
+        
         
         builder.Services.AddSingleton<SignUpPopup,SignUpPopup>();
         builder.Services.AddSingleton<MenuPopup,MenuPopup>();
