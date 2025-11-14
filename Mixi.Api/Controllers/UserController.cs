@@ -83,7 +83,7 @@ public class UserController : ControllerBase
         {
             var token = GenerateJwtToken(account.Username);
             
-           return StatusCode( 201, new {message = "Login successful"}); 
+           return Ok( new {message = "Login successful", token = token}); 
         }
     }
 
