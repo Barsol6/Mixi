@@ -7,7 +7,7 @@
 @using NameGenerator = Mixi.Shared.Models.UI.NameGeneratorPopup
 @layout MenuLayout
 
-@page "/menu/{UserName}"
+@page "/menu"
 
 @inject SignUpPopup SignUp
 @inject NameGenerator NameGenPop
@@ -54,8 +54,6 @@
 
     private ILogger _logger = null!;
     
-    [Parameter]
-    public string UserName { get; set; }
 
     protected override void OnInitialized()
     {
@@ -67,13 +65,13 @@
         switch (menuChoice)
         {
             case MenuChoice.NameGenerator:
-                NavigationManager.NavigateTo($"/generators/name_generator/{UserName}");
+                NavigationManager.NavigateTo($"/generators/name_generator");
                 break;
             case MenuChoice.PdfViewer:
-                NavigationManager.NavigateTo($"/pdf/viewer_choice/{UserName}");
+                NavigationManager.NavigateTo($"/pdf/viewer_choice");
                 break;
             case MenuChoice.Notes:
-                NavigationManager.NavigateTo($"/notes/notes_choice/{UserName}");
+                NavigationManager.NavigateTo($"/notes/notes_choice/");
                 break;
             default:
                 (_logger ?? throw new InvalidOperationException()).LogInformation("Menu choice error");

@@ -6,7 +6,7 @@
 @inject NavigationManager NavigationManager
 
 
-@page "/notes/notes_choice/{UserName}"
+@page "/notes/notes_choice"
 
 <div class="pdfChoicePanel">
     @if (_isLoading)
@@ -58,8 +58,7 @@
 </div>
 
 @code {
-    [Parameter]
-    public string UserName { get; set; }
+
 
     private class NoteListItemDto
     {
@@ -96,7 +95,7 @@
         {
             _isLoading = true;
             StateHasChanged();
-            _list = await Http.GetFromJsonAsync<List<NoteListItemDto>>($"api/note/{UserName}/getlist");
+            _list = await Http.GetFromJsonAsync<List<NoteListItemDto>>($"api/note/getlist");
         }
         catch (Exception e)
         {
@@ -114,7 +113,7 @@
         Note.NoteId = id;
         Note.IsVisible = true;
         Note.NoteName = name;
-        NavigationManager.NavigateTo($"/notes/editor/{UserName}");
+        NavigationManager.NavigateTo($"/notes/editor");
     }
 
     private async Task CreateNewNote()
@@ -128,7 +127,7 @@
 
             content.Add(new StringContent(Note.NoteName), "NoteName");
 
-            var response = await Http.PostAsync($"api/Note/{UserName}/create", content);
+            var response = await Http.PostAsync($"api/Note/create", content);
             if (response.IsSuccessStatusCode)
             {
                 var newNoteData = await response.Content.ReadFromJsonAsync<NoteId>();
@@ -139,7 +138,7 @@
                 {
                     Note.NoteId = newNoteData.Id;
                     Note.IsVisible = true;
-                    NavigationManager.NavigateTo($"/notes/editor/{UserName}");
+                    NavigationManager.NavigateTo($"/notes/editor");
                   
                 }
                 else
@@ -199,7 +198,7 @@
 
     private void HidePopup()
     {
-        NavigationManager.NavigateTo($"/menu/{UserName}");
+        NavigationManager.NavigateTo($"/menu");
     }
 
 }

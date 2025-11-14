@@ -2,7 +2,7 @@
 @using Mixi.Shared.Models.UI
 @using MongoDB.Bson
 
-@page "/pdf/upload/{UserName}"
+@page "/pdf/upload"
 
 @inject HttpClient Http
 @inject PdfPopup PdfPopup
@@ -53,8 +53,6 @@
     private string _errorMessage = String.Empty;
     private string _fileName = String.Empty;
     
-    [Parameter]
-    public string UserName { get; set; }
     
     protected override void OnInitialized()
     {
@@ -99,7 +97,7 @@
             content.Add(streamContent, "FormFile", _selectedFile.Name);
             content.Add(new StringContent(_fileName), "FileName");
 
-            var response = await Http.PostAsync($"api/Pdf/{UserName}/upload", content);
+            var response = await Http.PostAsync($"api/Pdf/upload", content);
 
             if (response.IsSuccessStatusCode)
             {
@@ -127,7 +125,7 @@
     
     private async void ClosePopup()
     {
-       NavigationManager.NavigateTo($"/pdf/viewer_choice/{UserName}");
+       NavigationManager.NavigateTo($"/pdf/viewer_choice");
     }
     
     public void Dispose()

@@ -8,7 +8,7 @@
 @inject PdfPopup PdfPopup
 @inject NavigationManager NavigationManager
 
-@page "/pdf/viewer_choice/{UserName}"
+@page "/pdf/viewer_choice"
 
 @implements IDisposable
 
@@ -65,8 +65,7 @@
 <PdfPopupContainer @ref="_popup"> </PdfPopupContainer>
 
 @code {
-    [Parameter]
-    public string UserName { get; set; }
+
     
 
     private class PdfListItemDto
@@ -102,7 +101,7 @@
         {
             _isLoading = true;
             StateHasChanged();
-            _documents = await Http.GetFromJsonAsync<List<PdfListItemDto>>($"api/Pdf/{UserName}/getlist");
+            _documents = await Http.GetFromJsonAsync<List<PdfListItemDto>>($"api/Pdf/getlist");
         }
         catch (Exception e)
         {
@@ -125,7 +124,7 @@
 
     private void UploadNewPdf()
     {
-        NavigationManager.NavigateTo($"/pdf/upload/{UserName}");
+        NavigationManager.NavigateTo($"/pdf/upload");
     }
     
 
@@ -170,7 +169,7 @@
     
     private void HidePopup()
     {
-        NavigationManager.NavigateTo($"/menu/{UserName}");
+        NavigationManager.NavigateTo($"/menu");
     }
     
 }

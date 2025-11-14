@@ -2,7 +2,7 @@
 @using Mixi.Shared.Models.UI
 @using Mixi.SharedUI.Components.Layout
 
-@page "/notes/editor/{UserName}"
+@page "/notes/editor"
 
 @inject HttpClient Http
 @inject NotePopup NotePopup
@@ -36,8 +36,6 @@
 </div>
 
 @code {
-    [Parameter]
-    public string UserName { get; set; }
 
     private bool _isLoading = true;
     private bool _isSaving = false;
@@ -113,9 +111,9 @@
 
         try
         {
-            var noteText = new { Data = _noteText, Name = _noteName };
+            var noteText = new { NoteData = _noteText, NoteId = _noteId, NoteName = _noteName };
 
-            await Http.PutAsJsonAsync($"/api/Note/{_noteId}/save", noteText);
+            await Http.PutAsJsonAsync($"/api/Note/save", noteText);
         }
         catch (Exception e)
         {
@@ -130,7 +128,7 @@
 
     private async Task ClosePopup()
     {
-        NavigationManager.NavigateTo($"notes/notes_choice/{UserName}");
+        NavigationManager.NavigateTo($"notes/notes_choice");
     }
 
     public void Dispose()

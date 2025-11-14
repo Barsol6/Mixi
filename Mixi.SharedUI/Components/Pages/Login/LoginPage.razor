@@ -80,8 +80,7 @@
         base.OnInitializedAsync();
     }
 
-    [Parameter]
-    public string UserName { get; set; }
+
 
     private async Task Enter(KeyboardEventArgs e)
     {
@@ -96,8 +95,7 @@
         if (Account.Username != String.Empty && Account.Password != String.Empty)
         {
             var response = await Http.PostAsJsonAsync("api/User/login", Account);
-
-            UserName = Account.Username;
+            
             
             if (response.IsSuccessStatusCode)
             {
@@ -108,7 +106,7 @@
 
                     await SecureStorage.SetAsync("auth_token", loginResult.Token);
                     
-                    NavigationManager.NavigateTo($"/menu/{UserName}");
+                    NavigationManager.NavigateTo($"/menu");
                 }
                 
             }
