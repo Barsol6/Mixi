@@ -1,4 +1,6 @@
-﻿namespace Mixi.Api.Modules.Pdf;
+﻿using System.Security;
+
+namespace Mixi.Api.Modules.Pdf;
 
 public class FileStorageService: IFileStorageService
 {
@@ -42,7 +44,14 @@ public class FileStorageService: IFileStorageService
                 .Replace(".", "");
             
             var uniqueFileName = $"{Guid.NewGuid()}_{safeFileName}.pdf";
+            
             var fullPath = Path.Combine(_storagePath, uniqueFileName);
+            
+            if (!fullPath.StartsWith(_storagePath))
+            {
+                _logger.LogWarning($"Attempted path traversal: {filePath}");
+                throw new SecurityException("Invalid file path");
+            }
             
             await File.WriteAllBytesAsync(fullPath, fileContent);
             
@@ -63,6 +72,12 @@ public class FileStorageService: IFileStorageService
         try
         {
             var fullPath = Path.Combine(_storagePath, filePath);
+            
+            if (!fullPath.StartsWith(_storagePath))
+            {
+                _logger.LogWarning($"Attempted path traversal: {filePath}");
+                throw new SecurityException("Invalid file path");
+            }
         
             _logger.LogInformation("Looking for file at: {FullPath}", fullPath);
             
@@ -84,15 +99,25 @@ public class FileStorageService: IFileStorageService
     public async Task DeleteFileAsync(string filePath)
     {
         var fullPath = Path.Combine(_storagePath, filePath);
+        
+        if (!fullPath.StartsWith(_storagePath))
+        {
+            _logger.LogWarning($"Attempted path traversal: {filePath}");
+            throw new SecurityException("Invalid file path");
+        }
+        
         try
         {
-            if (!File.Exists(filePath))
+            if (File.Exists(fullPath))
             {
-                File.Delete(filePath);
-                await Task.CompletedTask;
-                
+                File.Delete(fullPath);
                 _logger.LogInformation($"File {filePath} deleted");
             }
+            else
+            {
+                _logger.LogWarning($"File {filePath} not found at {fullPath}");
+            }
+            await Task.CompletedTask;
         }
         catch (Exception e)
         {

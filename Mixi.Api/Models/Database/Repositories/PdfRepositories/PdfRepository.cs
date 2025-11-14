@@ -21,11 +21,11 @@ public class PdfRepository:IPdfRepository
         _fileStorageService = fileStorageService;
     }
     
-    public async Task<PdfDocument?> GetByIdAsync(string id)
+    public async Task<PdfDocument?> GetByIdAsync(string id, string userName)
     {
         try
         {
-            return await _mongoDbContext.PdfDocuments.Find(p => p.Id == id).FirstOrDefaultAsync();
+            return await _mongoDbContext.PdfDocuments.Find(p => p.Id == id && p.UserName == userName).FirstOrDefaultAsync();
         }
         catch (Exception e)
         {
@@ -132,11 +132,11 @@ public class PdfRepository:IPdfRepository
         }
     }
     
-    public async Task<byte[]?> GetFileContentAsync(string id)
+    public async Task<byte[]?> GetFileContentAsync(string id, string userName)
     {
         try
         {
-            var document = await GetByIdAsync(id);
+            var document = await GetByIdAsync(id, userName);
             if (document is null)
             {
                 _logger.LogError($"PdfDocument with id {id} not found");
@@ -163,13 +163,13 @@ public class PdfRepository:IPdfRepository
         }
     }
 
-    public async Task<bool> UpdateFormDatasAsync(string id, string formData)
+    public async Task<bool> UpdateFormDatasAsync(string id, string formData, string userName)
     {
         try
         {
             
             
-            var pdfDocument = await _mongoDbContext.PdfDocuments.Find(x => x.Id == id).FirstOrDefaultAsync();
+            var pdfDocument = await _mongoDbContext.PdfDocuments.Find(x => x.Id == id && x.UserName == userName).FirstOrDefaultAsync();
             
             if (pdfDocument is null)
             {
@@ -192,12 +192,12 @@ public class PdfRepository:IPdfRepository
         }
     }
     
-    public async Task<bool> DeleteAsync(string id)
+    public async Task<bool> DeleteAsync(string id, string userName)
     {
        
         try
         {
-            var document = await _mongoDbContext.PdfDocuments.Find(x => x.Id == id).FirstOrDefaultAsync();
+            var document = await _mongoDbContext.PdfDocuments.Find(x => x.Id == id && x.UserName == userName).FirstOrDefaultAsync();
             if (document is null)
             {
                 _logger.LogError($"PdfDocument with id {id} not found");

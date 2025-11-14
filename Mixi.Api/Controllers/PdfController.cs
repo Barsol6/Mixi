@@ -29,14 +29,20 @@ namespace Mixi.Api.Controllers;
         }
         
         [HttpPost ("upload")]
-        public async Task<IActionResult> UploadPdf([FromForm] UploadPdfRequests request)
+        public async Task<IActionResult> UploadPdf(IFormFile FormFile, [FromForm] string FileName)
         {
-            if (request.FormFile == null || request.FormFile.Length == 0 )
+            
+            if (FormFile.Length > 20 * 1024 * 1024) 
+            {
+                return BadRequest("File size exceeds limit");
+            }
+            
+            if (FormFile == null || FormFile.Length == 0 )
             {
                 return BadRequest("No file uploaded");
             }
 
-            if (request.FormFile.ContentType != "application/pdf")
+            if (FormFile.ContentType != "application/pdf")
             {
                 return BadRequest("File is not a PDF");
             }
@@ -44,12 +50,12 @@ namespace Mixi.Api.Controllers;
             try
             {
                 using var memoryStream = new MemoryStream();
-                await request.FormFile.CopyToAsync(memoryStream);
+                await FormFile.CopyToAsync(memoryStream);
                 var fileBytes = memoryStream.ToArray();
 
                 var document = new PdfDocument
                 {
-                    FileName = request.FileName,
+                    FileName = FileName,
                     FileContent = fileBytes,
                     FormData = "{}",
                     UserName = GetUserName(),
@@ -68,7 +74,19 @@ namespace Mixi.Api.Controllers;
         [HttpGet ("{id}/content")]
         public async Task<IActionResult> GetPdf(string id)
         {
-            var pdfContent = await _pdfRepository.GetFileContentAsync(id);
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest("Invalid ID format");
+            }
+            
+            var username = GetUserName();
+
+            if (username == null)
+            {
+                return Unauthorized();
+            }
+            
+            var pdfContent = await _pdfRepository.GetFileContentAsync(id, username);
 
             if (pdfContent == null)
             {
@@ -83,7 +101,19 @@ namespace Mixi.Api.Controllers;
         [HttpGet ("{id}/getformdata")]
         public async Task<IActionResult> GetPdfFormData(string id)
         {
-            var document = await _pdfRepository.GetByIdAsync(id);
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest("Invalid ID format");
+            }
+            
+            var username = GetUserName();
+
+            if (username == null)
+            {
+                return Unauthorized();
+            }
+            
+            var document = await _pdfRepository.GetByIdAsync(id, username);
 
             if (document==null)
             {
@@ -96,12 +126,23 @@ namespace Mixi.Api.Controllers;
         [HttpPut ("{id}/updateformdata")]
         public async Task<IActionResult> UpdatePdfFormData(string id, [FromBody] FormDataUpdateDto dto)
         {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest("Invalid ID format");
+            }
+            
+            var username = GetUserName();
+
+            if (username  == null)
+            {
+                return Unauthorized();
+            }
 
             if (dto == null || string.IsNullOrWhiteSpace(dto.Data))
             {
                 return BadRequest("Form data is missing or empty");
             }
-            await _pdfRepository.UpdateFormDatasAsync(id, dto.Data);
+            await _pdfRepository.UpdateFormDatasAsync(id, dto.Data, username);
 
             return NoContent();
         }
@@ -130,9 +171,19 @@ namespace Mixi.Api.Controllers;
         [HttpDelete("{id}/delete")]
         public async Task<IActionResult> DeletePdf(string id)
         {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest("Invalid ID format");
+            }
             
             var username = GetUserName();
-            var success = await _pdfRepository.DeleteAsync(id);
+
+            if (username == null)
+            {
+                return Unauthorized();
+            }
+            
+            var success = await _pdfRepository.DeleteAsync(id, username);
 
             if (!success)
             {
