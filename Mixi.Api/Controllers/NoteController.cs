@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Mixi.Api.Modules.Database.Repositories.NotesRepositories;
 using Mixi.Api.Modules.Notes;
 using Mixi.Api.Requests;
+using MongoDB.Bson;
 
 namespace Mixi.Api.Controllers;
 
@@ -29,6 +30,12 @@ public class NoteController : ControllerBase
     public async Task<IActionResult> CreateNote([FromForm] CreateNoteRequest request)
     {
         var username = GetUserName();
+
+        if (username == null)
+        {
+            return Unauthorized();
+        }
+        
         try
         {
             var note = new Note
@@ -54,7 +61,20 @@ public class NoteController : ControllerBase
     [HttpGet("{id}/content")]
     public async Task<IActionResult> GetNote(string id)
     {
-        var note = await _notesRepository.GetByIdAsync(id);
+        
+        if (!ObjectId.TryParse(id, out _))
+        {
+            return BadRequest("Invalid ID format");
+        }
+        
+        var userId = GetUserName();
+
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+        
+        var note = await _notesRepository.GetByIdAsync(id, userId);
         
         if (note == null)
         {
@@ -64,9 +84,15 @@ public class NoteController : ControllerBase
         return Ok(note.Text);
     }
     
-    [HttpGet("{id}/getlist")]
-    public async Task<ActionResult<IEnumerable<NoteListItemDto>>> GetNotes(string id)
+    [HttpGet("getlist")]
+    public async Task<ActionResult<IEnumerable<NoteListItemDto>>> GetNotes()
     {
+        var id = GetUserName();
+        if (id == null)
+        {
+            return Unauthorized();
+        }
+        
         var notes = await _notesRepository.GetAllAsync(id);
         
         if (notes == null)
@@ -87,7 +113,19 @@ public class NoteController : ControllerBase
     [HttpDelete("{id}/delete")]
     public async Task<IActionResult> DeleteNote(string id)
     {
-        var success = await _notesRepository.DeleteAsync(id);
+        if (!ObjectId.TryParse(id, out _))
+        {
+            return BadRequest("Invalid ID format");
+        }
+        
+        var userId = GetUserName();
+
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+        
+        var success = await _notesRepository.DeleteAsync(id, userId);
 
         if (!success)
         {
@@ -100,10 +138,16 @@ public class NoteController : ControllerBase
     [HttpPut("save")]
     public async Task<IActionResult> SaveNote([FromBody] NoteDataUpdate note)
     {
-        var _userName = GetUserName();
+            var userName = GetUserName();
+
+            if (userName == null)
+            {
+                return Unauthorized();
+            }
         
-        await _notesRepository.SaveAsync(_userName, note.Data, note.Name);
-        return Ok();
+            await _notesRepository.SaveAsync(userName, note.NoteData, note.NoteName, note.NoteId);
+            return Ok();
+     
     }
     
     
@@ -115,8 +159,10 @@ public class NoteController : ControllerBase
 
     public class NoteDataUpdate
     {
-        public string Data { get; set; }
+        public string NoteData { get; set; }
         
-        public string? Name { get; set; }
+        public string NoteId { get; set; }
+        
+        public string NoteName { get; set; }
     }
 }
