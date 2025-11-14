@@ -17,11 +17,11 @@ public class NotesRepository:INotesRepository
         _logger = logger;
     }
 
-    public async Task<Note?> GetByIdAsync(string id)
+    public async Task<Note?> GetByIdAsync(string id, string userName )
     {
         try
         {
-            return await _context.NotesCollection.Find(p => p.Id == id).FirstOrDefaultAsync();
+            return await _context.NotesCollection.Find(p => p.Id == id && p.UserName == userName).FirstOrDefaultAsync();
         }
         catch (Exception e)
         {
@@ -47,22 +47,22 @@ public class NotesRepository:INotesRepository
         }
     }
 
-    public async Task<bool> SaveAsync(string id, string text, string name)
+    public async Task<bool> SaveAsync(string userName, string noteData, string noteName, string noteId)
     {
         try
         {
-            var note = await _context.NotesCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+            var note = await _context.NotesCollection.Find(x => x.Id == noteId).FirstOrDefaultAsync();
             if (note is null)
             {
-                _logger.LogError($"Note with id {id} not found");
+                _logger.LogError($"Note with id {noteId} not found");
                 return false;
             }
             
-            note.Text = text;
-            note.Name = name;
+            note.Text = noteData;
+            note.Name = noteName;
             note.UpdatedAt = DateTime.UtcNow;
-            await _context.NotesCollection.ReplaceOneAsync(x => x.Id == id, note);
-            _logger.LogInformation($"Note with id {id} updated");
+            await _context.NotesCollection.ReplaceOneAsync(x => x.Id == noteId, note);
+            _logger.LogInformation($"Note with id {noteId} updated");
             return true;
         }
         catch (Exception e)
@@ -111,17 +111,17 @@ public class NotesRepository:INotesRepository
         }
     }
     
-    public async Task<bool> DeleteAsync(string id)
+    public async Task<bool> DeleteAsync(string id, string userName)
     {
         try
         {
-            var note = await _context.NotesCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+            var note = await _context.NotesCollection.Find(x => x.Id == id && x.UserName == userName).FirstOrDefaultAsync();
             if (note is null)
             {
                 _logger.LogError($"Note with id {id} not found");
                 return false;
             }
-            await _context.NotesCollection.DeleteOneAsync(x => x.Id == note.Id);
+            await _context.NotesCollection.DeleteOneAsync(x => x.Id == note.Id && x.UserName == userName);
             _logger.LogInformation($"Note with id {id} deleted");
             return true;
         }
