@@ -40,6 +40,15 @@
       <ProjectReference Include="..\Mixi.Api\Mixi.Api.csproj" />
       <ProjectReference Include="..\Mixi.Shared.Models\Mixi.Shared.Models.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="wwwroot\js\Players\howlerPlayer.js" />
+      <MauiAsset Include="wwwroot\js\Players\howlerPlayer.js" />
+      <Content Remove="wwwroot\js\Players\spotifyPlayer.js" />
+      <MauiAsset Include="wwwroot\js\Players\spotifyPlayer.js" />
+      <Content Remove="wwwroot\js\Players\youtubePlayer.js" />
+      <MauiAsset Include="wwwroot\js\Players\youtubePlayer.js" />
+    </ItemGroup>
     
     <Target Name="NpmInstall" BeforeTargets="CopyPdfJsFiles">
         <Exec Command="npm install" WorkingDirectory="$(ProjectDir)" />
@@ -73,4 +82,17 @@
 
         <Message Text="--- PDF.js file copy, conversion, and cleanup complete. ---" Importance="high" />
     </Target>
+    
+    <Target Name="CopyHowlerJs" BeforeTargets="Build" AfterTargets="CopyPdfJsFiles">
+        <Message Text="--- Copying Howler.js module files... ---" Importance="high"/>
+        <Makedir Directories="wwwroot/js/howlerjs"/>
+        
+        <ItemGroup>
+            <HowlerJs Include="..\node_modules\howler\dist\howler.min.js"/>
+        </ItemGroup>
+        
+        <Copy SourceFiles="@(HowlerJs)" DestinationFolder="wwwroot/js/howlerjs"/>
+        <Message Text="---  Howler.js download finished. ---" Importance="high"/>
+    </Target>
+    
 </Project>
