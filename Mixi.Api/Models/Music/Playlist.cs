@@ -9,5 +9,5 @@ public class Playlist
     
     public string UserId { get; set; }
     
-    public virtual ICollection<PlaylistItem> PlaylistItems { get; set; }
+    public virtual ICollection<PlaylistItem> PlaylistItems { get; set; } = new List<PlaylistItem>();
 }

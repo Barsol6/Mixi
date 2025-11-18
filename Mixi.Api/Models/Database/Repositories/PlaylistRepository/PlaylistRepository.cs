@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.JavaScript;
 using Microsoft.EntityFrameworkCore;
 using Mixi.Api.Modules.Music;
 using Mixi.Shared.Models.Music;
@@ -41,7 +42,7 @@ public class PlaylistRepository : IPlaylistRepository
                 Items = p.PlaylistItems.Select(item => new PlaylistItemDto()
                 {
                     Id = item.Id,
-                    Source = item.SourceType,
+                    SourceType = item.SourceType,
                     SourceIdentifier = item.SourceIdentifier,
                     Title = item.Title,
                     Artist = item.Artist,
@@ -83,17 +84,21 @@ public class PlaylistRepository : IPlaylistRepository
         return playlistDto;
     }
 
-    public async Task DeletePlaylist(int id)
+    public async Task DeletePlaylist(int id, string userId)
     {
-        var playlist = await _context.Playlist.FindAsync(id);
-        _context.Playlist.Remove(playlist);
-        await _context.SaveChangesAsync();
+        var playlist = await _context.Playlist.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+        if (playlist != null)
+        {
+            _context.Playlist.Remove(playlist);
+            await _context.SaveChangesAsync();
+        }
+       
     }
     
 
     public async Task<PlaylistItemDto?> CreatePlaylistItem(CreatePlaylistItemDto createPlaylistItemDto, int id, string userId)
     {
-        var playlist = await _context.Playlist.FirstOrDefaultAsync(p => p.UserId == userId && p.Id == id);
+        var  playlist = await _context.Playlist.FirstOrDefaultAsync(p => p.UserId == userId && p.Id == id);
         if (playlist == null)
         {
             return null;
@@ -117,7 +122,7 @@ public class PlaylistRepository : IPlaylistRepository
         var trackDto = new PlaylistItemDto
         {
             Id = newTrack.Id,
-            Source = newTrack.SourceType,
+            SourceType = newTrack.SourceType,
             SourceIdentifier = newTrack.SourceIdentifier,
             Title = newTrack.Title,
             Artist = newTrack.Artist,

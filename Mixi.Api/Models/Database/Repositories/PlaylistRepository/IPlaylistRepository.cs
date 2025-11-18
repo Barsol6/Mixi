@@ -9,10 +9,10 @@ public interface IPlaylistRepository
     
     public Task<PlaylistDto> CreatePlaylist(CreatePlaylistDto playlistDto, string userId);
     
-    public Task DeletePlaylist(int id);
+    public Task DeletePlaylist(int id, string userId);
     
-    public Task<PlaylistItemDto> CreatePlaylistItem(CreatePlaylistItemDto createPlaylistItemDto, int id, string userId);
+    public Task<PlaylistItemDto?> CreatePlaylistItem(CreatePlaylistItemDto createPlaylistItemDto, int id, string userId);
     
-    public Task DeletePlaylistItem(int id, string userId, int trackId); 
+    public Task DeletePlaylistItem(int playlistId, string userId, int trackId); 
     
 }

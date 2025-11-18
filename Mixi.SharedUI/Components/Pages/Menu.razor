@@ -4,6 +4,7 @@
 @using Mixi.Shared.Models.UI
 @using Mixi.SharedUI.Components.Layout
 @using Mixi.SharedUI.Components.UI
+@using Mixi.SharedUI.Services.MusicPlayers
 @using NameGenerator = Mixi.Shared.Models.UI.NameGeneratorPopup
 @layout MenuLayout
 
@@ -13,40 +14,45 @@
 @inject NameGenerator NameGenPop
 @inject Account Account
 @inject NavigationManager NavigationManager
+@inject LocalMusicService LocalMusicService
 
 @implements IDisposable
 
 
 <div class="container">
-        <div class="data-box">
-            <div class="logButton">
-                <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.NameGenerator)">
-                    NAME GENERATOR
-                </div>
-            </div>
-        </div>  
-        <div class="data-box">
-            <div class="logButton">
-                <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.PdfViewer)">
-                    INTERACTIVE CHARACTER CARD
-                </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.NameGenerator)">
+                NAME GENERATOR
             </div>
         </div>
-        <div class="data-box">
-            <div class="logButton">
-                <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.Notes)">
-                    NOTES
-                </div>
+    </div>  
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.PdfViewer)">
+                INTERACTIVE CHARACTER CARD
             </div>
         </div>
-        <div class="data-box">
-            <div class="logButton">
-                <div class="closeButton-content" @onclick="LogOut">
-                    LOG OUT
-                </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.Notes)">
+                NOTES
             </div>
         </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="closeButton-content" @onclick="LogOut">
+                LOG OUT
+            </div>
+        </div>
+    </div>
     <MenuPopupContainer @ref="_popup"></MenuPopupContainer>
+    
+    <button class="btn btn-primary" @onclick="PlayOnlineMp3">Graj MP3 z Netu</button>
+
+    <button class="btn btn-danger" @onclick="StopMusic">Stop</button>
 </div>
 
 @code {
@@ -54,7 +60,19 @@
 
     private ILogger _logger = null!;
     
+    private async Task PlayOnlineMp3()
+    {
+      
+        var url = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+        await LocalMusicService.PlayAsync(url);
+    }
 
+    private async Task StopMusic()
+    {
+        await LocalMusicService.StopAsync();
+    }
+    
+    
     protected override void OnInitialized()
     {
         this.SignUp.IsLoggedChange += () => InvokeAsync(StateHasChanged);
