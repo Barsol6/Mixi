@@ -1,25 +1,23 @@
-@using Mixi.Shared.Models.UI
-
-
 @inject NotePopup Notes;
 
+@using Mixi.Shared.Models.UI
 @implements IDisposable
 
 <div class="@(Notes.IsVisible ? "popup" : "hidden")">
     @if (ComponentType is not null)
     {
-        <DynamicComponent Type="@ComponentType" Parameters="@Parameters" @ref="_component"/>   
+        <DynamicComponent Type="@ComponentType" Parameters="@Parameters" @ref="_component"/>
     }
 </div>
 
 @code {
-    private DynamicComponent? _component = null;
+    private DynamicComponent? _component;
     private Type? ComponentType { get; set; }
     private IDictionary<string, object>? Parameters { get; set; }
 
     protected override void OnInitialized()
     {
-        this.Notes.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        Notes.IsVisibleChange += () => InvokeAsync(StateHasChanged);
         base.OnInitialized();
     }
 
@@ -28,12 +26,13 @@
         ComponentType = typeof(T);
         Parameters = parameters;
         Notes.IsVisible = true;
-        
+
         StateHasChanged();
     }
 
     public void Dispose()
     {
-        this.Notes.IsVisibleChange -= StateHasChanged;
+        Notes.IsVisibleChange -= StateHasChanged;
     }
+
 }

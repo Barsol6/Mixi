@@ -1,24 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Mixi.Api.Modules.Users;
 using Mixi.Api.Modules.Music;
+using Mixi.Api.Modules.Users;
 
 namespace Mixi.Api.Modules.Database;
 
-public class MSSQLMixiDbContext:DbContext
+public class MSSQLMixiDbContext : DbContext
 {
     public MSSQLMixiDbContext(DbContextOptions<MSSQLMixiDbContext> options)
-        :base(options){ } 
-    
+        : base(options)
+    {
+    }
+
     public virtual DbSet<User> Users { get; set; }
-    
+
     public virtual DbSet<Playlist> Playlist { get; set; }
-    
+
     public virtual DbSet<PlaylistItem> PlaylistItem { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>(entity => 
+        modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Username)
@@ -55,16 +57,13 @@ public class MSSQLMixiDbContext:DbContext
             entity.Property(x => x.Album);
             entity.Property(x => x.Artist);
             entity.Property(x => x.Duration);
-            entity.Property(x => x.Title).IsRequired();;
+            entity.Property(x => x.Title).IsRequired();
+            ;
             entity.Property(x => x.SourceIdentifier).IsRequired();
             entity.Property(x => x.SourceType).IsRequired();
-            
         });
-        
 
-        
+
         base.OnModelCreating(modelBuilder);
     }
-
-  
 }

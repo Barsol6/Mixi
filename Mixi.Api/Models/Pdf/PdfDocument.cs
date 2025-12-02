@@ -9,8 +9,9 @@ public class PdfDocument
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; } = string.Empty;
-    [Required]
-    public string FileName { get; set; } 
+
+    [Required] public string FileName { get; set; }
+
     public byte[]? FileContent { get; set; }
     public string? FilePath { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -19,6 +20,7 @@ public class PdfDocument
     public DateTime UpdatedAt { get; set; }
     public string? UserName { get; set; }
 }
+
 public enum StorageStrategy
 {
     Database,

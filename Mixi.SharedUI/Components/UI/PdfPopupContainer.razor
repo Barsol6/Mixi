@@ -1,9 +1,7 @@
-﻿@using Mixi.Shared.Models.UI
-
-
-@inject MenuPopup MenuPopup
+﻿@inject MenuPopup MenuPopup
 @inject PdfPopup PdfPopup
 @inject SignUpPopup Signup
+@using Mixi.Shared.Models.UI
 @implements IDisposable
 
 
@@ -13,18 +11,18 @@
         <DynamicComponent Type="@ComponentType" Parameters="@Parameters" @ref="_component"/>
     }
 </div>
-    
+
 
 
 @code {
 
-    private  DynamicComponent? _component = null;
+    private DynamicComponent? _component;
     private Type? ComponentType { get; set; }
     private IDictionary<string, object>? Parameters { get; set; }
-    
+
     protected override void OnInitialized()
     {
-        this.PdfPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        PdfPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
         base.OnInitializedAsync();
     }
 
@@ -39,24 +37,21 @@
     }
 
     public async void ShowComponent<T>(IDictionary<string, object>? parameters = null)
-    {   
+    {
         ComponentType = typeof(T);
         Parameters = parameters;
         PdfPopup.IsVisible = true;
         Signup.IsLogged = true;
         MenuPopup.IsVisible = false;
-        
+
         StateHasChanged();
-    }   
-    
+    }
 
 
     public void Dispose()
     {
-        this.PdfPopup.IsVisibleChange -= StateHasChanged;
+        PdfPopup.IsVisibleChange -= StateHasChanged;
     }
-
-
 
 
 }

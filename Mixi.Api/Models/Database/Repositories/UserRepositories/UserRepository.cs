@@ -18,7 +18,7 @@ public class UserRepository : IUserRepository
         await _dbContext.SaveChangesAsync();
         return user;
     }
-    
+
     public bool CheckIfExists(string username)
     {
         var exists = _dbContext
@@ -26,14 +26,15 @@ public class UserRepository : IUserRepository
         Console.WriteLine(exists);
         return exists;
     }
+
     public async Task<User?> GetUserAsync(int id)
     {
         var user = await _dbContext
             .Users.Where(u => u.Id == id)
             .FirstOrDefaultAsync();
         return user;
-    } 
-    
+    }
+
     public async Task<User?> GetUserAsync(string username)
     {
         var user = await _dbContext
@@ -41,7 +42,4 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync();
         return user;
     }
-    
-    
-    
 }

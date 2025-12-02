@@ -1,10 +1,8 @@
-﻿@using Mixi.Shared.Models.Account
-@using Mixi.Shared.Models.UI
-
-
-@inject SignUpPopup SignUpPop
+﻿@inject SignUpPopup SignUpPop
 @inject Account Account
 
+@using Mixi.Shared.Models.Account
+@using Mixi.Shared.Models.UI
 @implements IDisposable
 
 
@@ -21,37 +19,35 @@
 
 @code {
 
-    private  DynamicComponent? _component = null;
+    private DynamicComponent? _component;
     public Type? ComponentType { get; set; }
     public IDictionary<string, object>? Parameters { get; set; }
-    
+
     protected override void OnInitialized()
     {
-        this.SignUpPop.IsVisibleChange += () => InvokeAsync(StateHasChanged);
-        this.SignUpPop.IsVisibleChange += () =>
+        SignUpPop.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        SignUpPop.IsVisibleChange += () =>
         {
-            Account.Password = String.Empty;
-            Account.Username = String.Empty;
-            Account.PasswordRepeat = String.Empty;
+            Account.Password = string.Empty;
+            Account.Username = string.Empty;
+            Account.PasswordRepeat = string.Empty;
         };
         base.OnInitializedAsync();
     }
-    
 
-    
+
     public async void ShowComponent<T>(IDictionary<string, object>? parameters = null)
     {
         ComponentType = typeof(T);
         Parameters = parameters;
-        SignUpPop.IsVisible = true; 
+        SignUpPop.IsVisible = true;
         StateHasChanged();
-    }   
-    
+    }
 
 
     public void Dispose()
     {
-        this.SignUpPop.IsVisibleChange -= StateHasChanged;
+        SignUpPop.IsVisibleChange -= StateHasChanged;
     }
 
     private void HidePopup()

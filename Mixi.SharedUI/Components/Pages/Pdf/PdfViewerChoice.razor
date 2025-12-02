@@ -1,107 +1,103 @@
-﻿
-@using Mixi.Shared.Models.UI
-@using Mixi.SharedUI.Components.Pages.Pdf
-@using Mixi.SharedUI.Components.UI
-@using MongoDB.Bson
-@inject HttpClient Http
+﻿@inject HttpClient Http
 @inject IJSRuntime JsRuntime
 @inject PdfPopup PdfPopup
 @inject NavigationManager NavigationManager
 
 @page "/pdf/viewer_choice"
 
+@using Mixi.Shared.Models.UI
+@using Mixi.SharedUI.Components.UI
 @implements IDisposable
 
 <div class="pdfChoicePanel">
-   @if (_isLoading)
-   {
-       <p>Loading Character Sheets...</p>
-   }
-   else
-   {
-       <div class="data-box">
-           <div class="logButton" @onclick="UploadNewPdf">
+    @if (_isLoading)
+    {
+        <p>Loading Character Sheets...</p>
+    }
+    else
+    {
+        <div class="data-box">
+            <div class="logButton" @onclick="UploadNewPdf">
                <span class="logButton-content">
                     ADD NEW CHARACTER SHEET
                </span>
-           </div>
-       </div>
-       
-       @if (_documents != null)
-       {
-           <div>
-               <h4>Your character sheets:</h4>
-               @foreach (var document in _documents)
-               {
-                   <div class="data-box">
-                       <div class="logButton" >
+            </div>
+        </div>
+
+        @if (_documents != null)
+        {
+            <div>
+                <h4>Your character sheets:</h4>
+                @foreach (var document in _documents)
+                {
+                    <div class="data-box">
+                        <div class="logButton">
                            <span class="logButton-content" @onclick="() => ViewDocument(document.Id)">
                                @document.Name
                            </span>
-                           <span class="logButton-content" @onclick="() => DeletePdf(document.Id)">
+                            <span class="logButton-content" @onclick="() => DeletePdf(document.Id)">
                                DELETE
                            </span>
-                       </div>
-                      
-                   </div>
-               }
-           </div>
-       }
-       else
-       {
-           <p>You have no character sheets yet.</p>
-       }
-       
-       <div class="data-box">
-           <div class="logButton">
-               <div class="closeButton-content " @onclick="() => HidePopup()">
-                   CLOSE
-               </div>
-           </div>
-       </div>
-   }
+                        </div>
+
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>You have no character sheets yet.</p>
+        }
+
+        <div class="data-box">
+            <div class="logButton">
+                <div class="closeButton-content " @onclick="() => ReturnMenu()">
+                    CLOSE
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
-<PdfPopupContainer @ref="_popup"> </PdfPopupContainer>
+<PdfPopupContainer @ref="_popup"></PdfPopupContainer>
 
 @code {
 
-    
 
     private class PdfListItemDto
     {
         public string Id { get; set; }
         public string Name { get; set; }
     }
-    
+
     private PdfPopupContainer? _popup;
     private List<PdfListItemDto>? _documents;
     private bool _isLoading = true;
-    
+
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadDocuments();  
+        await LoadDocuments();
     }
 
-    
+
     private async void OnIsVisibleChange()
     {
         await InvokeAsync(StateHasChanged);
-        
+
         if (!PdfPopup.IsVisible)
         {
             await InvokeAsync(LoadDocuments);
         }
     }
-    
+
     private async Task LoadDocuments()
     {
         try
         {
             _isLoading = true;
             StateHasChanged();
-            _documents = await Http.GetFromJsonAsync<List<PdfListItemDto>>($"api/Pdf/getlist");
+            _documents = await Http.GetFromJsonAsync<List<PdfListItemDto>>("api/Pdf/getlist");
         }
         catch (Exception e)
         {
@@ -109,7 +105,6 @@
         }
         finally
         {
-           
             _isLoading = false;
             StateHasChanged();
         }
@@ -124,17 +119,17 @@
 
     private void UploadNewPdf()
     {
-        NavigationManager.NavigateTo($"/pdf/upload");
+        NavigationManager.NavigateTo("/pdf/upload");
     }
-    
+
 
     private async Task DeletePdf(string id)
     {
-
         if (!await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this character sheet? This cannot be undone."))
         {
             return;
         }
+
         _isLoading = true;
         StateHasChanged();
 
@@ -164,12 +159,12 @@
 
     public void Dispose()
     {
-        this.PdfPopup.IsVisibleChange -= OnIsVisibleChange;
+        PdfPopup.IsVisibleChange -= OnIsVisibleChange;
     }
-    
-    private void HidePopup()
+
+    private void ReturnMenu()
     {
-        NavigationManager.NavigateTo($"/menu");
+        NavigationManager.NavigateTo("/menu");
     }
-    
+
 }

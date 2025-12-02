@@ -1,13 +1,10 @@
-﻿using MongoDB.Bson;
-
-namespace Mixi.Shared.Models.UI;
+﻿namespace Mixi.Shared.Models.UI;
 
 public class PdfPopup
 {
+    private bool _isVisible;
     private string _pdfName;
-    
-    public event Action? PdfNameChanged;
-    
+
     public string PdfName
     {
         get => _pdfName;
@@ -20,11 +17,7 @@ public class PdfPopup
             }
         }
     }
-    
-    private bool _isVisible;
-    
-    public event Action? IsVisibleChange;
-    
+
     public bool IsVisible
     {
         get => _isVisible;
@@ -37,4 +30,8 @@ public class PdfPopup
             }
         }
     }
+
+    public event Action? PdfNameChanged;
+
+    public event Action? IsVisibleChange;
 }

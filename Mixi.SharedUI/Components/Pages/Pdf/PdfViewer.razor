@@ -1,13 +1,11 @@
-﻿@using Mixi.SharedUI.Components.Layout
-@using Mixi.Shared.Models.UI
-@using MongoDB.Bson
-
-@page "/pdf/viewer"
+﻿@page "/pdf/viewer"
 
 @inject HttpClient Http
 @inject IJSRuntime JsRuntime
 @inject PdfPopup PdfPopup
 
+@using Mixi.Shared.Models.UI
+@using Mixi.SharedUI.Components.Layout
 @implements IDisposable
 @layout PdfViewerLayout
 
@@ -36,13 +34,16 @@
     private string _documentId;
     private bool _isLoading = true;
     private IJSObjectReference? _pdfModule;
-    private bool _isSaving = false;
+    private bool _isSaving;
     private string _statusMessage = string.Empty;
     private bool _shouldRenderPdf = false;
-    private bool _isDisposed = false;
-    private bool _isReadyToRender = false;
-    private string? _pdfBase64Data; 
-    private void Log(string message) => Console.WriteLine($"[C# {DateTime.Now:HH:mm:ss.fff}] {message}");
+    private bool _isDisposed;
+    private bool _isReadyToRender;
+    private string? _pdfBase64Data;
+    private void Log(string message)
+    {
+        Console.WriteLine($"[C# {DateTime.Now:HH:mm:ss.fff}] {message}");
+    }
 
     protected override void OnInitialized()
     {
@@ -51,12 +52,19 @@
         PdfPopup.IsVisibleChange += OnVisibilityChanged;
     }
 
-    private async void OnPdfNameChanged() => await InvokeAsync(LoadDocument);
-    private async void OnVisibilityChanged() => await InvokeAsync(() => 
+    private async void OnPdfNameChanged()
     {
-        if (!PdfPopup.IsVisible) ClosePopup();
-        else LoadDocument();
-    });
+        await InvokeAsync(LoadDocument);
+    }
+
+    private async void OnVisibilityChanged()
+    {
+        await InvokeAsync(() =>
+        {
+            if (!PdfPopup.IsVisible) ClosePopup();
+            else LoadDocument();
+        });
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -81,11 +89,10 @@
                 _pdfBase64Data = Convert.ToBase64String(pdfBytes);
                 _isReadyToRender = true;
             }
-        } 
+        }
         catch (Exception ex)
         {
-         
-            Log($"LoadDocument BŁĄD: {ex.ToString()}");
+            Log($"LoadDocument BŁĄD: {ex}");
         }
         finally
         {
@@ -99,21 +106,20 @@
     {
         if (_isReadyToRender && !string.IsNullOrEmpty(_pdfBase64Data))
         {
-           
-            _isReadyToRender = false; 
+            _isReadyToRender = false;
 
             try
             {
                 _pdfModule ??= await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Mixi.SharedUI/js/pdfViewer.js");
                 await _pdfModule.InvokeVoidAsync("renderPdf", "pdfContainer", _pdfBase64Data);
-                
+
                 await LoadFormData();
             }
             catch (Exception ex)
             {
-                Log($"OnAfterRenderAsync BŁĄD: {ex.ToString()}");
+                Log($"OnAfterRenderAsync BŁĄD: {ex}");
             }
-        } 
+        }
     }
 
     private async Task LoadFormData()
@@ -132,7 +138,7 @@
             _statusMessage = $"Error: {ex.Message}";
         }
     }
-    
+
 
     private async Task SaveChanges()
     {
@@ -155,7 +161,11 @@
         {
             _statusMessage = $"Error: {ex.Message}";
         }
-        finally { _isSaving = false; StateHasChanged(); }
+        finally
+        {
+            _isSaving = false;
+            StateHasChanged();
+        }
     }
 
     private async Task ClosePopup()
@@ -166,12 +176,12 @@
             {
                 await _pdfModule.InvokeVoidAsync("cleanupPdfViewer", "pdfContainer");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Log($"Failed to close popup: {e}");
             }
-            
         }
+
         PdfPopup.IsVisible = false;
     }
 
@@ -184,4 +194,5 @@
         PdfPopup.PdfNameChanged -= OnPdfNameChanged;
         PdfPopup.IsVisibleChange -= OnVisibilityChanged;
     }
+
 }

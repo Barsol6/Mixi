@@ -1,21 +1,20 @@
-﻿@using System.Net
-@using Mixi.Shared.Models.Account
-@using Mixi.Shared.Models.UI
-
-@page "/register"
+﻿@page "/register"
 
 @inject HttpClient Http
 @inject Account Account
 @inject SignUpPopup SignUpPop
 @inject NavigationManager NavigationManager
 
+@using System.Net
+@using Mixi.Shared.Models.Account
+@using Mixi.Shared.Models.UI
 @implements IDisposable
 
 <div class="signInPanel">
     <div class="title">
         <div>@_loginStatement</div>
     </div>
-    
+
     <div class="data-box">
         <input type="text" @bind="Account.Username" @onkeyup="Enter" required="required"/>
         <label> USERNAME </label>
@@ -60,40 +59,41 @@
 </div>
 
 @code {
-    
-    
-    private string _loginStatement = "FILL FORM";   
-    
+
+
+    private string _loginStatement = "FILL FORM";
+
     protected override void OnInitialized()
     {
-        this.SignUpPop.IsLoggedChange += () => InvokeAsync(StateHasChanged);
-        this.SignUpPop.IsVisibleChange += () =>
+        SignUpPop.IsLoggedChange += () => InvokeAsync(StateHasChanged);
+        SignUpPop.IsVisibleChange += () =>
         {
-            Account.Password = String.Empty;
-            Account.Username = String.Empty;
-            Account.PasswordRepeat = String.Empty;
+            Account.Password = string.Empty;
+            Account.Username = string.Empty;
+            Account.PasswordRepeat = string.Empty;
         };
         base.OnInitialized();
     }
 
     private async Task Enter(KeyboardEventArgs e)
     {
-        if (e.Code is "Enter" or "NumpadEnter" )
+        if (e.Code is "Enter" or "NumpadEnter")
         {
-            await HandleUserSignUp();   
+            await HandleUserSignUp();
         }
     }
 
     private async Task HandleUserSignUp()
     {
-        if (Account.Username != String.Empty && Account.Password != String.Empty && Account.PasswordRepeat != String.Empty)
+        if (Account.Username != string.Empty && Account.Password != string.Empty && Account.PasswordRepeat != string.Empty)
         {
             if (Account.Password != Account.PasswordRepeat)
             {
                 return;
             }
+
             var exists = await Http.PostAsJsonAsync("api/User/register", Account);
-            
+
             if (exists.StatusCode == HttpStatusCode.Conflict)
             {
                 _loginStatement = "USERNAME ALREADY USED";
@@ -103,18 +103,19 @@
             {
                 _loginStatement = "SUCCES";
                 StateHasChanged();
-                Account.Username = String.Empty;
-                Account.Password = String.Empty;
-                Account.PasswordRepeat = String.Empty;
+                Account.Username = string.Empty;
+                Account.Password = string.Empty;
+                Account.PasswordRepeat = string.Empty;
                 NavigationManager.NavigateTo("/login");
             }
+
             StateHasChanged();
         }
     }
 
     public void Dispose()
     {
-        this.SignUpPop.IsLoggedChange -= StateHasChanged;
+        SignUpPop.IsLoggedChange -= StateHasChanged;
     }
 
     public void Close()

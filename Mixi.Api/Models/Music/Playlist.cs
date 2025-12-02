@@ -6,8 +6,8 @@ public class Playlist
     public string Name { get; set; }
     public string? Description { get; set; }
     public string? ImageUrl { get; set; }
-    
+
     public string UserId { get; set; }
-    
+
     public virtual ICollection<PlaylistItem> PlaylistItems { get; set; } = new List<PlaylistItem>();
 }

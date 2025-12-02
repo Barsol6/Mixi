@@ -1,5 +1,3 @@
-@using Mixi.Shared.Models.UI
-
 @inject HttpClient Http
 @inject NotePopup Note
 @inject IJSRuntime JsRuntime
@@ -7,6 +5,7 @@
 
 
 @page "/notes/notes_choice"
+@using Mixi.Shared.Models.UI
 
 <div class="pdfChoicePanel">
     @if (_isLoading)
@@ -22,7 +21,7 @@
                 </span>
             </div>
         </div>
-        
+
         @if (_list != null)
         {
             <div>
@@ -30,7 +29,7 @@
                 @foreach (var note in _list)
                 {
                     <div class="data-box">
-                        <div class="logButton" >
+                        <div class="logButton">
                             <span class="logButton-content" @onclick="() => ViewNote(note.Id, note.Name)">
                                 @note.Name
                             </span>
@@ -46,6 +45,7 @@
         {
             <p>You have no notes yet.</p>
         }
+
         <div class="data-box">
             <div class="logButton">
                 <div class="closeButton-content" @onclick="() => HidePopup()">
@@ -53,7 +53,6 @@
                 </div>
             </div>
         </div>
-        
     }
 </div>
 
@@ -70,7 +69,7 @@
     {
         public string Id { get; set; }
     }
-    
+
     private List<NoteListItemDto>? _list;
     private bool _isLoading = true;
 
@@ -95,7 +94,7 @@
         {
             _isLoading = true;
             StateHasChanged();
-            _list = await Http.GetFromJsonAsync<List<NoteListItemDto>>($"api/note/getlist");
+            _list = await Http.GetFromJsonAsync<List<NoteListItemDto>>("api/note/getlist");
         }
         catch (Exception e)
         {
@@ -107,13 +106,13 @@
             StateHasChanged();
         }
     }
-    
+
     private void ViewNote(string id, string name)
     {
         Note.NoteId = id;
         Note.IsVisible = true;
         Note.NoteName = name;
-        NavigationManager.NavigateTo($"/notes/editor");
+        NavigationManager.NavigateTo("/notes/editor");
     }
 
     private async Task CreateNewNote()
@@ -127,19 +126,17 @@
 
             content.Add(new StringContent(Note.NoteName), "NoteName");
 
-            var response = await Http.PostAsync($"api/Note/create", content);
+            var response = await Http.PostAsync("api/Note/create", content);
             if (response.IsSuccessStatusCode)
             {
                 var newNoteData = await response.Content.ReadFromJsonAsync<NoteId>();
-                
-                
+
 
                 if (newNoteData != null)
                 {
                     Note.NoteId = newNoteData.Id;
                     Note.IsVisible = true;
-                    NavigationManager.NavigateTo($"/notes/editor");
-                  
+                    NavigationManager.NavigateTo("/notes/editor");
                 }
                 else
                 {
@@ -150,7 +147,6 @@
             else
             {
                 Console.Error.WriteLine($"Failed to create note. Status: {response.StatusCode}");
-
             }
         }
         catch (Exception e)
@@ -158,10 +154,8 @@
             Console.Error.WriteLine($"FATAL ERROR in CreateNewNote: {e.Message}");
             Console.Error.WriteLine(e.StackTrace);
         }
-
-
     }
-    
+
     private async Task DeleteNote(string id)
     {
         if (!await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this character sheet? This cannot be undone."))
@@ -198,7 +192,7 @@
 
     private void HidePopup()
     {
-        NavigationManager.NavigateTo($"/menu");
+        NavigationManager.NavigateTo("/menu");
     }
 
 }

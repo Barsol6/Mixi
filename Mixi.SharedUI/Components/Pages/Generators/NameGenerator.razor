@@ -1,8 +1,7 @@
-﻿@using Mixi.Api.Modules.Enums
-@using Mixi.Shared.Models.UI
+﻿@page "/generators/name_generator"
+@using Mixi.Api.Modules.Enums
 @using Mixi.Shared.Models.Generators
-
-@page "/generators/name_generator"
+@using Mixi.Shared.Models.UI
 
 
 @inject NameGeneratorPopup NameGenPop
@@ -10,9 +9,9 @@
 @inject NavigationManager NavigationManager
 
 <div class="choicePanel">
-            <div class="generatedName">
-                @NameGenPop.GeneratedName
-            </div>
+    <div class="generatedName">
+        @NameGenPop.GeneratedName
+    </div>
     <div class="data-box">
         <div class="logButton">
             <div class="logButton-content" @onclick="() => GenerateName(NameType.EnglishMale, _sex[0]) ">
@@ -65,17 +64,16 @@
 </div>
 
 @code {
-    private bool _isNoble = false;
-    private bool _isGenerating = false;
-    private List<string> _sex = ["Male", "Female"];
-    
-    
-    
-    private string? _generatedName = String.Empty;
-    
+    private readonly bool _isNoble = false;
+    private bool _isGenerating;
+    private readonly List<string> _sex = ["Male", "Female"];
+
+
+    private string? _generatedName = string.Empty;
+
     private void HidePopup()
     {
-        NavigationManager.NavigateTo($"/menu");
+        NavigationManager.NavigateTo("/menu");
     }
 
     private async Task GenerateName(NameType nameType, string sex)
@@ -120,11 +118,11 @@
         {
             _isGenerating = false;
         }
-    
     }
 
     private class GenerateNameResponse
     {
         public string GeneratedName { get; set; } = string.Empty;
     }
+
 }

@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UseMaui>true</UseMaui>
+        <UserSecretsId>515e496b-168c-4cb9-8ba7-5301fe039e5d</UserSecretsId>
     </PropertyGroup>
 
 
@@ -17,82 +18,77 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Components\Layout\BaseLayout.razor" />
-      <AdditionalFiles Include="Components\Layout\Footer.razor" />
-      <AdditionalFiles Include="Components\Layout\LoginLayout.razor" />
-      <AdditionalFiles Include="Components\Layout\MainLayout.razor" />
-      <AdditionalFiles Include="Components\Layout\MenuLayout.razor" />
-      <AdditionalFiles Include="Components\Layout\NavMenu.razor" />
-      <AdditionalFiles Include="Components\Layout\PdfViewerLayout.razor" />
-      <AdditionalFiles Include="Components\Layout\SectionLayout.razor" />
-      <AdditionalFiles Include="Components\Pages\Error.razor" />
-      <AdditionalFiles Include="Components\Pages\Index.razor" />
-      <AdditionalFiles Include="Components\Pages\LoginPage.razor" />
-      <AdditionalFiles Include="Components\Pages\Menu.razor" />
-      <AdditionalFiles Include="Components\Pages\Pdf\PdfViewer.razor" />
-      <AdditionalFiles Include="Components\Pages\Pdf\UploadPdf.razor" />
-      <AdditionalFiles Include="Components\UI\MenuPopupContainer.razor" />
-      <AdditionalFiles Include="Components\UI\PdfPopupContainer.razor" />
-      <AdditionalFiles Include="Components\UI\PopupContainer.razor" />
+        <AdditionalFiles Include="Components\Layout\BaseLayout.razor"/>
+        <AdditionalFiles Include="Components\Layout\Footer.razor"/>
+        <AdditionalFiles Include="Components\Layout\LoginLayout.razor"/>
+        <AdditionalFiles Include="Components\Layout\MainLayout.razor"/>
+        <AdditionalFiles Include="Components\Layout\MenuLayout.razor"/>
+        <AdditionalFiles Include="Components\Layout\NavMenu.razor"/>
+        <AdditionalFiles Include="Components\Layout\PdfViewerLayout.razor"/>
+        <AdditionalFiles Include="Components\Layout\SectionLayout.razor"/>
+        <AdditionalFiles Include="Components\Pages\Error.razor"/>
+        <AdditionalFiles Include="Components\Pages\Index.razor"/>
+        <AdditionalFiles Include="Components\Pages\LoginPage.razor"/>
+        <AdditionalFiles Include="Components\Pages\Menu.razor"/>
+        <AdditionalFiles Include="Components\Pages\Pdf\PdfViewer.razor"/>
+        <AdditionalFiles Include="Components\Pages\Pdf\UploadPdf.razor"/>
+        <AdditionalFiles Include="Components\UI\MenuPopupContainer.razor"/>
+        <AdditionalFiles Include="Components\UI\PdfPopupContainer.razor"/>
+        <AdditionalFiles Include="Components\UI\PopupContainer.razor"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Mixi.Api\Mixi.Api.csproj" />
-      <ProjectReference Include="..\Mixi.Shared.Models\Mixi.Shared.Models.csproj" />
+        <ProjectReference Include="..\Mixi.Api\Mixi.Api.csproj"/>
+        <ProjectReference Include="..\Mixi.Shared.Models\Mixi.Shared.Models.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <Content Remove="wwwroot\js\Players\howlerPlayer.js" />
-      <MauiAsset Include="wwwroot\js\Players\howlerPlayer.js" />
-      <Content Remove="wwwroot\js\Players\spotifyPlayer.js" />
-      <MauiAsset Include="wwwroot\js\Players\spotifyPlayer.js" />
-      <Content Remove="wwwroot\js\Players\youtubePlayer.js" />
-      <MauiAsset Include="wwwroot\js\Players\youtubePlayer.js" />
-    </ItemGroup>
-    
     <Target Name="NpmInstall" BeforeTargets="CopyPdfJsFiles">
-        <Exec Command="npm install" WorkingDirectory="$(ProjectDir)" />
+        <Exec Command="npm install" WorkingDirectory="$(ProjectDir)"/>
     </Target>
 
     <Target Name="CopyPdfJsFiles" BeforeTargets="Build">
-        <Message Text="--- Copying correct PDF.js v4 module files (.mjs)... ---" Importance="high" />
-        <MakeDir Directories="wwwroot/js/pdfjs/web" />
-   
-    
-        <ItemGroup>
-            <PdfJsCoreModules Include="..\node_modules\pdfjs-dist\build\pdf.mjs;..\node_modules\pdfjs-dist\build\pdf.worker.mjs" />
-            <PdfJsViewerFiles Include="..\node_modules\pdfjs-dist\web\pdf_viewer.mjs;..\node_modules\pdfjs-dist\web\pdf_viewer.css" />
-        </ItemGroup>
-    
-        <Copy SourceFiles="@(PdfJsCoreModules)" DestinationFolder="wwwroot/js/pdfjs/" />
-        <Copy SourceFiles="@(PdfJsViewerFiles)" DestinationFolder="wwwroot/js/pdfjs/web\" />
-        
+        <Message Text="--- Copying correct PDF.js v4 module files (.mjs)... ---" Importance="high"/>
+        <MakeDir Directories="wwwroot/js/pdfjs/web"/>
 
-        <Message Text="--- Converting .mjs files to .js files... ---" Importance="high" />
-        
+
         <ItemGroup>
-            <MjsFiles Include="wwwroot/js/pdfjs/**/*.mjs" />
-            <JsFiles Include="@(MjsFiles->'%(RootDir)%(Directory)%(Filename).js')" />
+            <PdfJsCoreModules Include="..\node_modules\pdfjs-dist\build\pdf.mjs;..\node_modules\pdfjs-dist\build\pdf.worker.mjs"/>
+            <PdfJsViewerFiles Include="..\node_modules\pdfjs-dist\web\pdf_viewer.mjs;..\node_modules\pdfjs-dist\web\pdf_viewer.css"/>
         </ItemGroup>
 
-        <Copy SourceFiles="@(MjsFiles)" DestinationFiles="@(JsFiles)" />
-        
-        <Message Text="--- Removing original .mjs files... ---" Importance="high" />
-        <Delete Files="@(MjsFiles)" />
+        <ItemGroup>
+            <Content Include="wwwroot\css\source.css" CopyToOutputDirectory="PreserveNewest" />
+        </ItemGroup>
 
-        <Message Text="--- PDF.js file copy, conversion, and cleanup complete. ---" Importance="high" />
+        <Copy SourceFiles="@(PdfJsCoreModules)" DestinationFolder="wwwroot/js/pdfjs/"/>
+        <Copy SourceFiles="@(PdfJsViewerFiles)" DestinationFolder="wwwroot/js/pdfjs/web\"/>
+
+
+        <Message Text="--- Converting .mjs files to .js files... ---" Importance="high"/>
+
+        <ItemGroup>
+            <MjsFiles Include="wwwroot/js/pdfjs/**/*.mjs"/>
+            <JsFiles Include="@(MjsFiles->'%(RootDir)%(Directory)%(Filename).js')"/>
+        </ItemGroup>
+
+        <Copy SourceFiles="@(MjsFiles)" DestinationFiles="@(JsFiles)"/>
+
+        <Message Text="--- Removing original .mjs files... ---" Importance="high"/>
+        <Delete Files="@(MjsFiles)"/>
+
+        <Message Text="--- PDF.js file copy, conversion, and cleanup complete. ---" Importance="high"/>
     </Target>
-    
+
     <Target Name="CopyHowlerJs" BeforeTargets="Build" AfterTargets="CopyPdfJsFiles">
         <Message Text="--- Copying Howler.js module files... ---" Importance="high"/>
         <Makedir Directories="wwwroot/js/howlerjs"/>
-        
+
         <ItemGroup>
             <HowlerJs Include="..\node_modules\howler\dist\howler.min.js"/>
         </ItemGroup>
-        
+
         <Copy SourceFiles="@(HowlerJs)" DestinationFolder="wwwroot/js/howlerjs"/>
         <Message Text="---  Howler.js download finished. ---" Importance="high"/>
     </Target>
-    
+
 </Project>

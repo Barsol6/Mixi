@@ -1,5 +1,4 @@
 ﻿@using Microsoft.Extensions.Logging
-@using Mixi.Api.Modules.Enums
 @using Mixi.Shared.Models.Account
 @using Mixi.Shared.Models.UI
 @using Mixi.SharedUI.Components.Layout
@@ -26,7 +25,7 @@
                 NAME GENERATOR
             </div>
         </div>
-    </div>  
+    </div>
     <div class="data-box">
         <div class="logButton">
             <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.PdfViewer)">
@@ -40,6 +39,13 @@
                 NOTES
             </div>
         </div>
+    </div>   
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.Music)">
+               MUSIC
+            </div>
+        </div>
     </div>
     <div class="data-box">
         <div class="logButton">
@@ -49,33 +55,17 @@
         </div>
     </div>
     <MenuPopupContainer @ref="_popup"></MenuPopupContainer>
-    
-    <button class="btn btn-primary" @onclick="PlayOnlineMp3">Graj MP3 z Netu</button>
-
-    <button class="btn btn-danger" @onclick="StopMusic">Stop</button>
 </div>
 
 @code {
     private MenuPopupContainer _popup = null!;
 
-    private ILogger _logger = null!;
-    
-    private async Task PlayOnlineMp3()
-    {
-      
-        var url = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
-        await LocalMusicService.PlayAsync(url);
-    }
+    private readonly ILogger _logger = null!;
 
-    private async Task StopMusic()
-    {
-        await LocalMusicService.StopAsync();
-    }
-    
-    
+
     protected override void OnInitialized()
     {
-        this.SignUp.IsLoggedChange += () => InvokeAsync(StateHasChanged);
+        SignUp.IsLoggedChange += () => InvokeAsync(StateHasChanged);
     }
 
     private Task ShowPopup(MenuChoice menuChoice)
@@ -83,40 +73,45 @@
         switch (menuChoice)
         {
             case MenuChoice.NameGenerator:
-                NavigationManager.NavigateTo($"/generators/name_generator");
+                NavigationManager.NavigateTo("/generators/name_generator");
                 break;
             case MenuChoice.PdfViewer:
-                NavigationManager.NavigateTo($"/pdf/viewer_choice");
+                NavigationManager.NavigateTo("/pdf/viewer_choice");
                 break;
             case MenuChoice.Notes:
-                NavigationManager.NavigateTo($"/notes/notes_choice/");
+                NavigationManager.NavigateTo("/notes/notes_choice/");
+                break;
+            case MenuChoice.Music:
+                NavigationManager.NavigateTo("/music/playlists");
                 break;
             default:
                 (_logger ?? throw new InvalidOperationException()).LogInformation("Menu choice error");
-                break; 
+                break;
         }
 
         return Task.CompletedTask;
     }
-    
+
     public void Dispose()
     {
-        this.SignUp.IsLoggedChange -= StateHasChanged;
+        SignUp.IsLoggedChange -= StateHasChanged;
     }
 
     private async Task LogOut()
     {
-        NameGenPop.GeneratedName = String.Empty;
-        Account.Password = String.Empty;
-        Account.Username = String.Empty;
+        NameGenPop.GeneratedName = string.Empty;
+        Account.Password = string.Empty;
+        Account.Username = string.Empty;
         NavigationManager.NavigateTo("/login");
         StateHasChanged();
     }
-    
+
     private enum MenuChoice
     {
         NameGenerator,
         PdfViewer,
         Notes,
+        Music
     }
+
 }

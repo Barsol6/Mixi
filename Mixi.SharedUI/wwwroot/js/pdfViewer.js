@@ -7,7 +7,8 @@ export function cleanupPdfViewer(containerId) {
             if (instance.pdfViewer) instance.pdfViewer.setDocument(null);
             if (instance.eventBus?.destroy) instance.eventBus.destroy();
             if (instance.pdfDoc) instance.pdfDoc.destroy();
-        } catch (e) { }
+        } catch (e) {
+        }
         pdfInstances.delete(containerId);
     }
     const container = document.getElementById(containerId);
@@ -34,11 +35,11 @@ export function renderPdf(containerId, base64Data) {
             mainContainer.appendChild(viewerDiv);
 
             const pdfjsLib = await import('./pdfjs/pdf.js');
-            const { PDFViewer, EventBus, PDFLinkService, GenericL10n } = await import('./pdfjs/web/pdf_viewer.js');
+            const {PDFViewer, EventBus, PDFLinkService, GenericL10n} = await import('./pdfjs/web/pdf_viewer.js');
             pdfjsLib.GlobalWorkerOptions.workerSrc = './pdf.worker.js';
 
             const eventBus = new EventBus();
-            const pdfDoc = await pdfjsLib.getDocument({ data: atob(base64Data) }).promise;
+            const pdfDoc = await pdfjsLib.getDocument({data: atob(base64Data)}).promise;
 
             eventBus.on('annotationlayerrendered', (event) => {
                 if (event.pageNumber === pdfDoc.numPages) {
@@ -47,14 +48,22 @@ export function renderPdf(containerId, base64Data) {
             });
 
             const l10n = new GenericL10n("en-US");
-            const linkService = new PDFLinkService({ eventBus });
-            const pdfViewer = new PDFViewer({ container: mainContainer, viewer: viewerDiv, eventBus, l10n, renderInteractiveForms: true, textLayerMode: 2, annotationMode: pdfjsLib.AnnotationMode.ENABLE_FORMS });
+            const linkService = new PDFLinkService({eventBus});
+            const pdfViewer = new PDFViewer({
+                container: mainContainer,
+                viewer: viewerDiv,
+                eventBus,
+                l10n,
+                renderInteractiveForms: true,
+                textLayerMode: 2,
+                annotationMode: pdfjsLib.AnnotationMode.ENABLE_FORMS
+            });
 
             linkService.setViewer(pdfViewer);
             pdfViewer.setDocument(pdfDoc);
             linkService.setDocument(pdfDoc, null);
 
-            pdfInstances.set(containerId, { pdfDoc, pdfViewer, eventBus, linkService });
+            pdfInstances.set(containerId, {pdfDoc, pdfViewer, eventBus, linkService});
         } catch (error) {
             reject(error);
         }
@@ -108,7 +117,7 @@ export async function loadFormDataIntoPdf(containerId, jsonData) {
                     const fieldObjects = await instance.pdfDoc.getFieldObjects();
                     if (fieldObjects && fieldObjects[fieldName]) {
                         for (const field of fieldObjects[fieldName]) {
-                            instance.pdfDoc.annotationStorage.setValue(field.id, { fieldValue: valueToSet });
+                            instance.pdfDoc.annotationStorage.setValue(field.id, {fieldValue: valueToSet});
                         }
                     }
                 }

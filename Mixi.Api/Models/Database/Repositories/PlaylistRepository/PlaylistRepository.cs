@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices.JavaScript;
 using Microsoft.EntityFrameworkCore;
 using Mixi.Api.Modules.Music;
 using Mixi.Shared.Models.Music;
@@ -7,12 +6,13 @@ namespace Mixi.Api.Modules.Database.Repositories.PlaylistRepository;
 
 public class PlaylistRepository : IPlaylistRepository
 {
-    
     private readonly MSSQLMixiDbContext _context;
+
     public PlaylistRepository(MSSQLMixiDbContext context)
     {
         _context = context;
     }
+
     public async Task<IEnumerable<PlaylistDto>> GetAllPlaylists(string userId)
     {
         var playlists = await _context.Playlist
@@ -39,7 +39,7 @@ public class PlaylistRepository : IPlaylistRepository
                 Name = p.Name,
                 Description = p.Description,
                 ImageUrl = p.ImageUrl,
-                Items = p.PlaylistItems.Select(item => new PlaylistItemDto()
+                Items = p.PlaylistItems.Select(item => new PlaylistItemDto
                 {
                     Id = item.Id,
                     SourceType = item.SourceType,
@@ -49,12 +49,11 @@ public class PlaylistRepository : IPlaylistRepository
                     Album = item.Album,
                     AlbumArtUrl = item.ImageUrl,
                     Duration = item.Duration
-                    
                 }).ToList()
             })
             .FirstOrDefaultAsync();
 
-        
+
         return playlist;
     }
 
@@ -68,9 +67,9 @@ public class PlaylistRepository : IPlaylistRepository
             UserId = userId,
             ImageUrl = createPlaylistDto.ImageUrl
         };
-        
+
         _context.Playlist.Add(newPlaylist);
-        
+
         await _context.SaveChangesAsync();
 
         var playlistDto = new PlaylistDto
@@ -80,7 +79,7 @@ public class PlaylistRepository : IPlaylistRepository
             Description = newPlaylist.Description,
             ImageUrl = newPlaylist.ImageUrl
         };
-        
+
         return playlistDto;
     }
 
@@ -92,30 +91,27 @@ public class PlaylistRepository : IPlaylistRepository
             _context.Playlist.Remove(playlist);
             await _context.SaveChangesAsync();
         }
-       
     }
-    
 
-    public async Task<PlaylistItemDto?> CreatePlaylistItem(CreatePlaylistItemDto createPlaylistItemDto, int id, string userId)
+
+    public async Task<PlaylistItemDto?> CreatePlaylistItem(CreatePlaylistItemDto createPlaylistItemDto, int id,
+        string userId)
     {
-        var  playlist = await _context.Playlist.FirstOrDefaultAsync(p => p.UserId == userId && p.Id == id);
-        if (playlist == null)
-        {
-            return null;
-        }
+        var playlist = await _context.Playlist.FirstOrDefaultAsync(p => p.UserId == userId && p.Id == id);
+        if (playlist == null) return null;
 
         var newTrack = new PlaylistItem
         {
             PlaylistId = id,
             SourceType = createPlaylistItemDto.SourceType,
             SourceIdentifier = createPlaylistItemDto.SourceIdentifier,
-            Title = createPlaylistItemDto.Title,
-            Artist = createPlaylistItemDto.Artist,
-            Album = createPlaylistItemDto.Album,
-            ImageUrl = createPlaylistItemDto.AlbumArtUrl,
+            Title = createPlaylistItemDto.Title ?? "Unknown Title",
+            Artist = createPlaylistItemDto.Artist ?? "Unknown Artist",
+            Album = createPlaylistItemDto.Album ?? "Unknown Album",
+            ImageUrl = createPlaylistItemDto.AlbumArtUrl ?? "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
             Duration = createPlaylistItemDto.Duration
         };
-        
+
         _context.PlaylistItem.Add(newTrack);
         await _context.SaveChangesAsync();
 
@@ -130,25 +126,18 @@ public class PlaylistRepository : IPlaylistRepository
             AlbumArtUrl = newTrack.ImageUrl,
             Duration = newTrack.Duration
         };
-        
+
         return trackDto;
     }
-    
+
     public async Task DeletePlaylistItem(int playlistId, string userId, int trackId)
     {
-        if (! await _context.Playlist.AnyAsync(p => p.Id == playlistId && p.UserId == userId))
-        {
-            return;
-        }
-            var track = await _context.PlaylistItem.FirstOrDefaultAsync(t => t.Id == trackId && t.PlaylistId == playlistId);
-            
-            if (track == null)
-            {
-                return;
-            }
-            
-            _context.PlaylistItem.Remove(track);
-            await _context.SaveChangesAsync();
+        if (!await _context.Playlist.AnyAsync(p => p.Id == playlistId && p.UserId == userId)) return;
+        var track = await _context.PlaylistItem.FirstOrDefaultAsync(t => t.Id == trackId && t.PlaylistId == playlistId);
+
+        if (track == null) return;
+
+        _context.PlaylistItem.Remove(track);
+        await _context.SaveChangesAsync();
     }
 }
-

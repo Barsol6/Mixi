@@ -20,24 +20,23 @@ public static class PdfHelper
 
                 foreach (var fieldName in acroFields.Fields.Keys)
                 {
-   
-                    AcroFields.Item field = acroFields.GetFieldItem(fieldName);
+                    var field = acroFields.GetFieldItem(fieldName);
                     if (field == null) continue;
 
-                    PdfDictionary fieldDict = field.GetMerged(0);
+                    var fieldDict = field.GetMerged(0);
                     if (fieldDict == null) continue;
-                    
-                    PdfNumber flags = fieldDict.GetAsNumber(PdfName.FF);
+
+                    var flags = fieldDict.GetAsNumber(PdfName.FF);
 
                     if (flags == null) continue;
-                    
-                    int currentFlags = flags.IntValue;
-                    int newFlags = currentFlags & ~readOnlyFlag;
-                    
+
+                    var currentFlags = flags.IntValue;
+                    var newFlags = currentFlags & ~readOnlyFlag;
+
                     fieldDict.Put(PdfName.FF, new PdfNumber(newFlags));
                 }
             }
-            
+
             stamper.Close();
             reader.Close();
 

@@ -1,11 +1,11 @@
 using System.Text.RegularExpressions;
 using Mixi.Api.Modules.Notes;
-using MongoDB.Driver;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace Mixi.Api.Modules.Database.Repositories.NotesRepositories;
 
-public class NotesRepository:INotesRepository
+public class NotesRepository : INotesRepository
 {
     private readonly MongoMixiDbContext _context;
     private readonly ILogger<NotesRepository> _logger;
@@ -17,7 +17,7 @@ public class NotesRepository:INotesRepository
         _logger = logger;
     }
 
-    public async Task<Note?> GetByIdAsync(string id, string userName )
+    public async Task<Note?> GetByIdAsync(string id, string userName)
     {
         try
         {
@@ -29,16 +29,16 @@ public class NotesRepository:INotesRepository
             throw;
         }
     }
-    
+
     public async Task<List<Note>> GetAllAsync(string userName)
     {
         try
         {
             var filter = Builders<Note>.Filter.Regex(
                 x => x.UserName,
-                new MongoDB.Bson.BsonRegularExpression($"^{Regex.Escape(userName)}$", "i")
+                new BsonRegularExpression($"^{Regex.Escape(userName)}$", "i")
             );
-            return await _context.NotesCollection.Find(filter).ToListAsync();        
+            return await _context.NotesCollection.Find(filter).ToListAsync();
         }
         catch (Exception e)
         {
@@ -57,7 +57,7 @@ public class NotesRepository:INotesRepository
                 _logger.LogError($"Note with id {noteId} not found");
                 return false;
             }
-            
+
             note.Text = noteData;
             note.Name = noteName;
             note.UpdatedAt = DateTime.UtcNow;
@@ -71,7 +71,7 @@ public class NotesRepository:INotesRepository
             throw;
         }
     }
-    
+
     public async Task<string> SaveAsync(Note note)
     {
         try
@@ -80,10 +80,7 @@ public class NotesRepository:INotesRepository
             if (!isNew)
             {
                 var existingNote = await _context.NotesCollection.Find(x => x.Id == note.Id).FirstOrDefaultAsync();
-                if (existingNote is null)
-                {
-                    throw new KeyNotFoundException($"Note with id {note.Id} not found");
-                }
+                if (existingNote is null) throw new KeyNotFoundException($"Note with id {note.Id} not found");
 
                 existingNote.UpdatedAt = DateTime.UtcNow;
                 existingNote.UserName = note.UserName;
@@ -97,8 +94,8 @@ public class NotesRepository:INotesRepository
             {
                 note.CreatedAt = DateTime.UtcNow;
                 note.UpdatedAt = DateTime.UtcNow;
-             
-                
+
+
                 await _context.NotesCollection.InsertOneAsync(note);
             }
 
@@ -110,17 +107,19 @@ public class NotesRepository:INotesRepository
             throw;
         }
     }
-    
+
     public async Task<bool> DeleteAsync(string id, string userName)
     {
         try
         {
-            var note = await _context.NotesCollection.Find(x => x.Id == id && x.UserName == userName).FirstOrDefaultAsync();
+            var note = await _context.NotesCollection.Find(x => x.Id == id && x.UserName == userName)
+                .FirstOrDefaultAsync();
             if (note is null)
             {
                 _logger.LogError($"Note with id {id} not found");
                 return false;
             }
+
             await _context.NotesCollection.DeleteOneAsync(x => x.Id == note.Id && x.UserName == userName);
             _logger.LogInformation($"Note with id {id} deleted");
             return true;
@@ -131,6 +130,4 @@ public class NotesRepository:INotesRepository
             throw;
         }
     }
-    
-    
 }

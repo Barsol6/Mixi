@@ -2,10 +2,12 @@ namespace Mixi.Shared.Models.UI;
 
 public class NotePopup
 {
+    private bool _isVisible;
+
+
+    private string _noteId;
     private string _noteName;
-    
-    public event Action? NoteNameChanged;
-    
+
     public string NoteName
     {
         get => _noteName;
@@ -18,12 +20,7 @@ public class NotePopup
             }
         }
     }
-    
 
-    private string _noteId;
-    
-    public event Action? NoteIdChanged;
-    
     public string NoteId
     {
         get => _noteId;
@@ -36,11 +33,7 @@ public class NotePopup
             }
         }
     }
-    
-    private bool _isVisible;
-    
-    public event Action? IsVisibleChange;
-    
+
     public bool IsVisible
     {
         get => _isVisible;
@@ -53,4 +46,10 @@ public class NotePopup
             }
         }
     }
+
+    public event Action? NoteNameChanged;
+
+    public event Action? NoteIdChanged;
+
+    public event Action? IsVisibleChange;
 }
