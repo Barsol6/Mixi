@@ -1,0 +1,140 @@
+@using Mixi.SharedUI.Services.MusicPlayers
+@inject PlaybackManager PlaybackManager
+@implements IDisposable
+
+@if (PlaybackManager.CurrentTrack != null)
+{
+    <div class="retro-player-bar">
+        
+    <div class="player-info">
+        <div class="player-img">
+            @if (!string.IsNullOrEmpty(PlaybackManager.CurrentTrack.AlbumArtUrl))
+            {
+                <img src="@PlaybackManager.CurrentTrack.AlbumArtUrl" />
+            }
+            else
+            {
+                <span>♪</span>
+            }
+        </div>
+            
+        <div class="player-text">
+            <div class="player-title">@PlaybackManager.CurrentTrack.Title</div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: @(CalculateProgress().ToString("0.##", System.Globalization.CultureInfo.InvariantCulture))%;"></div>
+                </div>
+                <div class="time-display">
+                    @FormatTime(_currentPosition) / @FormatTime(_totalDuration)
+                </div>
+            </div>
+            <div class="player-artist">@PlaybackManager.CurrentTrack.Artist</div>
+        </div>
+        
+    </div>
+    
+    <div class="player-controls">
+      
+            
+        @if (_isPlaying)
+        {
+            <button class="retro-btn btn-main" @onclick="Pause">⏸</button>
+        }
+        else
+        {
+            <button class="retro-btn btn-main" @onclick="Resume">▶</button>
+        }
+
+        <button class="retro-btn" @onclick="Next">⏭</button>
+    </div>
+
+    <div class="player-source">
+        SRC: @PlaybackManager.CurrentTrack.SourceType
+    </div>
+    </div>
+    
+    <div style="height: 100px;"></div>
+    
+    <div id="youtube-player" style="position: absolute; top: -9999px; left: -9999px; width: 1px; height: 1px; visibility: hidden;">
+        <div id="youtube-player-iframe"> </div>
+    </div>
+    }
+
+
+
+@code
+{
+    private bool _isPlaying = true;
+    private double _currentPosition = 0;
+    private double _totalDuration = 1;
+    private Timer?  _timer;
+
+    protected override void OnInitialized()
+    {
+        PlaybackManager.OnTrackChanged += RefreshUI;
+
+        _timer = new Timer(async _ => await UpdateProgress(), null, 0, 1000);
+    }
+
+    private async Task UpdateProgress()
+    {
+        if (PlaybackManager.CurrentTrack != null)
+        {
+            _currentPosition = await PlaybackManager.GetCurrentPosition();
+            var dur = await PlaybackManager.GetTotalDuration();
+            if (dur > 0)
+            {
+                _totalDuration = dur;
+            }
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private double CalculateProgress()
+    {
+        if (_totalDuration <= 0)
+        {
+            return 0;
+        }
+
+        return (_currentPosition / _totalDuration) * 100;
+    }
+    
+    
+    
+    
+    public void Dispose()
+    {
+        PlaybackManager.OnTrackChanged -= RefreshUI;
+        _timer.Dispose();
+    }
+
+    private void RefreshUI()
+    {
+        _isPlaying = true;
+        _currentPosition = 0;
+        InvokeAsync(StateHasChanged);
+    }
+    private string FormatTime(double seconds)
+    {
+        var ts = TimeSpan.FromSeconds(seconds);
+        return ts.ToString(@"mm\:ss");
+    }
+    private async Task Pause()
+    {
+        await PlaybackManager.PauseAsync();
+        _isPlaying = false;
+    }
+
+    private async Task Resume()
+    {
+        await PlaybackManager.ResumeAsync();
+        _isPlaying = true;
+    }
+
+    private void Next() => PlaybackManager.PlayNext();
+
+
+
+}

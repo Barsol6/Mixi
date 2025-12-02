@@ -1,0 +1,114 @@
+@page "/music/newPlaylist"
+@using Mixi.Shared.Models.Music
+
+@inject HttpClient Http
+@inject NavigationManager  NavigationManager
+
+<div class="container">
+    
+    <div class="title" style="margin-bottom: 30px; font-size: 3rem;">
+        NEW PLAYLIST
+    </div>
+
+    <div class="loginBox" style="height: auto; padding: 40px; border: 3px solid white;">
+
+        <div class="login">
+            
+            <div class="data-box">
+                <input type="text" @bind="_newPlaylist.Name" required="required" />
+                <label> NAME </label>
+            </div>
+            
+            <div class="data-box">
+                <input type="text" @bind="_newPlaylist.Description" required="required" />
+                <label> DESCRIPTION </label>
+            </div>
+
+            <div class="data-box">
+                <input type="text" @bind="_newPlaylist.ImageUrl"  />
+                <label> IMAGE URL </label>
+            </div>
+
+            @if (!string.IsNullOrEmpty(_newPlaylist.ImageUrl))
+            {
+                <div class="data-box" style="margin: 20px 0;">
+                    <img src="@_newPlaylist.ImageUrl" style="width: 100px; height: 100px; border: 2px solid white; object-fit: cover;" onerror="this.style.display='none'" />
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <div style="color: red; margin: 10px 0; font-family: Courier; font-weight: bold;">
+                    ERROR: @_errorMessage
+                </div>
+            }
+
+            <br/>
+
+            <div class="loginButton" @onclick="HandleCreate">
+                <div class="logButton">
+                    <div class="logButton-content">
+                        @(_isLoading ? "CREATING..." : "CREATE")
+                    </div>
+                </div>
+            </div>
+
+            <div class="loginButton" @onclick="Return">
+                <div class="logButton">
+                    <div class="closeButton-content">
+                        CANCEL
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private CreatePlaylistDto _newPlaylist = new CreatePlaylistDto();
+    private string _errorMessage = string.Empty;
+    private bool _isLoading = false;
+    private async Task HandleCreate()
+    {
+        if (string.IsNullOrWhiteSpace(_newPlaylist.Name))
+        {
+            _errorMessage = "NAME IS REQUIRED";
+            return;
+        }
+
+        _isLoading = true;
+        _errorMessage = string.Empty;
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/playlists/createPlaylist", _newPlaylist);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var createdPlaylist = await response.Content.ReadFromJsonAsync<PlaylistDto>();
+                Console.WriteLine($"Utworzono playlistę o ID: {createdPlaylist.Id}");
+                NavigationManager.NavigateTo("/music/playlists");
+            }
+            else
+            {
+                _errorMessage = await response.Content.ReadAsStringAsync();
+            }
+        }
+        catch (Exception e)
+        {
+                Console.Error.WriteLine($"Error while creating playlist: {e.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void Return()
+    {
+        NavigationManager.NavigateTo("music/playlists");
+    }
+
+}

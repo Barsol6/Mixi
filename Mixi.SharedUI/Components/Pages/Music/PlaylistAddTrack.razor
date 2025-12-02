@@ -1,0 +1,221 @@
+@page "/music/{id:int}/addTrack"
+@using Mixi.Shared.Models.Music
+@using Mixi.Shared.Models.Enums
+
+
+@inject NavigationManager NavManager
+@inject HttpClient Http
+
+<div class="container">
+    
+    <div class="title" style="font-size: 2.5rem; margin-bottom: 20px;">
+        ADD TRACK
+    </div>
+
+    <div class="retro-list-container" style="display: flex; justify-content: center;">
+        
+        <div class="loginBox" style="height: auto; width: 500px; padding: 30px; border: 3px solid white;">
+
+            <div class="login">
+
+                <div class="data-box">
+                    <select @bind="newTrack.SourceType" class="retro-select">
+                        <option value="@TrackSource.Youtube">YOUTUBE</option>
+                        <option value="@TrackSource.Spotify">SPOTIFY</option>
+                        <option value="@TrackSource.LocalFile">LOCAL FILE</option>
+                        <option value="@TrackSource.Tidal">TIDAL</option>
+                    </select>
+                    <label style="top: -10px; font-size: 12px;"> SOURCE TYPE </label>
+                </div>
+
+                <div class="data-box">
+                    <input type="text" @bind="rawInput" @bind:after="OnLinkPasted" required="required" />
+                    <label> PASTE LINK / ID / PATH </label>
+                </div>
+                
+                <div style="font-size: 0.8rem; color: var(--rarity-uncommon); margin-bottom: 10px;">
+                    DETECTED ID: @(newTrack.SourceIdentifier ?? "Waiting...")
+                </div>
+
+                <div class="data-box">
+                    <input type="text" @bind="newTrack.Title" required="required" />
+                    <label> TITLE </label>
+                </div>
+
+                <div class="data-box">
+                    <input type="text" @bind="newTrack.Artist" required="required" />
+                    <label> ARTIST </label>
+                </div>
+
+                <div class="data-box">
+                    <input type="text" @bind="newTrack.AlbumArtUrl" />
+                    <label> IMAGE URL </label>
+                </div>
+
+                @if (!string.IsNullOrEmpty(newTrack.AlbumArtUrl))
+                {
+                    <img src="@newTrack.AlbumArtUrl" style="width: 80px; height: 80px; border: 1px solid white; margin: 10px auto; object-fit: cover;" />
+                }
+
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <div style="color: red; font-family: Courier; margin: 10px 0;">
+                        @_errorMessage
+                    </div>
+                }
+
+                <br/>
+
+                <div class="loginButton" @onclick="HandleAddTrack">
+                    <div class="logButton">
+                        <div class="logButton-content">ADD TO PLAYLIST</div>
+                    </div>
+                </div>
+
+                <div class="loginButton" @onclick="GoBack">
+                    <div class="logButton">
+                        <div class="closeButton-content">CANCEL</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    [Parameter] public int id { get; set; }
+    
+    private CreatePlaylistItemDto newTrack = new CreatePlaylistItemDto { SourceType = TrackSource.Youtube };
+    private string rawInput = string.Empty;
+    private string _errorMessage = string.Empty;
+    private bool _isFetching = false;
+    
+    private async Task OnLinkPasted()
+    {
+        if (string.IsNullOrWhiteSpace(rawInput)) return;
+
+        _isFetching = true;
+        StateHasChanged();
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/playlists/fetchMetadata", rawInput);
+            if (response.IsSuccessStatusCode)
+            {
+                var metadata = await response.Content.ReadFromJsonAsync<CreatePlaylistItemDto>();
+                if (metadata != null && !string.IsNullOrEmpty(metadata.Title))
+                {
+                    newTrack.SourceType = metadata.SourceType;
+                    newTrack.SourceIdentifier = metadata.SourceIdentifier;
+                    newTrack.Title = metadata.Title;
+                    newTrack.Artist = metadata.Artist;
+                    newTrack.Album = metadata.Album;
+                    newTrack.AlbumArtUrl = metadata.AlbumArtUrl;
+                    newTrack.Duration = metadata.Duration;
+
+                    return;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Error:{e}");
+            throw;
+        }
+        finally
+        {
+            _isFetching = false;
+            StateHasChanged();
+        }
+
+        if (newTrack.SourceType == TrackSource.Youtube)
+        {
+            if (rawInput.Contains("youtube.com/watch?v="))
+            {
+                var uri = new Uri(rawInput);
+                var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+                newTrack.SourceIdentifier = query["v"];
+            }
+            else if (rawInput.Contains("youtu.be/"))
+            {
+                newTrack.SourceIdentifier = rawInput.Split('/').Last();
+            }
+            else
+            {
+                newTrack.SourceIdentifier = rawInput;
+            }
+            
+            if (string.IsNullOrEmpty(newTrack.AlbumArtUrl))
+            {
+                newTrack.AlbumArtUrl = $"https://img.youtube.com/vi/{newTrack.SourceIdentifier}/0.jpg";
+            }
+        }
+        else if (newTrack.SourceType == TrackSource.LocalFile)
+        {
+            newTrack.SourceIdentifier = rawInput.Replace("\"", ""); 
+
+            if (string.IsNullOrEmpty(newTrack.Title))
+            {
+                newTrack.Title = Path.GetFileNameWithoutExtension(newTrack.SourceIdentifier);
+            }
+        }
+        else if (newTrack.SourceType == TrackSource.Spotify)
+        {
+            if (rawInput.Contains("/track/"))
+            {
+                var parts = rawInput.Split("/track/");
+                if (parts.Length > 1)
+                {
+                    newTrack.SourceIdentifier = $"spotify:track:{parts[1].Split('?')[0]}";
+                }
+            }
+            else
+            {
+                newTrack.SourceIdentifier = rawInput;
+            }
+        }
+        else
+        {
+            newTrack.SourceIdentifier = rawInput;
+        }
+    }
+
+    private async Task HandleAddTrack()
+    {
+        if (string.IsNullOrEmpty(newTrack.SourceIdentifier))
+        {
+            OnLinkPasted(); 
+        }
+
+        if (string.IsNullOrWhiteSpace(newTrack.Title) || string.IsNullOrWhiteSpace(newTrack.SourceIdentifier))
+        {
+            _errorMessage = "TITLE AND SOURCE ID ARE REQUIRED";
+            return;
+        }
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync($"api/playlists/{id}/addTrackPlaylist", newTrack);
+
+            if (response.IsSuccessStatusCode)
+            {
+                _errorMessage = "TRACK ADDED SUCCESSFULLY";
+            }
+            else
+            {
+                _errorMessage = response.ToString() + await response.Content.ReadAsStringAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"ERROR: {ex.Message}";
+        }
+    }
+
+    private void GoBack()
+    {
+        NavManager.NavigateTo($"/music/playlist{id}");
+    }
+}
