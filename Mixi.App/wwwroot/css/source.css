@@ -1,12 +1,11 @@
-﻿@tailwind base;
-@tailwind components;
-@tailwind utilities;
+﻿
 
 html {
     height: 100%;
     width: 100%;
     position: fixed;
 }
+
 body {
     width: 100%;
     height: 100%;
@@ -21,10 +20,12 @@ body {
     position: fixed;
     color: white;
 }
+
 .hidden {
     display: none;
     visibility: hidden;
 }
+
 .container {
     width: 100%;
     height: 100vh;
@@ -34,11 +35,12 @@ body {
     align-items: center;
     justify-content: center;
 }
+
 .popup {
     top: 0;
     left: 0;
     position: fixed;
-    background-color: rgba(0,0,0,1);
+    background-color: rgba(0, 0, 0, 1);
     width: 100%;
     height: 100%;
     display: flex;
@@ -48,6 +50,7 @@ body {
     z-index: 1000;
     margin: 0;
 }
+
 .title {
     width: 90%;
     font-family: "Comic Sans MS", sans-serif;
@@ -60,9 +63,10 @@ body {
     place-items: center;
     border-radius: 50px;
     background-color: black;
-    filter: drop-shadow(5px 8px 30px black );
+    filter: drop-shadow(5px 8px 30px black);
     flex-direction: row;
 }
+
 .loginBox {
     height: 400px;
     width: 400px;
@@ -76,6 +80,7 @@ body {
     border-radius: 50px;
     filter: dropShadow(10px);
 }
+
 .titleImg {
     width: auto;
     height: 40vh;
@@ -85,6 +90,7 @@ body {
     display: flex;
     flex-direction: row;
 }
+
 :root {
     --rarity-common: #808080;
     --rarity-uncommon: #8ef059;
@@ -96,8 +102,8 @@ body {
     --row-padding: 5px;
 }
 
-.data-box{
-    
+.data-box {
+
     position: relative;
     display: flex;
     flex-direction: column;
@@ -106,10 +112,10 @@ body {
     text-align: center;
     height: fit-content;
     padding: 2px;
-    
+
 }
 
-.closeButtonBox{
+.closeButtonBox {
     position: absolute;
     display: flex;
     flex-direction: column;
@@ -117,13 +123,13 @@ body {
     align-items: center;
     text-align: center;
     height: 25%;
-    
-    
+
+
 }
 
-.data-box input{
+.data-box input {
     width: 14rem;
-    padding: 5px ;
+    padding: 5px;
     font-size: 16px;
     margin-top: 30px;
     margin-bottom: 10px;
@@ -132,9 +138,10 @@ body {
     outline: none;
     transition: .4s;
 }
-.data-box input:focus{
+
+.data-box input:focus {
     width: 14rem;
-    padding: 5px ;
+    padding: 5px;
     font-size: 16px;
     margin-top: 30px;
     margin-bottom: 10px;
@@ -145,9 +152,9 @@ body {
     transition: .4s;
 }
 
-.data-box label{
+.data-box label {
 
-    top:30px;
+    top: 30px;
     left: 0;
     padding: 10px 0;
     font-size: 16px;
@@ -159,14 +166,14 @@ body {
 }
 
 .data-box input:focus ~ label,
-.data-box input:focus ~ label   {
+.data-box input:focus ~ label {
     top: 0px;
     left: 0;
     color: white;
     transition: 0.4s;
-}   
+}
 
-.actionButton:hover:before, .info:hover:before, .settingsBtn:hover:before, .logButton-content:hover{
+.actionButton:hover:before, .info:hover:before, .settingsBtn:hover:before, .logButton-content:hover {
     border-radius: inherit;
     inset: 1px;
     transition: 0.4s;
@@ -175,26 +182,24 @@ body {
 }
 
 
-.closeButton-content:hover{
+.closeButton-content:hover {
     border-radius: inherit;
     inset: 1px;
     transition: 0.4s;
     z-index: 0;
-    color:red;
+    color: red;
 }
 
-.closePdfButton-content:hover{
+.closePdfButton-content:hover {
     border-radius: inherit;
     inset: 1px;
     transition: 0.4s;
     z-index: 0;
-    color:red;
+    color: red;
 }
 
 
-
-
-.actionButton-content, .info-content, .settingsBtn-content .logButton-content{
+.actionButton-content, .info-content, .settingsBtn-content .logButton-content {
     color: white;
     border-radius: inherit;
     inset: 1px;
@@ -204,7 +209,7 @@ body {
     background-color: black;
 }
 
-.closeButton-content{
+.closeButton-content {
     color: darkred;
     border-radius: inherit;
     inset: 1px;
@@ -214,10 +219,11 @@ body {
     justify-content: center;
     background-color: black;
     letter-spacing: 5px;
-    font-size:1.2rem ;
+    font-size: 1.2rem;
     transition: .4s;
 }
-.closePdfButton-content{
+
+.closePdfButton-content {
     color: darkred;
     border-radius: inherit;
     inset: 1px;
@@ -227,15 +233,15 @@ body {
     display: flex;
     background-color: rgba(0, 0, 0, 0);
     letter-spacing: 5px;
-    font-size:1.2rem ;
+    font-size: 1.2rem;
     transition: .4s;
 }
 
-.logButton-content{
+.logButton-content {
     width: inherit;
     height: inherit;
     letter-spacing: 5px;
-    font-size:1.2rem ;
+    font-size: 1.2rem;
     border-style: solid;
     border-radius: initial;
     transition: 0.4s;
@@ -243,8 +249,8 @@ body {
     padding-right: 4px;
 }
 
-.logButton{
-    
+.logButton {
+
     width: 12rem;
     height: fit-content;
     margin: 5px;
@@ -276,7 +282,7 @@ body {
     z-index: auto;
 }
 
-.closeButton{
+.closeButton {
     color: white;
     padding: 2px;
     transition: 0.4s;
@@ -285,7 +291,8 @@ body {
     top: 0;
     right: 0;
 }
-.pdfCloseButton{
+
+.pdfCloseButton {
     color: red;
     padding: 2px;
     transition: 0.4s;
@@ -307,13 +314,13 @@ body {
     right: 0;
 }
 
-.pdfCloseButton:hover{
+.pdfCloseButton:hover {
     color: darkred;
     transition: 0.4s;
     font-size: xx-large;
 }
 
-.nameGenChoicePanel{
+.nameGenChoicePanel {
     height: 90%;
     width: 90%;
     background-color: black;
@@ -328,7 +335,7 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.generatedName{
+.generatedName {
     color: #ffd789;
     background-color: black;
     height: fit-content;
@@ -341,7 +348,7 @@ body {
     padding-left: 6px;
 }
 
-.pdfChoicePanel{
+.pdfChoicePanel {
     height: 90%;
     width: 90%;
     background-color: black;
@@ -355,7 +362,7 @@ body {
     border-radius: 0.5rem;
 }
 
-.signInPanel{
+.signInPanel {
     height: 100%;
     width: 100%;
     margin: 0 auto;
@@ -370,7 +377,7 @@ body {
     background-color: black;
 }
 
-.loginButton{
+.loginButton {
     padding: 0.5rem;
     margin-bottom: 1.5rem;
     position: relative;
@@ -382,7 +389,7 @@ body {
     height: fit-content;
 }
 
-.loginContainerBefore{
+.loginContainerBefore {
     width: 50%;
     height: 75%;
     display: flex;
@@ -393,7 +400,8 @@ body {
     flex-shrink: inherit;
     transition: 500ms;
 }
-.loginContainerAfter{
+
+.loginContainerAfter {
     width: 35%;
     height: 75%;
     display: flex;
@@ -414,6 +422,7 @@ body {
     overflow: hidden;
     border: 1px solid #ccc;
 }
+
 .pdfViewer {
     position: absolute;
     top: 0;
@@ -435,6 +444,7 @@ body {
 .pdfViewer .annotationLayer section {
     pointer-events: auto;
 }
+
 #pdfContainer {
     position: absolute;
     top: 0;
@@ -443,11 +453,13 @@ body {
     height: 100%;
     overflow: auto;
 }
+
 .pdfHost {
     position: relative;
     width: 100%;
-    height: 100vh; 
+    height: 100vh;
 }
+
 .pdfViewer .page {
     position: relative;
     margin: 1px auto -8px auto;
@@ -489,7 +501,7 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    transform: translate(0, 0); 
+    transform: translate(0, 0);
     z-index: 3;
 }
 
@@ -498,7 +510,7 @@ body {
 }
 
 .pdfViewer .page canvas {
-    pointer-events: auto; 
+    pointer-events: auto;
 }
 
 
@@ -530,7 +542,7 @@ body {
 .textWidgetAnnotation > input,
 .textWidgetAnnotation > textarea,
 .textWidgetAnnotation > select {
-    box-sizing: border-box; 
+    box-sizing: border-box;
     width: 100%;
     height: 100%;
     margin: 0;
@@ -538,7 +550,7 @@ body {
 }
 
 .textWidgetAnnotation > input {
-    font: inherit; 
+    font: inherit;
     background: transparent;
 }
 
@@ -553,11 +565,269 @@ body {
     padding: 0 !important;
     box-sizing: border-box !important;
     background: transparent !important;
-    border: 1px solid #000;      
+    border: 1px solid #000;
 }
 
 .checkboxWidgetAnnotation > input[type="checkbox"] {
     transform-origin: 0 0;
 }
+.retro-list-container {
+    width: 100%;
+    max-width: 1200px;
+    height: 65vh;
+    overflow-y: auto; 
+    border: 2px solid white;
+    background-color: black;
+    margin-top: 10px;
+    padding: 5px;
+
+    display: block;
+}
+
+.retro-list-header,
+.retro-row {
+    display: grid;
+
+    grid-template-columns: 40px 60px 2fr 1fr 80px 50px;
+    align-items: center; 
+    gap: 15px; 
+    padding: 8px 10px;
+    box-sizing: border-box;
+}
+
+.retro-list-header {
+    border-bottom: 2px solid white;
+    margin-bottom: 5px;
+    font-family: "Courier New", monospace;
+    color: #888; 
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.retro-row {
+    border: 1px solid #333; 
+    margin-bottom: 5px;
+    cursor: pointer;
+    background-color: black;
+    color: white;
+    transition: all 0.1s ease-in-out;
+}
+
+.retro-row:hover {
+    background-color: white;
+    color: black;
+    border-color: white;
+    transform: scale(1.005);
+}
+
+.col-id {
+    font-weight: bold;
+    color: var(--rarity-legendary);
+    text-align: center;
+}
+.retro-row:hover .col-id { color: black; }
+
+.col-img {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #555;
+    background: #111;
+    overflow: hidden;
+}
+.col-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.col-title {
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.col-artist {
+    font-size: 0.9em;
+    color: #ccc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.retro-row:hover .col-artist { color: #333; }
+.col-duration {
+    font-family: monospace;
+    text-align: right;
+}
+.col-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.btn-delete-track {
+    background: transparent;
+    border: 1px solid var(--rarity-insane);
+    color: var(--rarity-insane);
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.btn-delete-track:hover {
+    background-color: var(--rarity-insane);
+    color: white;
+}
+
+.retro-list-container::-webkit-scrollbar { width: 8px; }
+.retro-list-container::-webkit-scrollbar-track { background: black; border-left: 1px solid #333; }
+.retro-list-container::-webkit-scrollbar-thumb { background-color: white; border: 1px solid black; }
 
 
+.retro-player-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 90px;
+    background-color: black;
+    border-top: 3px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 9999; 
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
+    font-family: 'Courier New', Courier, monospace;
+    color: white;
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+    width: 40%;
+    overflow: hidden;
+}
+
+.player-img {
+    width: 60px;
+    height: 60px;
+    border: 2px solid white;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111;
+    flex-shrink: 0;
+}
+.player-img img { width: 100%; height: 100%; object-fit: cover; }
+
+.player-text {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.player-title {
+    font-weight: bold;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+}
+
+.player-artist {
+    font-size: 0.9rem;
+    color: #aaa;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.player-controls {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.retro-btn {
+    background: black;
+    border: 2px solid white;
+    color: white;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.1s;
+}
+.retro-btn:active {
+    background: white;
+    color: black;
+}
+
+.btn-main {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    border-color: var(--rarity-legendary, gold); 
+}
+
+
+.player-source {
+    border: 1px solid #555;
+    padding: 5px;
+    font-size: 0.7rem;
+    color: #888;
+}
+
+
+@media (max-width: 600px) {
+    .player-source { display: none; }
+    .player-info { width: 60%; }
+}
+
+.page {
+    padding-bottom: 100px;
+}
+.content {
+    padding-bottom: 100px !important;
+}
+
+.progress-container {
+    margin-top: 5px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    border: 2px solid white;
+    background: black;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: white;
+    transition: width 0.5s linear; 
+}
+
+.time-display {
+    font-size: 0.7rem;
+    color: #aaa;
+    margin-top: 2px;
+    font-family: monospace;
+}
