@@ -18,7 +18,6 @@ public static class MauiProgram
         builder.Services.AddSingleton<ISecureStorage>(SecureStorage.Default);
         builder.Services.AddScoped<IMusicPlayer, YoutubeMusicService>();
         builder.Services.AddScoped<IMusicPlayer, SpotifyMusicService>();
-        builder.Services.AddScoped<IMusicPlayer, TidalMusicService>();
         builder.Services.AddScoped<LocalMusicService>();
         builder.Services.AddScoped<IMusicPlayer>(sp => sp.GetRequiredService<LocalMusicService>());
 
