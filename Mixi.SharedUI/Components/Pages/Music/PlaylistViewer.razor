@@ -1,0 +1,170 @@
+@page "/music/playlist{Id:int}"
+@using Mixi.Shared.Models.Music
+@using Mixi.SharedUI.Services.MusicPlayers
+
+@inject HttpClient Http
+@inject PlaybackManager PlaybackManager
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+
+<div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 20px;">
+    
+    @if (_isLoading)
+    {
+        <p style="color: white; font-family: courier; margin-top: 50px;">LOADING DATA...</p>
+    }
+    else
+    {
+        <div class="title" style="font-size: 3rem; margin-bottom: 20px;">
+            @(_currentPlaylist?.Name ?? "UNKNOWN")
+        </div>
+
+        <div class="retro-list-container">
+
+            <div class="retro-list-header">
+                <div class="col-id">#</div>
+                <div class="col-title">IMG</div> <div class="col-title">TITLE</div>
+                <div class="col-artist">ARTIST</div>
+                <div class="col-duration">TIME</div>
+                <div class="col-actions">DEL</div>
+            </div>
+
+            @if (_currentPlaylist?.Items != null && _currentPlaylist.Items.Any())
+            {
+                @for (int i = 0; i < _currentPlaylist.Items.Count; i++)
+                {
+                    var track = _currentPlaylist.Items[i];
+                    var index = i;
+
+                    <div class="retro-row" @onclick="() => PlayTrack(index)">
+
+                        <div class="col-id">@(i + 1)</div>
+
+                        <div class="col-img">
+                            @if (!string.IsNullOrEmpty(track.AlbumArtUrl))
+                            {
+                                <img src="@track.AlbumArtUrl" alt="cover" />
+                            }
+                            else
+                            {
+                                <span style="font-size: 20px; color: #555;">♪</span>
+                            }
+                        </div>
+
+                        <div class="col-title" title="@track.Title">@track.Title</div>
+
+                        <div class="col-artist" title="@track.Artist">@track.Artist</div>
+
+                        <div class="col-duration">@FormatDuration(track.Duration)</div>
+
+                        <div class="col-actions">
+                            <button class="btn-delete-track" @onclick:stopPropagation @onclick="() => DeleteTrack(track.Id, Id)">
+                                X
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div style="padding: 40px; text-align: center; color: #666; font-family: Courier;">
+                    PLAYLIST IS EMPTY.<br/>CLICK "ADD TRACK" BELOW.
+                </div>
+            }
+        </div>
+
+        <div style="margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+            
+            <div class="logButton" @onclick='() => NavigationManager.NavigateTo($"/music/{Id}/addTrack")'>
+                <div class="logButton-content">ADD TRACK</div>
+            </div>
+
+            <div class="logButton" @onclick="ReturnMenu">
+                <div class="closeButton-content">CLOSE</div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private PlaylistDto? _currentPlaylist;
+    private bool _isLoading = true;
+    [Parameter] public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            _isLoading = true;
+            StateHasChanged();
+            _currentPlaylist = await Http.GetFromJsonAsync<PlaylistDto>($"/api/playlists/{Id}/getPlaylist");
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"Error: {exception.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task PlayTrack(int index)
+    {
+        await PlaybackManager.StartPlaylist(_currentPlaylist.Items);
+    }
+
+    private void ReturnMenu()
+    {
+        NavigationManager.NavigateTo("/menu");
+    }
+    private string FormatDuration(double? durationMs)
+    {
+        if (!durationMs.HasValue) return "--:--";
+        var ts = TimeSpan.FromMilliseconds(durationMs.Value);
+        return ts.ToString(@"mm\:ss");
+    }
+
+    private async Task DeleteTrack(int? trackId, int playlistId)
+    {
+        if (!await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this track? This cannot be undone."))
+        {
+            return;
+        }
+
+        _isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var response = await Http.DeleteAsync($"api/playlists/{playlistId}/{trackId}/deleteTrackFromPlaylist");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await InvokeAsync(LoadData);
+            }
+            else
+            {
+                {
+                    Console.Error.WriteLine("Failed to delete track.");
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Error deleting track: {e.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+}

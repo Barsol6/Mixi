@@ -2,12 +2,12 @@
 
 public enum NameType
 {
-   EnglishFemale,
-   FrenchFemale,
-   GermanFemale,
-   ItalianFemale,   
-   EnglishMale,
-   FrenchMale,
-   GermanMale,
-   ItalianMale
+    EnglishFemale,
+    FrenchFemale,
+    GermanFemale,
+    ItalianFemale,
+    EnglishMale,
+    FrenchMale,
+    GermanMale,
+    ItalianMale
 }

@@ -3,9 +3,7 @@
 public class MenuPopup
 {
     private bool _isVisible;
-    
-    public event Action? IsVisibleChange;
-    
+
     public bool IsVisible
     {
         get => _isVisible;
@@ -18,4 +16,6 @@ public class MenuPopup
             }
         }
     }
+
+    public event Action? IsVisibleChange;
 }

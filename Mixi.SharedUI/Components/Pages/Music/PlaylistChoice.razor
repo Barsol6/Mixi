@@ -1,0 +1,141 @@
+@page "/music/playlists"
+
+
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+
+
+<div class="pdfchooser">
+    @if (_isLoading)
+    {
+        <p>Loding playlists...</p>
+    }
+    else
+    {
+        <div class="data-box">
+            <div class="logButton">
+                <span class="logButton-content" @onclick="() => CreateNewPlaylist()">
+                    ADD NEW PLAYLISTS
+                </span>
+            </div>
+        </div>
+
+        @if (_list != null)
+        {
+            <div>
+                <h4>PLAYLISTS</h4>
+                @foreach (var item in _list)
+                {
+                    <div class="data-box">
+                        <div class="logButton">
+                            <span class="logButton-content" @onclick="() => ViewPlaylist(item.Id)">
+                                @item.Name
+                            </span>
+                            <span class="logButton-content" @onclick="() => DeletePlaylist(item.Id)">
+                                DELETE
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>You have no playlists yet.</p>
+        }
+
+        <div class="data-box">
+            <div class="logButton">
+                <div class="closeButton-content" @onclick="() => ReturnMenu()">
+                    CLOSE
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool _isLoading = true;
+
+    private List<PlaylistItemDto>? _list;
+
+    private class PlaylistItemDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPlaylists();
+    }
+
+    private async Task LoadPlaylists()
+    {
+        try
+        {
+            _isLoading = true;
+            StateHasChanged();
+            _list = await Http.GetFromJsonAsync<List<PlaylistItemDto>>("api/playlists/getPlaylists");
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Error: {e.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void CreateNewPlaylist()
+    {
+        NavigationManager.NavigateTo("music/newPlaylist");
+    }
+
+    private async Task DeletePlaylist(int id)
+    {
+        if (!await JsRuntime.InvokeAsync<bool>("confirm", "Are tou sure you want to delete playlist? This cannot be undone"))
+        {
+            return;
+        }
+
+        _isLoading = true;
+        StateHasChanged();
+        try
+        {
+            var response = await Http.DeleteAsync($"api/playlists/{id}/deletePlaylist");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await InvokeAsync(LoadPlaylists);
+            }
+            else
+            {
+                Console.Error.WriteLine($"Failed to delete document with ID: {id}");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Error: {e.Message}");
+        }
+        finally
+        { 
+            _isLoading = false; 
+            StateHasChanged();
+        }
+    }
+
+    public void ViewPlaylist(int id)
+    {
+        NavigationManager.NavigateTo($"/music/playlist{id}");
+    }
+
+    public void ReturnMenu()
+    {
+        NavigationManager.NavigateTo("/menu");
+    }
+
+}

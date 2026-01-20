@@ -1,8 +1,4 @@
-﻿@using Mixi.Shared.Models.UI
-@using Mixi.SharedUI.Components.Layout
-@using Mixi.SharedUI.Components.Pages.Login
-
-@page "/home"
+﻿@page "/home"
 @page "/"
 @layout MainLayout
 
@@ -11,21 +7,22 @@
 @inject PdfPopup PdfPopup
 @inject NavigationManager NavigationManager
 
+@using Mixi.Shared.Models.UI
+@using Mixi.SharedUI.Components.Layout
 @implements IDisposable
 
 @code {
 
 
-    
     protected override void OnInitialized()
     {
-        this.SignUp.IsVisibleChange += () => InvokeAsync(StateHasChanged);
-        this.SignUp.IsLoggedChange += () => InvokeAsync(StateHasChanged);
-        this.MenuPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
-        this.PdfPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        SignUp.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        SignUp.IsLoggedChange += () => InvokeAsync(StateHasChanged);
+        MenuPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        PdfPopup.IsVisibleChange += () => InvokeAsync(StateHasChanged);
         NavigationManager.NavigateTo("/login");
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -37,12 +34,13 @@
             StateHasChanged();
         }
     }
-    
+
     public void Dispose()
     {
-        this.SignUp.IsVisibleChange -= StateHasChanged;
-        this.SignUp.IsLoggedChange -= StateHasChanged;
-        this.MenuPopup.IsVisibleChange -= StateHasChanged;
-        this.PdfPopup.IsVisibleChange -= StateHasChanged;
+        SignUp.IsVisibleChange -= StateHasChanged;
+        SignUp.IsLoggedChange -= StateHasChanged;
+        MenuPopup.IsVisibleChange -= StateHasChanged;
+        PdfPopup.IsVisibleChange -= StateHasChanged;
     }
+
 }

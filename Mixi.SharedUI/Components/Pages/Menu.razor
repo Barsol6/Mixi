@@ -1,65 +1,71 @@
 ﻿@using Microsoft.Extensions.Logging
-@using Mixi.Api.Modules.Enums
 @using Mixi.Shared.Models.Account
 @using Mixi.Shared.Models.UI
 @using Mixi.SharedUI.Components.Layout
 @using Mixi.SharedUI.Components.UI
+@using Mixi.SharedUI.Services.MusicPlayers
 @using NameGenerator = Mixi.Shared.Models.UI.NameGeneratorPopup
-@layout MenuLayout
 
-@page "/menu/{UserName}"
+
+@page "/menu"
 
 @inject SignUpPopup SignUp
 @inject NameGenerator NameGenPop
 @inject Account Account
 @inject NavigationManager NavigationManager
+@inject LocalMusicService LocalMusicService
 
 @implements IDisposable
 
 
 <div class="container">
-        <div class="data-box">
-            <div class="logButton">
-                <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.NameGenerator)">
-                    NAME GENERATOR
-                </div>
-            </div>
-        </div>  
-        <div class="data-box">
-            <div class="logButton">
-                <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.PdfViewer)">
-                    INTERACTIVE CHARACTER CARD
-                </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.NameGenerator)">
+                NAME GENERATOR
             </div>
         </div>
-        <div class="data-box">
-            <div class="logButton">
-                <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.Notes)">
-                    NOTES
-                </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.PdfViewer)">
+                INTERACTIVE CHARACTER CARD
             </div>
         </div>
-        <div class="data-box">
-            <div class="logButton">
-                <div class="closeButton-content" @onclick="LogOut">
-                    LOG OUT
-                </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.Notes)">
+                NOTES
             </div>
         </div>
+    </div>   
+    <div class="data-box">
+        <div class="logButton">
+            <div class="logButton-content" @onclick="() => ShowPopup(MenuChoice.Music)">
+               MUSIC
+            </div>
+        </div>
+    </div>
+    <div class="data-box">
+        <div class="logButton">
+            <div class="closeButton-content" @onclick="LogOut">
+                LOG OUT
+            </div>
+        </div>
+    </div>
     <MenuPopupContainer @ref="_popup"></MenuPopupContainer>
 </div>
 
 @code {
     private MenuPopupContainer _popup = null!;
 
-    private ILogger _logger = null!;
-    
-    [Parameter]
-    public string UserName { get; set; }
+    private readonly ILogger _logger = null!;
+
 
     protected override void OnInitialized()
     {
-        this.SignUp.IsLoggedChange += () => InvokeAsync(StateHasChanged);
+        SignUp.IsLoggedChange += () => InvokeAsync(StateHasChanged);
     }
 
     private Task ShowPopup(MenuChoice menuChoice)
@@ -67,40 +73,45 @@
         switch (menuChoice)
         {
             case MenuChoice.NameGenerator:
-                NavigationManager.NavigateTo($"/generators/name_generator/{UserName}");
+                NavigationManager.NavigateTo("/generators/name_generator");
                 break;
             case MenuChoice.PdfViewer:
-                NavigationManager.NavigateTo($"/pdf/viewer_choice/{UserName}");
+                NavigationManager.NavigateTo("/pdf/viewer_choice");
                 break;
             case MenuChoice.Notes:
-                NavigationManager.NavigateTo($"/notes/notes_choice/{UserName}");
+                NavigationManager.NavigateTo("/notes/notes_choice/");
+                break;
+            case MenuChoice.Music:
+                NavigationManager.NavigateTo("/music/playlists");
                 break;
             default:
                 (_logger ?? throw new InvalidOperationException()).LogInformation("Menu choice error");
-                break; 
+                break;
         }
 
         return Task.CompletedTask;
     }
-    
+
     public void Dispose()
     {
-        this.SignUp.IsLoggedChange -= StateHasChanged;
+        SignUp.IsLoggedChange -= StateHasChanged;
     }
 
     private async Task LogOut()
     {
-        NameGenPop.GeneratedName = String.Empty;
-        Account.Password = String.Empty;
-        Account.Username = String.Empty;
+        NameGenPop.GeneratedName = string.Empty;
+        Account.Password = string.Empty;
+        Account.Username = string.Empty;
         NavigationManager.NavigateTo("/login");
         StateHasChanged();
     }
-    
+
     private enum MenuChoice
     {
         NameGenerator,
         PdfViewer,
         Notes,
+        Music
     }
+
 }

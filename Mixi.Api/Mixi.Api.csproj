@@ -5,34 +5,38 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-      <UserSecretsId>9208fd1c-c45a-4eb2-9357-9dcb6aa35962</UserSecretsId>
-  </PropertyGroup>
+        <UserSecretsId>9208fd1c-c45a-4eb2-9357-9dcb6aa35962</UserSecretsId>
+    </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CryptoRandom" Version="1.0.9" />
-        <PackageReference Include="iTextSharp" Version="5.5.13.3" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.14" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.12" />
+        <PackageReference Include="CryptoRandom" Version="1.0.9"/>
+        <PackageReference Include="iTextSharp" Version="5.5.13.3"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.21"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.14"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.12"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.12">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.12" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.12" />
-        <PackageReference Include="MongoDB.Bson" Version="2.25.0" />
-        <PackageReference Include="MongoDB.Driver" Version="2.25.0" />
-        <PackageReference Include="MongoDB.EntityFrameworkCore" Version="8.0.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.12"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.12"/>
+        <PackageReference Include="MongoDB.Bson" Version="2.25.0"/>
+        <PackageReference Include="MongoDB.Driver" Version="2.25.0"/>
+        <PackageReference Include="MongoDB.EntityFrameworkCore" Version="8.0.0"/>
+        <PackageReference Include="SpotifyAPI.Web" Version="7.2.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0"/>
+        <PackageReference Include="YoutubeExplode" Version="6.4.4" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Mixi.Shared.Models\Mixi.Shared.Models.csproj" />
+        <ProjectReference Include="..\Mixi.Shared.Models\Mixi.Shared.Models.csproj"/>
     </ItemGroup>
 
 </Project>

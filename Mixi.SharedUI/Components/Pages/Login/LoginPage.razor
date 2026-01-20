@@ -1,84 +1,89 @@
-﻿@using System.Net
-@using Mixi.Shared.Models.Account
-@using Mixi.Shared.Models.UI
-@using Mixi.SharedUI.Components.Layout
-@using Mixi.SharedUI.Components.UI
-
-@page "/login"
+﻿@page "/login"
 
 @layout LoginLayout
 @inject HttpClient Http
 @inject Account Account
 @inject SignUpPopup SignUpPop
 @inject NavigationManager NavigationManager
+@inject ISecureStorage SecureStorage
 
+@using System.Net
+@using Mixi.Shared.Models.Account
+@using Mixi.Shared.Models.UI
+@using Mixi.SharedUI.Components.Layout
+@using Mixi.SharedUI.Components.UI
 @implements IDisposable
 
 <div class="container">
-    
-    <div class="@(SignUpPop.MouseStatus ? "loginContainerAfter" : "loginContainerBefore")" onmouseenter="@MouseEnter" onmouseleave="@MouseLeave">
-    <div class="title">
-       MIXI
-    </div>
-    <div class="loginBox items-center">
 
-        <div class="login">
-            <div class="data-box">
-                <input type="text" @bind="Account.Username" onkeyup="@Enter" required="required"/>
-                <label> LOGIN </label>
-            </div>
-            <br/>
-            <div class="data-box">
-                <input class="bg-[]" type="password" @bind="Account.Password" onkeyup="@Enter" required="required"/>
-                <label> PASSWORD </label>
-            </div>
-            <br/>
-            <div class="loginButton" @onclick="HandleUserLogin">
-                <div class="logButton">
-                    <div class="logButton-content">
-                        LOG IN
-                    </div>
-                </div>
-            </div>
-            <div class="loginButton"  @onclick="ShowSignUpPop">
-                <div class="logButton" >
-                    <div class="logButton-content">
-                        SIGN UP
-                    </div>
-                </div>
-            </div>
-         
+    <div class="@(SignUpPop.MouseStatus ? "loginContainerAfter" : "loginContainerBefore")" onmouseenter="@MouseEnter"
+         onmouseleave="@MouseLeave">
+        <div class="title">
+            MIXI
         </div>
-        <PopupContainer @ref="_popup"></PopupContainer>
-    </div>
-   
+        <div class="loginBox items-center">
+
+            <div class="login">
+                <div class="data-box">
+                    <input type="text" @bind="Account.Username" onkeyup="@Enter" required="required"/>
+                    <label> LOGIN </label>
+                </div>
+                <br/>
+                <div class="data-box">
+                    <input class="bg-[]" type="password" @bind="Account.Password" onkeyup="@Enter" required="required"/>
+                    <label> PASSWORD </label>
+                </div>
+                <br/>
+                <div class="loginButton" @onclick="HandleUserLogin">
+                    <div class="logButton">
+                        <div class="logButton-content">
+                            LOG IN
+                        </div>
+                    </div>
+                </div>
+                <div class="loginButton" @onclick="ShowSignUpPop">
+                    <div class="logButton">
+                        <div class="logButton-content">
+                            SIGN UP
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <PopupContainer @ref="_popup"></PopupContainer>
+        </div>
+
     </div>
 
-</div> 
+</div>
 
 @code {
     private PopupContainer _popup = null!;
 
+    public class LoginResponseDto
+    {
+        public string Message { get; set; }
+        public string Token { get; set; }
+    }
+
     protected override void OnInitialized()
     {
-        this.SignUpPop.MouseStatusChange += () => InvokeAsync(StateHasChanged);
-        this.SignUpPop.IsLoggedChange += () => InvokeAsync(StateHasChanged);
-        this.SignUpPop.IsVisibleChange += () => InvokeAsync(StateHasChanged);
-        this.SignUpPop.IsVisibleChange += () =>
+        SignUpPop.MouseStatusChange += () => InvokeAsync(StateHasChanged);
+        SignUpPop.IsLoggedChange += () => InvokeAsync(StateHasChanged);
+        SignUpPop.IsVisibleChange += () => InvokeAsync(StateHasChanged);
+        SignUpPop.IsVisibleChange += () =>
         {
-            Account.Password = String.Empty;
-            Account.Username = String.Empty;
-            Account.PasswordRepeat = String.Empty;
+            Account.Password = string.Empty;
+            Account.Username = string.Empty;
+            Account.PasswordRepeat = string.Empty;
         };
         base.OnInitializedAsync();
     }
 
-    [Parameter]
-    public string UserName { get; set; }
 
     private async Task Enter(KeyboardEventArgs e)
     {
-        if (e.Code is "Enter" or "NumpadEnter" )
+        if (e.Code is "Enter" or "NumpadEnter")
         {
             await HandleUserLogin();
         }
@@ -86,42 +91,46 @@
 
     private async Task HandleUserLogin()
     {
-        if (Account.Username != String.Empty && Account.Password != String.Empty)
+        if (Account.Username != string.Empty && Account.Password != string.Empty)
         {
             var response = await Http.PostAsJsonAsync("api/User/login", Account);
 
-            UserName = Account.Username;
-            
+
             if (response.IsSuccessStatusCode)
             {
-                NavigationManager.NavigateTo($"/menu/{UserName}");
+                var loginResult = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
+
+                if (loginResult != null && !string.IsNullOrEmpty(loginResult.Token))
+                {
+                    await SecureStorage.SetAsync("auth_token", loginResult.Token);
+
+                    NavigationManager.NavigateTo("/menu");
+                }
             }
-            else if(response.StatusCode == HttpStatusCode.NotFound)
+            else if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 ShowSignUpPop();
             }
-            else if(response.StatusCode == HttpStatusCode.Unauthorized)
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                return;
             }
-            
         }
     }
 
     private async void ShowSignUpPop()
     {
-        Account.Password = String.Empty;
-        Account.Username = String.Empty;
-        Account.PasswordRepeat = String.Empty;
-        Account.UserType = string.Empty; 
+        Account.Password = string.Empty;
+        Account.Username = string.Empty;
+        Account.PasswordRepeat = string.Empty;
+        Account.UserType = string.Empty;
         NavigationManager.NavigateTo("/register");
     }
-    
+
     public void Dispose()
     {
-        this.SignUpPop.IsVisibleChange -= StateHasChanged;
-        this.SignUpPop.IsLoggedChange -= StateHasChanged;
-        this.SignUpPop.MouseStatusChange -= StateHasChanged;
+        SignUpPop.IsVisibleChange -= StateHasChanged;
+        SignUpPop.IsLoggedChange -= StateHasChanged;
+        SignUpPop.MouseStatusChange -= StateHasChanged;
     }
 
     public void MouseEnter()
