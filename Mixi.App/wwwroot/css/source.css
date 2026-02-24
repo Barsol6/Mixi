@@ -704,7 +704,7 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 0 20px;
-    z-index: 9999; 
+    z-index: auto;
     box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
     font-family: 'Courier New', Courier, monospace;
     color: white;

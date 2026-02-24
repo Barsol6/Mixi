@@ -1,4 +1,6 @@
-﻿namespace Mixi.App;
+﻿using Microsoft.Maui.Controls;
+
+namespace Mixi.App;
 
 public partial class App : Application
 {

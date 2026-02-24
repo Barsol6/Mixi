@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+    
 
     <PropertyGroup>
-        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
+        <TargetFrameworks>net8.0-android;net8.0-windows10.0.19041.0</TargetFrameworks>
+
 
         <OutputType>Exe</OutputType>
         <RootNamespace>Mixi.App</RootNamespace>
@@ -11,15 +13,16 @@
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
         <Nullable>enable</Nullable>
 
-        <!-- Display name -->
+ 
+
+        
         <ApplicationTitle>Mixi.App</ApplicationTitle>
-
-        <!-- App Identifier -->
+        
         <ApplicationId>com.companyname.mixi.app</ApplicationId>
-
-        <!-- Versions -->
+        
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <ApplicationVersion>1</ApplicationVersion>
+
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
@@ -29,7 +32,8 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
         <UserSecretsId>a911461c-f1d7-48a0-8f22-dd345a6acbb1</UserSecretsId>
     </PropertyGroup>
-
+    
+    
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4"/>
@@ -49,17 +53,23 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.7"/>
         <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.7"/>
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.7"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.9" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1"/>
-        <PackageReference Include="SpotifyAPI.Web" Version="7.2.1" />
-        <PackageReference Include="SpotifyAPI.Web.Auth" Version="7.2.1" />
+        <PackageReference Include="Microsoft.UI.Xaml" Version="2.8.7" Condition="!$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)').Contains('android'))"/>
+        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3800.47" Condition="!$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)').Contains('android'))"/>
+        <PackageReference Include="SpotifyAPI.Web" Version="7.2.1"/>
+        <PackageReference Include="SpotifyAPI.Web.Auth" Version="7.2.1"/>
     </ItemGroup>
-
+    
     <ItemGroup>
         <ProjectReference Include="..\Mixi.Shared.Models\Mixi.Shared.Models.csproj"/>
-        <ProjectReference Include="..\Mixi.SharedUI\Mixi.SharedUI.csproj"/>
+        <ProjectReference Include="..\Mixi.SharedUI\Mixi.SharedUI.csproj" AdditionalProperties="RuntimeIdentifier=" />
     </ItemGroup>
+    
+    
 
 </Project>

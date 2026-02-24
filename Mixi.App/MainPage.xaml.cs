@@ -1,6 +1,10 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using System;
 using Microsoft.AspNetCore.Components.WebView;
+using Microsoft.Maui.Controls;
+#if WINDOWS
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Web.WebView2.Core;
+#endif
 
 namespace Mixi.App;
 

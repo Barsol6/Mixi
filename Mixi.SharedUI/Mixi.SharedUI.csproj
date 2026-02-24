@@ -1,13 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFrameworks>net8.0-android;net8.0-windows10.0.19041.0</TargetFrameworks>
+
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+
         <UseMaui>true</UseMaui>
+
+        <RuntimeIdentifiers>android-x64;android-arm64</RuntimeIdentifiers>
+
         <UserSecretsId>515e496b-168c-4cb9-8ba7-5301fe039e5d</UserSecretsId>
     </PropertyGroup>
-
 
     <ItemGroup>
         <SupportedPlatform Include="browser"/>
@@ -15,6 +19,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.14"/>
+        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.9" />
     </ItemGroup>
 
     <ItemGroup>
@@ -37,8 +42,7 @@
         <AdditionalFiles Include="Components\UI\PopupContainer.razor"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\Mixi.Api\Mixi.Api.csproj"/>
+    <ItemGroup> 
         <ProjectReference Include="..\Mixi.Shared.Models\Mixi.Shared.Models.csproj"/>
     </ItemGroup>
 
@@ -47,36 +51,30 @@
     </Target>
 
     <Target Name="CopyPdfJsFiles" BeforeTargets="Build">
-        <Message Text="--- Copying correct PDF.js v4 module files (.mjs)... ---" Importance="high"/>
+        <Message Text="--- Copying and renaming PDF.js v4 module files (.mjs to .js)... ---" Importance="high"/>
         <MakeDir Directories="wwwroot/js/pdfjs/web"/>
 
-
         <ItemGroup>
-            <PdfJsCoreModules Include="..\node_modules\pdfjs-dist\build\pdf.mjs;..\node_modules\pdfjs-dist\build\pdf.worker.mjs"/>
-            <PdfJsViewerFiles Include="..\node_modules\pdfjs-dist\web\pdf_viewer.mjs;..\node_modules\pdfjs-dist\web\pdf_viewer.css"/>
+            <PdfJsCoreMjs Include="..\node_modules\pdfjs-dist\build\pdf.mjs;..\node_modules\pdfjs-dist\build\pdf.worker.mjs"/>
+            <PdfJsViewerMjs Include="..\node_modules\pdfjs-dist\web\pdf_viewer.mjs"/>
+
+            <PdfJsViewerCss Include="..\node_modules\pdfjs-dist\web\pdf_viewer.css"/>
         </ItemGroup>
 
         <ItemGroup>
             <Content Include="wwwroot\css\source.css" CopyToOutputDirectory="PreserveNewest" />
         </ItemGroup>
 
-        <Copy SourceFiles="@(PdfJsCoreModules)" DestinationFolder="wwwroot/js/pdfjs/"/>
-        <Copy SourceFiles="@(PdfJsViewerFiles)" DestinationFolder="wwwroot/js/pdfjs/web\"/>
+        <Copy SourceFiles="@(PdfJsCoreMjs)"
+              DestinationFiles="@(PdfJsCoreMjs->'wwwroot\js\pdfjs\%(Filename).js')" />
 
+        <Copy SourceFiles="@(PdfJsViewerMjs)"
+              DestinationFiles="@(PdfJsViewerMjs->'wwwroot\js\pdfjs\web\%(Filename).js')" />
 
-        <Message Text="--- Converting .mjs files to .js files... ---" Importance="high"/>
+        <Copy SourceFiles="@(PdfJsViewerCss)"
+              DestinationFolder="wwwroot/js/pdfjs\web\"/>
 
-        <ItemGroup>
-            <MjsFiles Include="wwwroot/js/pdfjs/**/*.mjs"/>
-            <JsFiles Include="@(MjsFiles->'%(RootDir)%(Directory)%(Filename).js')"/>
-        </ItemGroup>
-
-        <Copy SourceFiles="@(MjsFiles)" DestinationFiles="@(JsFiles)"/>
-
-        <Message Text="--- Removing original .mjs files... ---" Importance="high"/>
-        <Delete Files="@(MjsFiles)"/>
-
-        <Message Text="--- PDF.js file copy, conversion, and cleanup complete. ---" Importance="high"/>
+        <Message Text="--- PDF.js file copy and conversion complete. ---" Importance="high"/>
     </Target>
 
     <Target Name="CopyHowlerJs" BeforeTargets="Build" AfterTargets="CopyPdfJsFiles">
@@ -90,5 +88,7 @@
         <Copy SourceFiles="@(HowlerJs)" DestinationFolder="wwwroot/js/howlerjs"/>
         <Message Text="---  Howler.js download finished. ---" Importance="high"/>
     </Target>
+    
 
+    
 </Project>
