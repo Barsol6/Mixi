@@ -98,6 +98,6 @@ git push origin feature/my-feature
 ```
 4. Open a pull reques
 
-## 📄 License
+##  License
 Licensed under the GNU General Public License v3.0.
 
