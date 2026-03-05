@@ -2,14 +2,15 @@
 
 **Mixi** is a self-hosted, minimalistic cross-platform **.NET MAUI Blazor Hybrid** app designed to assist with organizing and running tabletop role-playing games (TTRPGs). It offers tools for both Game Masters and players to streamline session prep, gameplay, and immersion.
 
-## ✨ Features
+##  Features
 
-- 🎭 Game Master and Player accounts  
-- 🧠 Name generator  
-- 📇 Character card support  
-- 🧩 Modular and extensible architecture  
+-  Game Master and Player accounts  
+-  Name generator  
+-  Character card support
+-  Youtube music player with built-in adblocker
+-  Modular and extensible architecture  
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - .NET MAUI Blazor Hybrid (client)  
 - ASP.NET Core Web API (backend)  
@@ -19,7 +20,7 @@
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -32,7 +33,7 @@
 
 ### Database Setup (SQL Server)
 
-Mixi now uses **Microsoft SQL Server** instead of SQLite.  
+Mixi uses **Microsoft SQL Server** .
 The API project (`Mixi.Api`) connects to a **local SQL Server** instance using credentials stored in **.NET user secrets**.
 
 #### 1. Install and run SQL Server locally
@@ -62,40 +63,40 @@ Since migrations are not applied automatically at startup, you need to apply the
 cd Mixi.Api
 dotnet ef database update
 ```
-## ▶️ Run the App
+##  Run the App
 Run the backend (API) and client separately:
 
 ```
 dotnet run --project Mixi.Api
 dotnet run --project Mixi.App
 ```
-## 🧩 Planned Features
-Campaign/session manager
+##  Planned Features
+- Campaign/session manager
 
-Player dashboard
+- Player dashboard
 
-Dice roller
+- Dice roller
 
-Music player (local, Spotify, and Tidal planned)
+- Messages between players and GM
 
-## 🤝 Contributing
+- And more!
+
+##  Contributing
 Pull requests are welcome! To contribute:
 
-1. Fork the project
-
-2. Create your feature branch:
+1. Create your feature branch:
 ```
 git checkout -b feature/my-feature
 ```
-3. Commit your changes:
+2. Commit your changes:
 ```
 git commit -m 'feat: added feature'
 ```
-4. Push to the branch:
+3. Push to the branch:
 ```
 git push origin feature/my-feature
 ```
-5. Open a pull reques
+4. Open a pull reques
 
 ## 📄 License
 Licensed under the GNU General Public License v3.0.
