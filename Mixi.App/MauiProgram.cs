@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.WebView.Maui;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls.Hosting;
+using Microsoft.Maui.Devices;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Hosting;
 using Microsoft.Maui.Storage;
@@ -31,9 +32,19 @@ public static class MauiProgram
 
         builder.Services.AddTransient<AuthTokenHandler>();
 
+        string baseAddress = DeviceInfo.Platform == DevicePlatform.Android ? "https://10.0.2.2:7079" : "https://localhost:7079";
+       
         builder.Services
             .AddHttpClient("MyApi",
-                async (serviceProvider, client) => { client.BaseAddress = new Uri("https://localhost:7079"); })
+                async (serviceProvider, client) => { client.BaseAddress = new Uri(baseAddress); })
+            .ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                var handler = new HttpClientHandler();
+                #if DEBUG
+                handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+                #endif
+                return handler;
+            })
             .AddHttpMessageHandler<AuthTokenHandler>();
 
         builder.Services.AddScoped(sp =>

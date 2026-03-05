@@ -15,9 +15,13 @@
         {
             <p>Loading...</p>
         }
+        else if (!string.IsNullOrEmpty(_statusMessage))
+        {
+            <p style="color:red; padding: 20px;">@_statusMessage</p>
+        }
         else
         {
-            <div id="pdfContainer" style="  width:100%;height:100%;"></div>
+            <div id="pdfContainer" style="width:100%;height:80vh; min-height: 500px;"></div>
         }
     </div>
     <div>
@@ -92,6 +96,7 @@
         }
         catch (Exception ex)
         {
+            _statusMessage = $"Network Error: {ex.Message}"; 
             Log($"LoadDocument BŁĄD: {ex}");
         }
         finally
@@ -110,13 +115,14 @@
 
             try
             {
-                _pdfModule ??= await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Mixi.SharedUI/js/pdfViewer.js");
+                _pdfModule ??= await JsRuntime.InvokeAsync<IJSObjectReference>("import", "/_content/Mixi.SharedUI/js/pdfViewer.js");
                 await _pdfModule.InvokeVoidAsync("renderPdf", "pdfContainer", _pdfBase64Data);
-
                 await LoadFormData();
             }
             catch (Exception ex)
             {
+                _statusMessage = $"JS Interop Error: {ex.Message}";
+                StateHasChanged(); 
                 Log($"OnAfterRenderAsync BŁĄD: {ex}");
             }
         }
@@ -126,7 +132,7 @@
     {
         try
         {
-            var formData = await Http.GetStringAsync($"api/Pdf/{_documentId}/getformdata");
+            var formData = await Http.GetStringAsync($"/api/Pdf/{_documentId}/getformdata");
 
             if (_pdfModule != null && !string.IsNullOrWhiteSpace(formData) && formData != "{}")
             {
@@ -135,10 +141,10 @@
         }
         catch (Exception ex)
         {
-            _statusMessage = $"Error: {ex.Message}";
+            _statusMessage = $"Form Data Error: {ex.Message}";
+            StateHasChanged(); 
         }
     }
-
 
     private async Task SaveChanges()
     {

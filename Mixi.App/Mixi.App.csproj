@@ -2,7 +2,7 @@
     
 
     <PropertyGroup>
-        <TargetFrameworks>net8.0-android;net8.0-windows10.0.19041.0</TargetFrameworks>
+        <TargetFrameworks><!--net8.0-android;-->net8.0-windows10.0.19041.0</TargetFrameworks>
 
 
         <OutputType>Exe</OutputType>
@@ -12,9 +12,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
         <Nullable>enable</Nullable>
-
- 
-
+        
         
         <ApplicationTitle>Mixi.App</ApplicationTitle>
         
@@ -32,7 +30,7 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
         <UserSecretsId>a911461c-f1d7-48a0-8f22-dd345a6acbb1</UserSecretsId>
     </PropertyGroup>
-    
+
     
     <ItemGroup>
         <!-- App Icon -->
@@ -59,15 +57,13 @@
         <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.9" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1"/>
-        <PackageReference Include="Microsoft.UI.Xaml" Version="2.8.7" Condition="!$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)').Contains('android'))"/>
-        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3800.47" Condition="!$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)').Contains('android'))"/>
         <PackageReference Include="SpotifyAPI.Web" Version="7.2.1"/>
         <PackageReference Include="SpotifyAPI.Web.Auth" Version="7.2.1"/>
     </ItemGroup>
     
     <ItemGroup>
         <ProjectReference Include="..\Mixi.Shared.Models\Mixi.Shared.Models.csproj"/>
-        <ProjectReference Include="..\Mixi.SharedUI\Mixi.SharedUI.csproj" AdditionalProperties="RuntimeIdentifier=" />
+        <ProjectReference Include="..\Mixi.SharedUI\Mixi.SharedUI.csproj"/>
     </ItemGroup>
     
     
